@@ -97,6 +97,69 @@ export const cities: City[] = [
   { id: "rio", name: "Rio de Janeiro, Brazil", flag: "🇧🇷" },
   { id: "saopaulo", name: "São Paulo, Brazil", flag: "🇧🇷" },
   { id: "salvador", name: "Salvador, Brazil", flag: "🇧🇷" },
+  // Africa - North
+  { id: "cairo", name: "Cairo, Egypt", flag: "🇪🇬" },
+  { id: "algiers", name: "Algiers, Algeria", flag: "🇩🇿" },
+  { id: "tunis", name: "Tunis, Tunisia", flag: "🇹🇳" },
+  { id: "tripoli", name: "Tripoli, Libya", flag: "🇱🇾" },
+  { id: "casablanca", name: "Casablanca, Morocco", flag: "🇲🇦" },
+  { id: "marrakech", name: "Marrakech, Morocco", flag: "🇲🇦" },
+  // Africa - West
+  { id: "lagos", name: "Lagos, Nigeria", flag: "🇳🇬" },
+  { id: "abuja", name: "Abuja, Nigeria", flag: "🇳🇬" },
+  { id: "accra", name: "Accra, Ghana", flag: "🇬🇭" },
+  { id: "dakar", name: "Dakar, Senegal", flag: "🇸🇳" },
+  { id: "abidjan", name: "Abidjan, Côte d'Ivoire", flag: "🇨🇮" },
+  { id: "bamako", name: "Bamako, Mali", flag: "🇲🇱" },
+  { id: "ouagadougou", name: "Ouagadougou, Burkina Faso", flag: "🇧🇫" },
+  { id: "conakry", name: "Conakry, Guinea", flag: "🇬🇳" },
+  { id: "freetown", name: "Freetown, Sierra Leone", flag: "🇸🇱" },
+  { id: "monrovia", name: "Monrovia, Liberia", flag: "🇱🇷" },
+  { id: "lome", name: "Lomé, Togo", flag: "🇹🇬" },
+  { id: "cotonou", name: "Cotonou, Benin", flag: "🇧🇯" },
+  { id: "niamey", name: "Niamey, Niger", flag: "🇳🇪" },
+  { id: "banjul", name: "Banjul, Gambia", flag: "🇬🇲" },
+  { id: "bissau", name: "Bissau, Guinea-Bissau", flag: "🇬🇼" },
+  { id: "praia", name: "Praia, Cabo Verde", flag: "🇨🇻" },
+  { id: "nouakchott", name: "Nouakchott, Mauritania", flag: "🇲🇷" },
+  // Africa - East
+  { id: "nairobi", name: "Nairobi, Kenya", flag: "🇰🇪" },
+  { id: "addisababa", name: "Addis Ababa, Ethiopia", flag: "🇪🇹" },
+  { id: "asmara", name: "Asmara, Eritrea", flag: "🇪🇷" },
+  { id: "kigali", name: "Kigali, Rwanda", flag: "🇷🇼" },
+  { id: "kampala", name: "Kampala, Uganda", flag: "🇺🇬" },
+  { id: "darussalaam", name: "Dar es Salaam, Tanzania", flag: "🇹🇿" },
+  { id: "mogadishu", name: "Mogadishu, Somalia", flag: "🇸🇴" },
+  { id: "djibouti", name: "Djibouti, Djibouti", flag: "🇩🇯" },
+  { id: "juba", name: "Juba, South Sudan", flag: "🇸🇸" },
+  { id: "khartoum", name: "Khartoum, Sudan", flag: "🇸🇩" },
+  { id: "antananarivo", name: "Antananarivo, Madagascar", flag: "🇲🇬" },
+  { id: "moroni", name: "Moroni, Comoros", flag: "🇰🇲" },
+  { id: "portlouis", name: "Port Louis, Mauritius", flag: "🇲🇺" },
+  { id: "victoria", name: "Victoria, Seychelles", flag: "🇸🇨" },
+  { id: "bujumbura", name: "Bujumbura, Burundi", flag: "🇧🇮" },
+  // Africa - Central
+  { id: "kinshasa", name: "Kinshasa, DR Congo", flag: "🇨🇩" },
+  { id: "douala", name: "Douala, Cameroon", flag: "🇨🇲" },
+  { id: "yaounde", name: "Yaoundé, Cameroon", flag: "🇨🇲" },
+  { id: "brazzaville", name: "Brazzaville, Congo", flag: "🇨🇬" },
+  { id: "libreville", name: "Libreville, Gabon", flag: "🇬🇦" },
+  { id: "bangui", name: "Bangui, Central African Republic", flag: "🇨🇫" },
+  { id: "ndjamena", name: "N'Djamena, Chad", flag: "🇹🇩" },
+  { id: "malabo", name: "Malabo, Equatorial Guinea", flag: "🇬🇶" },
+  { id: "saotome", name: "São Tomé, São Tomé and Príncipe", flag: "🇸🇹" },
+  // Africa - Southern
+  { id: "johannesburg", name: "Johannesburg, South Africa", flag: "🇿🇦" },
+  { id: "capetown", name: "Cape Town, South Africa", flag: "🇿🇦" },
+  { id: "luanda", name: "Luanda, Angola", flag: "🇦🇴" },
+  { id: "maputo", name: "Maputo, Mozambique", flag: "🇲🇿" },
+  { id: "harare", name: "Harare, Zimbabwe", flag: "🇿🇼" },
+  { id: "lusaka", name: "Lusaka, Zambia", flag: "🇿🇲" },
+  { id: "lilongwe", name: "Lilongwe, Malawi", flag: "🇲🇼" },
+  { id: "windhoek", name: "Windhoek, Namibia", flag: "🇳🇦" },
+  { id: "gaborone", name: "Gaborone, Botswana", flag: "🇧🇼" },
+  { id: "maseru", name: "Maseru, Lesotho", flag: "🇱🇸" },
+  { id: "mbabane", name: "Mbabane, Eswatini", flag: "🇸🇿" },
 ];
 
 export interface FeedPost {
@@ -954,4 +1017,193 @@ export const events: EventItem[] = [
   { id: 1301, title: "AfroTech Dallas", host: "AfroTech", date: "Fri, Mar 21 · 9:00 AM", venue: "Kay Bailey Hutchison Convention Center", city: "dallas", distance: "1.0 mi", image: networkingConference, attending: 5000, free: false, price: "$199", category: "Networking" },
   { id: 1302, title: "AfroTech Houston", host: "AfroTech", date: "Sat, Mar 22 · 9:00 AM", venue: "George R. Brown Convention Center", city: "houston", distance: "0.8 mi", image: networkingConference, attending: 6000, free: false, price: "$199", category: "Networking" },
   { id: 1303, title: "AfroTech San Francisco", host: "AfroTech", date: "Fri, Mar 28 · 9:00 AM", venue: "Moscone Center", city: "sanfrancisco", distance: "0.5 mi", image: networkingConference, attending: 10000, free: false, price: "$249", category: "Networking" },
+
+  // ===== AFRICA =====
+
+  // Nigeria - Lagos
+  { id: 2000, title: "Dirty December Lagos 🔥", host: "Dirty December", date: "Sat, Dec 20 · 10:00 PM", venue: "Eko Atlantic City", city: "lagos", distance: "2.0 mi", image: eventParty, attending: 25000, free: false, price: "$50", category: "Festival" },
+  { id: 2001, title: "Detty December Beach Rave", host: "Afro Nation", date: "Sun, Dec 21 · 4:00 PM", venue: "Landmark Beach", city: "lagos", distance: "3.0 mi", image: eventParty, attending: 15000, free: false, price: "$40", category: "Party" },
+  { id: 2002, title: "Lagos Afrobeats Festival", host: "Afrobeats Global", date: "Fri, Dec 19 · 7:00 PM", venue: "Tafawa Balewa Square", city: "lagos", distance: "1.5 mi", image: eventConcert, attending: 30000, free: false, price: "$35", category: "Festival" },
+  { id: 2003, title: "Art X Lagos", host: "Art X Collective", date: "Sat, Nov 8 · 10:00 AM", venue: "Civic Centre", city: "lagos", distance: "1.0 mi", image: eventAfricanArt, attending: 5000, free: false, price: "$20", category: "Art" },
+  // Nigeria - Abuja
+  { id: 2010, title: "Abuja Carnival", host: "FCT Events", date: "Sat, Dec 13 · 12:00 PM", venue: "Eagle Square", city: "abuja", distance: "0.5 mi", image: eventParty, attending: 10000, free: true, category: "Festival" },
+
+  // Ethiopia - Addis Ababa
+  { id: 2020, title: "Dirty December Addis 🔥", host: "Dirty December East Africa", date: "Fri, Dec 26 · 9:00 PM", venue: "Millennium Hall", city: "addisababa", distance: "1.0 mi", image: eventParty, attending: 8000, free: false, price: "$30", category: "Party" },
+  { id: 2021, title: "Timkat Festival", host: "Ethiopian Orthodox Church", date: "Sun, Jan 19 · 6:00 AM", venue: "Jan Meda", city: "addisababa", distance: "2.0 mi", image: eventAfricanArt, attending: 50000, free: true, category: "Cultural" },
+  { id: 2022, title: "Addis Jazz Festival", host: "Ethio Jazz Society", date: "Sat, Mar 15 · 7:00 PM", venue: "Hyatt Regency", city: "addisababa", distance: "1.5 mi", image: eventConcert, attending: 3000, free: false, price: "$25", category: "Music" },
+
+  // Eritrea - Asmara
+  { id: 2030, title: "Eritrean Independence Day Festival", host: "Asmara Cultural Center", date: "Sat, May 24 · 10:00 AM", venue: "Asmara Stadium", city: "asmara", distance: "0.5 mi", image: eventAfricanArt, attending: 20000, free: true, category: "Cultural" },
+  { id: 2031, title: "Asmara Art Deco Walking Tour", host: "Heritage Eritrea", date: "Sun, Mar 16 · 9:00 AM", venue: "Fiat Tagliero Building", city: "asmara", distance: "1.0 mi", image: eventAfricanArt, attending: 200, free: false, price: "$15", category: "Art" },
+
+  // Rwanda - Kigali
+  { id: 2040, title: "Basketball Africa League 🏀", host: "BAL / NBA Africa", date: "Sat, Mar 8 · 5:00 PM", venue: "BK Arena", city: "kigali", distance: "1.0 mi", image: eventFootball, attending: 10000, free: false, price: "$20", category: "Sports" },
+  { id: 2041, title: "Kigali Up Festival", host: "Rwanda Arts Initiative", date: "Fri, Jul 4 · 6:00 PM", venue: "Kigali Convention Centre", city: "kigali", distance: "0.5 mi", image: eventConcert, attending: 5000, free: false, price: "$15", category: "Music" },
+  { id: 2042, title: "Kwita Izina (Gorilla Naming)", host: "Rwanda Development Board", date: "Sat, Sep 6 · 9:00 AM", venue: "Kinigi, Volcanoes NP", city: "kigali", distance: "60 mi", image: eventAfricanArt, attending: 30000, free: true, category: "Cultural" },
+
+  // Ghana - Accra
+  { id: 2050, title: "Afrochella Festival", host: "Afrochella", date: "Sat, Dec 27 · 2:00 PM", venue: "El Wak Stadium", city: "accra", distance: "1.5 mi", image: eventParty, attending: 20000, free: false, price: "$45", category: "Festival" },
+  { id: 2051, title: "Chale Wote Street Art Festival", host: "ACCRA [dot] ALT", date: "Sat, Aug 16 · 10:00 AM", venue: "James Town", city: "accra", distance: "2.0 mi", image: eventAfricanArt, attending: 15000, free: true, category: "Art" },
+
+  // Kenya - Nairobi
+  { id: 2060, title: "Blankets & Wine Nairobi", host: "Tusker", date: "Sun, Mar 9 · 12:00 PM", venue: "Ngong Racecourse", city: "nairobi", distance: "3.0 mi", image: eventBrunch, attending: 8000, free: false, price: "$20", category: "Music" },
+  { id: 2061, title: "Koroga Festival", host: "Capital FM", date: "Sat, Apr 12 · 2:00 PM", venue: "Carnivore Grounds", city: "nairobi", distance: "4.0 mi", image: eventConcert, attending: 10000, free: false, price: "$25", category: "Festival" },
+
+  // South Africa - Johannesburg
+  { id: 2070, title: "Afropunk Joburg", host: "Afropunk", date: "Sat, Dec 13 · 12:00 PM", venue: "Constitution Hill", city: "johannesburg", distance: "1.0 mi", image: eventParty, attending: 20000, free: false, price: "$60", category: "Festival" },
+  { id: 2071, title: "Amapiano Fest Soweto", host: "Amapiano SA", date: "Fri, Mar 14 · 8:00 PM", venue: "Soweto Theatre", city: "johannesburg", distance: "8.0 mi", image: eventConcert, attending: 5000, free: false, price: "$15", category: "Music" },
+
+  // South Africa - Cape Town
+  { id: 2080, title: "Cape Town Jazz Festival", host: "espAfrika", date: "Fri, Mar 28 · 6:00 PM", venue: "Cape Town ICC", city: "capetown", distance: "1.0 mi", image: eventConcert, attending: 37000, free: false, price: "$70", category: "Music" },
+  { id: 2081, title: "Cape Town Carnival", host: "CT Carnival Trust", date: "Sat, Mar 15 · 4:00 PM", venue: "Green Point", city: "capetown", distance: "2.0 mi", image: eventParty, attending: 50000, free: true, category: "Festival" },
+
+  // Senegal - Dakar
+  { id: 2090, title: "Dak'Art Biennale", host: "Dak'Art", date: "Sat, May 3 · 10:00 AM", venue: "Village de la Biennale", city: "dakar", distance: "1.0 mi", image: eventAfricanArt, attending: 10000, free: true, category: "Art" },
+  { id: 2091, title: "Saint-Louis Jazz Festival", host: "Jazz St-Louis", date: "Fri, May 9 · 7:00 PM", venue: "Place Faidherbe", city: "dakar", distance: "150 mi", image: eventConcert, attending: 5000, free: false, price: "$20", category: "Music" },
+
+  // DR Congo - Kinshasa
+  { id: 2100, title: "Fête de la Musique Kinshasa", host: "Institut Français", date: "Sat, Jun 21 · 6:00 PM", venue: "Halle de la Gombe", city: "kinshasa", distance: "1.0 mi", image: eventFeteMusique, attending: 8000, free: true, category: "Music" },
+  { id: 2101, title: "Rumba Night Kinshasa", host: "Congo Music Collective", date: "Fri, Mar 14 · 9:00 PM", venue: "Memling Hotel", city: "kinshasa", distance: "0.5 mi", image: eventParty, attending: 2000, free: false, price: "$15", category: "Party" },
+
+  // Tanzania - Dar es Salaam
+  { id: 2110, title: "Sauti za Busara", host: "Busara Promotions", date: "Sat, Feb 8 · 6:00 PM", venue: "Old Fort Zanzibar", city: "darussalaam", distance: "40 mi", image: eventConcert, attending: 5000, free: false, price: "$25", category: "Music" },
+  { id: 2111, title: "Dar es Salaam Fashion Week", host: "DSFW", date: "Fri, Oct 17 · 7:00 PM", venue: "Julius Nyerere ICC", city: "darussalaam", distance: "1.0 mi", image: eventStreetwearShow, attending: 3000, free: false, price: "$30", category: "Fashion" },
+
+  // Uganda - Kampala
+  { id: 2120, title: "Nyege Nyege Festival", host: "Nyege Nyege", date: "Thu, Sep 4 · 12:00 PM", venue: "Itanda Falls, Jinja", city: "kampala", distance: "50 mi", image: eventParty, attending: 15000, free: false, price: "$60", category: "Festival" },
+  { id: 2121, title: "Rolex Festival Kampala", host: "KLA Events", date: "Sun, Aug 17 · 10:00 AM", venue: "Lugogo Cricket Oval", city: "kampala", distance: "2.0 mi", image: eventBrunch, attending: 10000, free: true, category: "Food" },
+
+  // Egypt - Cairo
+  { id: 2130, title: "Cairo Jazz Festival", host: "Cairo Jazz Club", date: "Fri, Mar 21 · 8:00 PM", venue: "Cairo Opera House", city: "cairo", distance: "1.0 mi", image: eventConcert, attending: 5000, free: false, price: "$30", category: "Music" },
+  { id: 2131, title: "Pyramids Sound & Light Show", host: "Ministry of Tourism", date: "Daily · 7:00 PM", venue: "Giza Plateau", city: "cairo", distance: "8.0 mi", image: eventAfricanArt, attending: 2000, free: false, price: "$15", category: "Cultural" },
+
+  // Morocco - Casablanca & Marrakech
+  { id: 2140, title: "Gnaoua World Music Festival", host: "Gnaoua Festival", date: "Fri, Jun 13 · 6:00 PM", venue: "Place Moulay Hassan, Essaouira", city: "casablanca", distance: "200 mi", image: eventConcert, attending: 30000, free: true, category: "Music" },
+  { id: 2141, title: "Marrakech International Film Festival", host: "FIFM", date: "Fri, Nov 28 · 7:00 PM", venue: "Palais des Congrès", city: "marrakech", distance: "1.0 mi", image: eventNyfw, attending: 8000, free: false, price: "$25", category: "Film" },
+
+  // Côte d'Ivoire - Abidjan
+  { id: 2150, title: "FEMUA Festival", host: "Magic System", date: "Sat, Apr 19 · 4:00 PM", venue: "Palais de la Culture", city: "abidjan", distance: "2.0 mi", image: eventConcert, attending: 20000, free: false, price: "$10", category: "Music" },
+  { id: 2151, title: "Abidjan Coupé-Décalé Night", host: "Ivoire Music", date: "Sat, Mar 15 · 10:00 PM", venue: "Parker Place", city: "abidjan", distance: "1.0 mi", image: eventParty, attending: 3000, free: false, price: "$15", category: "Party" },
+
+  // Cameroon - Douala & Yaoundé
+  { id: 2160, title: "Douala Hip Hop Festival", host: "237 Urban", date: "Sat, Mar 22 · 6:00 PM", venue: "Palais des Sports", city: "douala", distance: "1.0 mi", image: eventRapConcert, attending: 5000, free: false, price: "$10", category: "Music" },
+  { id: 2161, title: "FESMA Yaoundé", host: "Ministry of Culture", date: "Fri, Nov 14 · 5:00 PM", venue: "Palais des Congrès", city: "yaounde", distance: "0.5 mi", image: eventAfricanArt, attending: 3000, free: true, category: "Cultural" },
+
+  // Angola - Luanda
+  { id: 2170, title: "Luanda Kuduro Festival", host: "Kuduro World", date: "Sat, Aug 9 · 8:00 PM", venue: "Marginal de Luanda", city: "luanda", distance: "1.0 mi", image: eventParty, attending: 10000, free: false, price: "$15", category: "Music" },
+
+  // Mozambique - Maputo
+  { id: 2180, title: "Azgo Festival", host: "Azgo", date: "Sat, Sep 27 · 2:00 PM", venue: "Jardim Botânico", city: "maputo", distance: "2.0 mi", image: eventConcert, attending: 8000, free: false, price: "$10", category: "Festival" },
+
+  // Zimbabwe - Harare
+  { id: 2190, title: "HIFA (Harare Intl Festival)", host: "HIFA Trust", date: "Tue, Apr 29 · 10:00 AM", venue: "Harare Gardens", city: "harare", distance: "0.5 mi", image: eventAfricanArt, attending: 5000, free: false, price: "$20", category: "Arts" },
+
+  // Zambia - Lusaka
+  { id: 2200, title: "Vic Falls Carnival", host: "VFC Events", date: "Sat, Dec 27 · 12:00 PM", venue: "Victoria Falls", city: "lusaka", distance: "300 mi", image: eventParty, attending: 10000, free: false, price: "$35", category: "Festival" },
+
+  // Algeria - Algiers
+  { id: 2210, title: "Algiers International Jazz Festival", host: "Festival Jazz Alger", date: "Fri, Jul 4 · 8:00 PM", venue: "Théâtre de Verdure", city: "algiers", distance: "1.0 mi", image: eventConcert, attending: 4000, free: false, price: "$20", category: "Music" },
+
+  // Tunisia - Tunis
+  { id: 2220, title: "Carthage International Festival", host: "Festival de Carthage", date: "Fri, Jul 11 · 9:00 PM", venue: "Amphitheatre of Carthage", city: "tunis", distance: "10 mi", image: eventConcert, attending: 7000, free: false, price: "$25", category: "Music" },
+
+  // Mali - Bamako
+  { id: 2230, title: "Festival au Désert", host: "Festival in the Desert", date: "Thu, Jan 9 · 4:00 PM", venue: "Essakane", city: "bamako", distance: "500 mi", image: eventAfricanArt, attending: 3000, free: false, price: "$30", category: "Music" },
+
+  // Burkina Faso - Ouagadougou
+  { id: 2240, title: "FESPACO Film Festival", host: "FESPACO", date: "Sat, Feb 22 · 10:00 AM", venue: "Ciné Burkina", city: "ouagadougou", distance: "1.0 mi", image: eventAfricanArt, attending: 10000, free: false, price: "$10", category: "Film" },
+
+  // Guinea - Conakry
+  { id: 2250, title: "Festival Nuit Atypique", host: "Conakry Arts", date: "Sat, Apr 5 · 7:00 PM", venue: "Palais du Peuple", city: "conakry", distance: "1.0 mi", image: eventConcert, attending: 3000, free: false, price: "$10", category: "Music" },
+
+  // Sierra Leone - Freetown
+  { id: 2260, title: "Freetown Music Festival", host: "Salone Events", date: "Sat, Dec 20 · 5:00 PM", venue: "Lumley Beach", city: "freetown", distance: "3.0 mi", image: eventParty, attending: 5000, free: false, price: "$10", category: "Festival" },
+
+  // Liberia - Monrovia
+  { id: 2270, title: "Monrovia Independence Day Party", host: "LIB Events", date: "Sat, Jul 26 · 12:00 PM", venue: "Providence Island", city: "monrovia", distance: "0.5 mi", image: eventParty, attending: 10000, free: true, category: "Cultural" },
+
+  // Togo - Lomé
+  { id: 2280, title: "Lomé Carnival", host: "Togo Cultural Ministry", date: "Sat, Feb 15 · 2:00 PM", venue: "Boulevard du Mono", city: "lome", distance: "1.0 mi", image: eventParty, attending: 15000, free: true, category: "Festival" },
+
+  // Benin - Cotonou
+  { id: 2290, title: "Voodoo Festival", host: "Benin Tourism", date: "Sat, Jan 10 · 8:00 AM", venue: "Ouidah", city: "cotonou", distance: "25 mi", image: eventAfricanArt, attending: 20000, free: true, category: "Cultural" },
+
+  // Niger - Niamey
+  { id: 2300, title: "Cure Salée Festival", host: "Niger Culture Ministry", date: "Sat, Sep 13 · 10:00 AM", venue: "In-Gall", city: "niamey", distance: "400 mi", image: eventAfricanArt, attending: 5000, free: true, category: "Cultural" },
+
+  // Somalia - Mogadishu
+  { id: 2310, title: "Mogadishu Book Fair", host: "Somali Arts", date: "Sat, Aug 2 · 10:00 AM", venue: "Mogadishu University", city: "mogadishu", distance: "2.0 mi", image: eventAfricanArt, attending: 2000, free: true, category: "Arts" },
+
+  // Sudan - Khartoum
+  { id: 2320, title: "Khartoum Art Night", host: "Sudan Creative Hub", date: "Fri, Mar 7 · 6:00 PM", venue: "Downtown Gallery", city: "khartoum", distance: "1.0 mi", image: eventAfricanArt, attending: 1000, free: true, category: "Art" },
+
+  // Djibouti
+  { id: 2330, title: "Djibouti Cultural Week", host: "Djibouti Tourism", date: "Mon, Jun 23 · 9:00 AM", venue: "People's Palace", city: "djibouti", distance: "0.5 mi", image: eventAfricanArt, attending: 3000, free: true, category: "Cultural" },
+
+  // South Sudan - Juba
+  { id: 2340, title: "Juba Day Festival", host: "SS Events", date: "Sat, Jul 9 · 10:00 AM", venue: "John Garang Memorial", city: "juba", distance: "1.0 mi", image: eventParty, attending: 5000, free: true, category: "Cultural" },
+
+  // Madagascar - Antananarivo
+  { id: 2350, title: "Madajazzcar Festival", host: "Madajazzcar", date: "Sat, Oct 11 · 7:00 PM", venue: "Alliance Française", city: "antananarivo", distance: "1.0 mi", image: eventConcert, attending: 3000, free: false, price: "$10", category: "Music" },
+
+  // Namibia - Windhoek
+  { id: 2360, title: "Windhoek Karneval (WIKA)", host: "WIKA Committee", date: "Sat, Apr 26 · 2:00 PM", venue: "Independence Avenue", city: "windhoek", distance: "0.5 mi", image: eventParty, attending: 8000, free: true, category: "Festival" },
+
+  // Botswana - Gaborone
+  { id: 2370, title: "Maitisong Festival", host: "Maitisong Trust", date: "Sat, Mar 29 · 6:00 PM", venue: "Maitisong Theatre", city: "gaborone", distance: "1.0 mi", image: eventConcert, attending: 3000, free: false, price: "$15", category: "Arts" },
+
+  // Gabon - Libreville
+  { id: 2380, title: "Libreville Music Night", host: "Gabon Arts Council", date: "Sat, May 10 · 8:00 PM", venue: "French Cultural Centre", city: "libreville", distance: "1.0 mi", image: eventConcert, attending: 1500, free: false, price: "$10", category: "Music" },
+
+  // Congo - Brazzaville
+  { id: 2390, title: "Feux de Brazza", host: "Congo Music Scene", date: "Sat, Aug 16 · 7:00 PM", venue: "Corniche du Congo", city: "brazzaville", distance: "1.0 mi", image: eventParty, attending: 5000, free: false, price: "$10", category: "Festival" },
+
+  // Chad - N'Djamena
+  { id: 2400, title: "N'Djamena Cultural Fair", host: "Chad Cultural Ministry", date: "Sat, Nov 29 · 10:00 AM", venue: "Palais du 15 Janvier", city: "ndjamena", distance: "0.5 mi", image: eventAfricanArt, attending: 3000, free: true, category: "Cultural" },
+
+  // CAR - Bangui
+  { id: 2410, title: "Bangui Music Festival", host: "RCA Arts", date: "Sat, Jun 14 · 5:00 PM", venue: "Centre Culturel", city: "bangui", distance: "1.0 mi", image: eventConcert, attending: 1000, free: true, category: "Music" },
+
+  // Malawi - Lilongwe
+  { id: 2420, title: "Lake of Stars Festival", host: "Lake of Stars", date: "Fri, Sep 26 · 4:00 PM", venue: "Lake Malawi Shore", city: "lilongwe", distance: "180 mi", image: eventParty, attending: 5000, free: false, price: "$30", category: "Festival" },
+
+  // Comoros - Moroni
+  { id: 2430, title: "Grand Mariage Festival", host: "Comoros Traditions", date: "Sat, Jul 19 · 10:00 AM", venue: "Moroni Medina", city: "moroni", distance: "0.5 mi", image: eventAfricanArt, attending: 2000, free: true, category: "Cultural" },
+
+  // Mauritius - Port Louis
+  { id: 2440, title: "Sega Music Night", host: "Mauritius Tourism", date: "Sat, Mar 15 · 8:00 PM", venue: "Le Caudan Waterfront", city: "portlouis", distance: "0.5 mi", image: eventConcert, attending: 3000, free: false, price: "$15", category: "Music" },
+
+  // Seychelles - Victoria
+  { id: 2450, title: "Creole Festival Seychelles", host: "Seychelles Tourism", date: "Fri, Oct 24 · 6:00 PM", venue: "Beau Vallon Beach", city: "victoria", distance: "3.0 mi", image: eventParty, attending: 5000, free: true, category: "Festival" },
+
+  // Burundi - Bujumbura
+  { id: 2460, title: "Bujumbura Drum Festival", host: "Royal Drummers of Burundi", date: "Sat, Apr 5 · 3:00 PM", venue: "Lake Tanganyika Shore", city: "bujumbura", distance: "1.0 mi", image: eventAfricanArt, attending: 3000, free: true, category: "Cultural" },
+
+  // Cabo Verde - Praia
+  { id: 2470, title: "Kriol Jazz Festival", host: "KJF", date: "Sat, Apr 12 · 7:00 PM", venue: "Praça Alexandre Albuquerque", city: "praia", distance: "0.5 mi", image: eventConcert, attending: 4000, free: false, price: "$20", category: "Music" },
+
+  // Gambia - Banjul
+  { id: 2480, title: "Roots Homecoming Festival", host: "Gambia Tourism", date: "Sat, May 3 · 10:00 AM", venue: "Kunta Kinteh Island", city: "banjul", distance: "15 mi", image: eventAfricanArt, attending: 5000, free: false, price: "$10", category: "Cultural" },
+
+  // Guinea-Bissau - Bissau
+  { id: 2490, title: "Carnival of Bissau", host: "GB Cultural Council", date: "Sat, Feb 22 · 2:00 PM", venue: "Praça dos Heróis", city: "bissau", distance: "0.5 mi", image: eventParty, attending: 8000, free: true, category: "Festival" },
+
+  // Mauritania - Nouakchott
+  { id: 2500, title: "Nouakchott Music Festival", host: "Mauritania Arts", date: "Sat, Mar 8 · 7:00 PM", venue: "Maison des Jeunes", city: "nouakchott", distance: "1.0 mi", image: eventConcert, attending: 1500, free: false, price: "$10", category: "Music" },
+
+  // Libya - Tripoli
+  { id: 2510, title: "Tripoli Heritage Night", host: "Libya Heritage", date: "Sat, May 17 · 6:00 PM", venue: "Red Castle Museum", city: "tripoli", distance: "1.0 mi", image: eventAfricanArt, attending: 2000, free: true, category: "Cultural" },
+
+  // Equatorial Guinea - Malabo
+  { id: 2520, title: "Malabo Hip Hop Festival", host: "GQ Urban Music", date: "Sat, Aug 9 · 8:00 PM", venue: "Malabo Stadium", city: "malabo", distance: "1.0 mi", image: eventRapConcert, attending: 3000, free: false, price: "$10", category: "Music" },
+
+  // São Tomé
+  { id: 2530, title: "São Tomé Chocolate Festival", host: "STP Tourism", date: "Sat, Jun 7 · 10:00 AM", venue: "Praça da Independência", city: "saotome", distance: "0.5 mi", image: eventBrunch, attending: 2000, free: true, category: "Food" },
+
+  // Lesotho - Maseru
+  { id: 2540, title: "Morija Arts Festival", host: "Morija Museum", date: "Sat, Oct 4 · 10:00 AM", venue: "Morija", city: "maseru", distance: "20 mi", image: eventAfricanArt, attending: 3000, free: false, price: "$5", category: "Arts" },
+
+  // Eswatini - Mbabane
+  { id: 2550, title: "MTN Bushfire Festival", host: "Bushfire", date: "Fri, May 23 · 4:00 PM", venue: "House on Fire", city: "mbabane", distance: "15 mi", image: eventConcert, attending: 8000, free: false, price: "$40", category: "Festival" },
 ];
