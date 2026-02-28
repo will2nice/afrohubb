@@ -358,7 +358,7 @@ const MatchScreen = ({ selectedCity }: MatchScreenProps) => {
       ) : viewMode === "grid" ? (
         /* ─── GRID VIEW ─── */
         <div className="px-4 pt-3 max-w-lg mx-auto">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-3 gap-3">
             {gridProfiles.map((p) => (
               <button
                 key={p.id}
