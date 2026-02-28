@@ -520,7 +520,77 @@ const diasporaHubs: DiasporaHub[] = [
       { country: "Somalia", countryFlag: "🇸🇴", population: "~3,000+", neighborhoods: ["Sioux Falls", "Fargo"], notes: "Somali community growing alongside South Sudanese diaspora in the Dakotas." },
     ],
   },
+  {
+    city: "Charlotte", state: "NC", flag: "👑",
+    communities: [
+      { country: "Liberia", countryFlag: "🇱🇷", population: "~8,000+", neighborhoods: ["West Charlotte", "Beatties Ford Rd", "Steele Creek"], notes: "One of the fastest-growing Liberian communities on the East Coast. Strong church networks and cultural organizations." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~10,000+", neighborhoods: ["University City", "Ballantyne", "Mint Hill"], notes: "Growing Nigerian professional community drawn by Charlotte's banking and finance sector." },
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~5,000+", neighborhoods: ["North Charlotte", "Concord"], notes: "Active Ghanaian community with cultural events and Akan-language churches." },
+    ],
+  },
+  {
+    city: "Kansas City", state: "MO/KS", flag: "🎺",
+    communities: [
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~10,000+", neighborhoods: ["Northeast KC", "Wyandotte County (KS)"], notes: "Significant Somali community with mosques, halal markets, and community centers. One of the largest in the Midwest." },
+      { country: "Sudan", countryFlag: "🇸🇩", population: "~3,000+", neighborhoods: ["Northeast KC", "Independence"], notes: "Sudanese community with cultural organizations and shared spaces with the Somali diaspora." },
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~3,000+", neighborhoods: ["Midtown", "Westport area"], notes: "Small but vibrant Habesha community with restaurants and coffee shops." },
+    ],
+  },
+  {
+    city: "Providence", state: "RI", flag: "⚓",
+    communities: [
+      { country: "Cape Verde", countryFlag: "🇨🇻", population: "~20,000+", neighborhoods: ["Fox Point", "East Side", "Pawtucket"], notes: "One of the oldest Cape Verdean communities in the US, dating back to the 1800s whaling era. Kriolu is widely spoken." },
+      { country: "Liberia", countryFlag: "🇱🇷", population: "~10,000+", neighborhoods: ["South Providence", "Olneyville", "Central Falls"], notes: "Large Liberian refugee community. Rhode Island has one of the highest per-capita Liberian populations in the country." },
+      { country: "Guatemala (Garifuna)", countryFlag: "🇬🇹", population: "~5,000+", neighborhoods: ["South Providence", "Central Falls"], notes: "Garifuna community — Afro-Indigenous people from Central America with deep African roots in language and culture." },
+    ],
+  },
+  {
+    city: "Raleigh–Durham", state: "NC", flag: "🔬",
+    communities: [
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~15,000+", neighborhoods: ["Cary", "Durham", "Morrisville"], notes: "Research Triangle attracts Nigerian professionals. Strong Igbo community with cultural associations." },
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~5,000+", neighborhoods: ["Durham", "Chapel Hill"], notes: "Growing Habesha community near Duke and UNC with restaurants and cultural events." },
+    ],
+  },
+  {
+    city: "Nashville", state: "TN", flag: "🎸",
+    communities: [
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~12,000+", neighborhoods: ["Antioch", "South Nashville", "Murfreesboro"], notes: "One of the fastest-growing Somali communities in the South. Antioch has become a Somali cultural hub." },
+      { country: "Sudan", countryFlag: "🇸🇩", population: "~5,000+", neighborhoods: ["Antioch", "LaVergne"], notes: "Sudanese community growing alongside the Somali diaspora in South Nashville." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~5,000+", neighborhoods: ["Brentwood", "Franklin", "Antioch"], notes: "Nigerian professionals and families settling in Nashville's growing suburbs." },
+    ],
+  },
+  {
+    city: "Denver", state: "CO", flag: "🏔️",
+    communities: [
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~25,000+", neighborhoods: ["East Colfax", "Aurora", "Park Hill"], notes: "Denver-Aurora has one of the largest Ethiopian communities in the US. East Colfax is lined with Habesha restaurants." },
+      { country: "Eritrea", countryFlag: "🇪🇷", population: "~10,000+", neighborhoods: ["Aurora", "East Denver"], notes: "Eritrean community shares spaces with Ethiopian neighbors along the Colfax corridor." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~8,000+", neighborhoods: ["Aurora", "East Denver"], notes: "Somali community in Aurora with mosques, halal markets, and cultural centers." },
+    ],
+  },
+  {
+    city: "Detroit", state: "MI", flag: "🚗",
+    communities: [
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~8,000+", neighborhoods: ["Southfield", "Farmington Hills", "Canton"], notes: "Nigerian community in Detroit's western suburbs with strong professional networks." },
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~5,000+", neighborhoods: ["Dearborn Heights", "Westland"], notes: "Ghanaian community with churches and cultural festivals." },
+    ],
+  },
+  {
+    city: "Salt Lake City", state: "UT", flag: "⛰️",
+    communities: [
+      { country: "DR Congo", countryFlag: "🇨🇩", population: "~5,000+", neighborhoods: ["South Salt Lake", "West Valley City"], notes: "Congolese refugee community resettled through humanitarian programs. Active cultural associations." },
+      { country: "Burundi", countryFlag: "🇧🇮", population: "~3,000+", neighborhoods: ["South Salt Lake", "Murray"], notes: "Burundian refugee community alongside Congolese neighbors in South Salt Lake." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~3,000+", neighborhoods: ["West Valley City", "Taylorsville"], notes: "Growing Somali community with mosques and community organizations." },
+    ],
+  },
+  {
+    city: "Richmond", state: "VA", flag: "🏛️",
+    communities: [
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~5,000+", neighborhoods: ["Henrico County", "Chesterfield"], notes: "Nigerian families in Richmond suburbs with cultural organizations and churches." },
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~3,000+", neighborhoods: ["Broad Street corridor", "Short Pump"], notes: "Small but growing Habesha community with restaurants and coffee shops." },
+    ],
+  },
 ];
+
 
 const categoryIcon: Record<string, string> = {
   language: "🗣️",
