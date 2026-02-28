@@ -22,6 +22,9 @@ export const diasporaHubs: DiasporaHub[] = [
       { country: "Guinea", countryFlag: "🇬🇳", population: "~15,000+", neighborhoods: ["Harlem", "The Bronx"], notes: "Significant Guinean community with strong ties to the Mandinka and Fulani diasporas." },
       { country: "Haiti", countryFlag: "🇭🇹", population: "~100,000+", neighborhoods: ["Flatbush (Brooklyn)", "Crown Heights", "East New York"], notes: "Flatbush is the cultural capital of Haitian America. Kreyòl is the second language of Brooklyn." },
       { country: "Jamaica", countryFlag: "🇯🇲", population: "~300,000+", neighborhoods: ["Flatbush", "Crown Heights", "Southeast Queens"], notes: "NYC has the largest Jamaican population outside of Jamaica. Patois echoes through Brooklyn streets." },
+      { country: "Trinidad & Tobago", countryFlag: "🇹🇹", population: "~50,000+", neighborhoods: ["Crown Heights", "Flatbush", "Richmond Hill (Queens)"], notes: "Trini community keeps soca and carnival culture alive. West Indian Day Parade is their crown jewel." },
+      { country: "Guyana", countryFlag: "🇬🇾", population: "~140,000+", neighborhoods: ["Richmond Hill (Queens)", "Flatbush", "South Ozone Park"], notes: "One of the largest Guyanese communities in the world. Richmond Hill is known as 'Little Guyana.'" },
+      { country: "Barbados", countryFlag: "🇧🇧", population: "~20,000+", neighborhoods: ["Brooklyn", "The Bronx"], notes: "Bajan community with deep roots in Brooklyn since the early 20th century." },
     ],
   },
   {
@@ -114,6 +117,10 @@ export const diasporaHubs: DiasporaHub[] = [
       { country: "Jamaica", countryFlag: "🇯🇲", population: "~100,000+", neighborhoods: ["Miramar", "Lauderhill", "Pembroke Pines"], notes: "South Florida has one of the densest Jamaican communities in the US. Lauderhill is sometimes called 'Little Jamaica.'" },
       { country: "Trinidad & Tobago", countryFlag: "🇹🇹", population: "~30,000+", neighborhoods: ["Lauderhill", "Miramar", "Hollywood"], notes: "Trini community brings soca, carnival culture, and doubles to South Florida." },
       { country: "Nigeria", countryFlag: "🇳🇬", population: "~15,000+", neighborhoods: ["Miramar", "Pembroke Pines"], notes: "Growing Nigerian community in Broward County suburbs." },
+      { country: "Bahamas", countryFlag: "🇧🇸", population: "~40,000+", neighborhoods: ["Miami Gardens", "North Miami Beach", "Opa-Locka"], notes: "Large Bahamian community with deep historical ties to South Florida dating back generations." },
+      { country: "Cuba", countryFlag: "🇨🇺", population: "~800,000+", neighborhoods: ["Little Havana", "Hialeah", "Westchester"], notes: "Massive Afro-Cuban diaspora. Santería traditions preserve Yoruba spiritual practices brought from West Africa." },
+      { country: "Dominican Republic", countryFlag: "🇩🇴", population: "~100,000+", neighborhoods: ["Doral", "Hialeah", "Allapattah"], notes: "Afro-Dominican community with deep roots in bachata, merengue, and African-descended culture." },
+      { country: "Guyana", countryFlag: "🇬🇾", population: "~15,000+", neighborhoods: ["Lauderhill", "Sunrise"], notes: "Guyanese community adding to South Florida's rich Caribbean tapestry." },
     ],
   },
   {
@@ -269,4 +276,177 @@ export const diasporaHubs: DiasporaHub[] = [
       { country: "Nigeria", countryFlag: "🇳🇬", population: "~5,000+", neighborhoods: ["Chandler", "Gilbert"], notes: "Nigerian professionals in Phoenix's East Valley suburbs." },
     ],
   },
+
+  // ── EUROPE ──
+  {
+    city: "London", state: "UK", flag: "🇬🇧", cityId: "london",
+    communities: [
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~200,000+", neighborhoods: ["Peckham", "Lewisham", "Woolwich", "Tottenham"], notes: "Peckham is London's Nigerian heartland. Yoruba, Igbo, and Edo communities run deep. Jollof rice debates are loud." },
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~120,000+", neighborhoods: ["Tottenham", "Brixton", "Lewisham"], notes: "One of the largest Ghanaian communities in Europe. Tottenham's African markets are legendary." },
+      { country: "Jamaica", countryFlag: "🇯🇲", population: "~180,000+", neighborhoods: ["Brixton", "Hackney", "Tottenham", "Harlesden"], notes: "Brixton is the spiritual home of Jamaican London. Windrush generation built the foundation. Notting Hill Carnival celebrates this legacy." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~100,000+", neighborhoods: ["Tower Hamlets", "Ealing", "Camden"], notes: "Largest Somali community in Europe. Somali-owned businesses thrive across East and West London." },
+      { country: "Eritrea", countryFlag: "🇪🇷", population: "~30,000+", neighborhoods: ["Lambeth", "Southwark", "Islington"], notes: "Eritrean community with cultural centres and restaurants across South London." },
+      { country: "Trinidad & Tobago", countryFlag: "🇹🇹", population: "~50,000+", neighborhoods: ["Notting Hill", "Ladbroke Grove", "Harlesden"], notes: "Trini culture birthed Notting Hill Carnival — the second-largest street festival in the world." },
+      { country: "Sierra Leone", countryFlag: "🇸🇱", population: "~30,000+", neighborhoods: ["Southwark", "Bermondsey", "Woolwich"], notes: "Strong Sierra Leonean community with Krio-language churches and cultural associations." },
+      { country: "Barbados", countryFlag: "🇧🇧", population: "~25,000+", neighborhoods: ["Brixton", "Lewisham"], notes: "Bajan community part of the Windrush generation that shaped modern multicultural Britain." },
+    ],
+  },
+  {
+    city: "Paris", state: "France", flag: "🇫🇷", cityId: "paris",
+    communities: [
+      { country: "Mali", countryFlag: "🇲🇱", population: "~80,000+", neighborhoods: ["Montreuil", "Saint-Denis", "Belleville"], notes: "Montreuil is called 'Little Bamako.' The largest Malian community outside Africa. Bambara is spoken everywhere." },
+      { country: "Senegal", countryFlag: "🇸🇳", population: "~60,000+", neighborhoods: ["Château Rouge", "Saint-Denis", "Barbès"], notes: "Château Rouge is Paris's Little Africa. Wolof echoes through the markets. Thiéboudienne is a staple." },
+      { country: "Côte d'Ivoire", countryFlag: "🇨🇮", population: "~50,000+", neighborhoods: ["Château Rouge", "Saint-Denis", "Aulnay-sous-Bois"], notes: "Massive Ivorian community. Coupé-Décalé music and alloco are everywhere in the banlieues." },
+      { country: "DR Congo", countryFlag: "🇨🇩", population: "~60,000+", neighborhoods: ["Château Rouge", "Matonge (nearby Brussels)", "Saint-Denis"], notes: "Congolese community with deep musical influence — rumba, ndombolo, and now Afro-trap born in the banlieues." },
+      { country: "Cameroon", countryFlag: "🇨🇲", population: "~40,000+", neighborhoods: ["Val-de-Marne", "Seine-Saint-Denis"], notes: "Large Cameroonian community with strong cultural associations and annual festivals." },
+      { country: "Guinea", countryFlag: "🇬🇳", population: "~35,000+", neighborhoods: ["Montreuil", "Saint-Denis", "Aubervilliers"], notes: "Guinean community with Mandinka and Fulani cultural organizations." },
+      { country: "Haiti", countryFlag: "🇭🇹", population: "~30,000+", neighborhoods: ["Seine-Saint-Denis", "Val-de-Marne"], notes: "Haitian community connecting the francophone Caribbean to francophone Africa in Paris." },
+      { country: "Martinique & Guadeloupe", countryFlag: "🇲🇶", population: "~200,000+", neighborhoods: ["Throughout Paris", "Seine-Saint-Denis"], notes: "Antillean community is massive — Zouk, Carnival, and Creole culture are integral to Parisian Black identity." },
+    ],
+  },
+  {
+    city: "Brussels", state: "Belgium", flag: "🇧🇪", cityId: "brussels",
+    communities: [
+      { country: "DR Congo", countryFlag: "🇨🇩", population: "~100,000+", neighborhoods: ["Matonge (Ixelles)", "Saint-Gilles", "Molenbeek"], notes: "Matonge is the heart of Congolese Europe. Named after a neighborhood in Kinshasa. Lingala, rumba, and Congolese fashion define the area." },
+      { country: "Rwanda", countryFlag: "🇷🇼", population: "~20,000+", neighborhoods: ["Saint-Gilles", "Forest", "Uccle"], notes: "Rwandan community with cultural centres and strong diaspora organizations." },
+      { country: "Burundi", countryFlag: "🇧🇮", population: "~10,000+", neighborhoods: ["Saint-Josse", "Schaerbeek"], notes: "Burundian community alongside Congolese and Rwandan neighbors in the Great Lakes diaspora." },
+      { country: "Cameroon", countryFlag: "🇨🇲", population: "~15,000+", neighborhoods: ["Schaerbeek", "Molenbeek"], notes: "Cameroonian community with cultural festivals and community associations." },
+    ],
+  },
+  {
+    city: "Amsterdam", state: "Netherlands", flag: "🇳🇱", cityId: "amsterdam",
+    communities: [
+      { country: "Suriname", countryFlag: "🇸🇷", population: "~180,000+", neighborhoods: ["Bijlmer (Zuidoost)", "Noord", "Nieuw-West"], notes: "Bijlmer is the Surinamese capital of Europe. The largest Afro-Surinamese community outside Suriname. Kwaku Festival is the biggest Black festival in Europe." },
+      { country: "Curaçao", countryFlag: "🇨🇼", population: "~50,000+", neighborhoods: ["Bijlmer", "Nieuw-West"], notes: "Antillean community from Curaçao, Aruba, and Bonaire. Papiamento is spoken. Tumba and carnival culture thrive." },
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~25,000+", neighborhoods: ["Bijlmer", "Almere"], notes: "Growing Ghanaian community in Zuidoost with churches, restaurants, and cultural events." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~40,000+", neighborhoods: ["West Amsterdam", "Nieuw-West", "Tilburg"], notes: "One of the largest Somali communities in Western Europe with mosques and community centres." },
+    ],
+  },
+  {
+    city: "Rotterdam", state: "Netherlands", flag: "🇳🇱", cityId: "rotterdam",
+    communities: [
+      { country: "Cape Verde", countryFlag: "🇨🇻", population: "~30,000+", neighborhoods: ["Delfshaven", "Feijenoord"], notes: "Largest Cape Verdean community in the Netherlands. Kriolu culture and music festivals are major events." },
+      { country: "Suriname", countryFlag: "🇸🇷", population: "~50,000+", neighborhoods: ["Feijenoord", "Charlois", "Delfshaven"], notes: "Large Surinamese community with deep roots in Rotterdam's south." },
+      { country: "Curaçao", countryFlag: "🇨🇼", population: "~20,000+", neighborhoods: ["Zuid", "Charlois"], notes: "Antillean community bringing carnival and Papiamento language to Rotterdam." },
+    ],
+  },
+  {
+    city: "Antwerp", state: "Belgium", flag: "🇧🇪", cityId: "antwerp",
+    communities: [
+      { country: "DR Congo", countryFlag: "🇨🇩", population: "~15,000+", neighborhoods: ["Borgerhout", "Deurne"], notes: "Congolese community with cultural centres and Lingala-speaking churches." },
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~10,000+", neighborhoods: ["Borgerhout", "Merksem"], notes: "Ghanaian community with Pentecostal churches and cultural associations." },
+    ],
+  },
+  {
+    city: "Barcelona", state: "Spain", flag: "🇪🇸", cityId: "barcelona",
+    communities: [
+      { country: "Senegal", countryFlag: "🇸🇳", population: "~15,000+", neighborhoods: ["Raval", "Ciutat Vella", "Badalona"], notes: "Senegalese community with strong Mouride brotherhood networks. Wolof is spoken in Raval markets." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~10,000+", neighborhoods: ["Raval", "Sant Martí"], notes: "Nigerian community with cultural associations and churches." },
+      { country: "Equatorial Guinea", countryFlag: "🇬🇶", population: "~8,000+", neighborhoods: ["Throughout Barcelona", "L'Hospitalet"], notes: "Spain's only former sub-Saharan colony. Equatoguinean community speaks Spanish natively and has deep cultural integration." },
+      { country: "Dominican Republic", countryFlag: "🇩🇴", population: "~30,000+", neighborhoods: ["Ciutat Vella", "Nou Barris"], notes: "Afro-Dominican community bringing bachata, merengue, and Caribbean flavor to Barcelona." },
+    ],
+  },
+  {
+    city: "Madrid", state: "Spain", flag: "🇪🇸", cityId: "madrid",
+    communities: [
+      { country: "Equatorial Guinea", countryFlag: "🇬🇶", population: "~15,000+", neighborhoods: ["Lavapiés", "Usera", "Carabanchel"], notes: "Largest Equatoguinean community in Europe. Lavapiés is Madrid's African quarter." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~12,000+", neighborhoods: ["Lavapiés", "Usera"], notes: "Nigerian community with churches, markets, and cultural events in central Madrid." },
+      { country: "Senegal", countryFlag: "🇸🇳", population: "~10,000+", neighborhoods: ["Lavapiés", "Vallecas"], notes: "Senegalese community with Mouride networks and cultural associations." },
+      { country: "Dominican Republic", countryFlag: "🇩🇴", population: "~50,000+", neighborhoods: ["Usera", "Tetuán", "Ciudad Lineal"], notes: "Large Afro-Dominican community. Bachata and merengue nights are a Madrid staple." },
+      { country: "Colombia", countryFlag: "🇨🇴", population: "~40,000+", neighborhoods: ["Usera", "Villaverde"], notes: "Afro-Colombian community from Chocó, Cali, and the Pacific coast bringing cumbia and champeta." },
+    ],
+  },
+  {
+    city: "Berlin", state: "Germany", flag: "🇩🇪", cityId: "berlin",
+    communities: [
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~20,000+", neighborhoods: ["Wedding", "Neukölln", "Kreuzberg"], notes: "One of the largest African communities in Germany. Wedding has Ghanaian restaurants and cultural spaces." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~15,000+", neighborhoods: ["Neukölln", "Tempelhof"], notes: "Nigerian community with professional networks and cultural events." },
+      { country: "Cameroon", countryFlag: "🇨🇲", population: "~12,000+", neighborhoods: ["Wedding", "Mitte"], notes: "Cameroonian community with the annual Kamerun Festival and cultural associations." },
+      { country: "Eritrea", countryFlag: "🇪🇷", population: "~30,000+", neighborhoods: ["Neukölln", "Kreuzberg", "Mitte"], notes: "One of the largest Eritrean communities in Europe. Strong Tigrinya-speaking networks." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~20,000+", neighborhoods: ["Neukölln", "Spandau"], notes: "Somali community with mosques, cultural centres, and community organizations." },
+    ],
+  },
+  {
+    city: "Rome", state: "Italy", flag: "🇮🇹", cityId: "rome",
+    communities: [
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~30,000+", neighborhoods: ["Esquilino", "Tor Bella Monaca", "Castel Volturno"], notes: "Largest African community in Italy. Esquilino is Rome's multicultural heart. Strong Edo and Igbo presence." },
+      { country: "Eritrea", countryFlag: "🇪🇷", population: "~15,000+", neighborhoods: ["Esquilino", "Pigneto"], notes: "Deep historical ties from Italian colonization. Eritrean restaurants are beloved across Rome." },
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~10,000+", neighborhoods: ["Esquilino", "Piazza Vittorio area"], notes: "Ethiopian community alongside Eritrean neighbors, sharing cultural spaces and cuisine." },
+      { country: "Senegal", countryFlag: "🇸🇳", population: "~20,000+", neighborhoods: ["Esquilino", "San Lorenzo"], notes: "Senegalese community with strong Mouride brotherhood networks across Italy." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~10,000+", neighborhoods: ["Esquilino", "Centocelle"], notes: "Somali community with historical ties from Italian Somaliland era." },
+    ],
+  },
+  {
+    city: "Stockholm", state: "Sweden", flag: "🇸🇪", cityId: "stockholm",
+    communities: [
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~70,000+", neighborhoods: ["Rinkeby", "Tensta", "Husby", "Kista"], notes: "Sweden has the largest Somali community in Scandinavia. Rinkeby is sometimes called 'Little Mogadishu of Europe.'" },
+      { country: "Eritrea", countryFlag: "🇪🇷", population: "~30,000+", neighborhoods: ["Sundbyberg", "Kista", "Södertälje"], notes: "Large Eritrean community with cultural centres, Tigrinya media, and restaurants." },
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~20,000+", neighborhoods: ["Rinkeby", "Tensta", "Spånga"], notes: "Ethiopian Oromo and Amhara communities alongside Somali and Eritrean neighbors." },
+      { country: "Gambia", countryFlag: "🇬🇲", population: "~5,000+", neighborhoods: ["Rinkeby", "Botkyrka"], notes: "Gambian community with Mandinka cultural associations." },
+    ],
+  },
+  {
+    city: "Oslo", state: "Norway", flag: "🇳🇴", cityId: "oslo",
+    communities: [
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~40,000+", neighborhoods: ["Grønland", "Tøyen", "Stovner"], notes: "Largest non-European immigrant group in Norway. Grønland is the cultural center." },
+      { country: "Eritrea", countryFlag: "🇪🇷", population: "~15,000+", neighborhoods: ["Grønland", "Gamle Oslo"], notes: "Eritrean community with churches and cultural organizations." },
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~8,000+", neighborhoods: ["Grønland", "Tøyen"], notes: "Ethiopian community sharing spaces with Eritrean neighbors." },
+    ],
+  },
+  {
+    city: "Copenhagen", state: "Denmark", flag: "🇩🇰", cityId: "copenhagen",
+    communities: [
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~20,000+", neighborhoods: ["Nørrebro", "Ishøj", "Brøndby"], notes: "Largest African community in Denmark. Nørrebro has Somali restaurants and businesses." },
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~5,000+", neighborhoods: ["Nørrebro", "Vesterbro"], notes: "Growing Habesha community with restaurants and cultural events." },
+    ],
+  },
+  {
+    city: "Helsinki", state: "Finland", flag: "🇫🇮", cityId: "helsinki",
+    communities: [
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~22,000+", neighborhoods: ["Itäkeskus", "Kontula", "Vuosaari"], notes: "Largest African-origin community in Finland. East Helsinki is the cultural center." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~3,000+", neighborhoods: ["Itäkeskus", "Central Helsinki"], notes: "Growing Nigerian community with cultural associations." },
+    ],
+  },
+  {
+    city: "Dublin", state: "Ireland", flag: "🇮🇪", cityId: "dublin",
+    communities: [
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~40,000+", neighborhoods: ["Blanchardstown", "Tallaght", "Balbriggan"], notes: "Largest African community in Ireland. Nigerian-Irish identity is a growing cultural force. Balbriggan has been called 'Little Lagos.'" },
+      { country: "DR Congo", countryFlag: "🇨🇩", population: "~5,000+", neighborhoods: ["Clondalkin", "Tallaght"], notes: "Congolese community with cultural associations and churches." },
+      { country: "South Africa", countryFlag: "🇿🇦", population: "~5,000+", neighborhoods: ["Throughout Dublin"], notes: "South African community growing since the 2000s with braai culture and cultural events." },
+      { country: "Zimbabwe", countryFlag: "🇿🇼", population: "~4,000+", neighborhoods: ["Blanchardstown", "Lucan"], notes: "Zimbabwean community with churches and cultural gatherings." },
+    ],
+  },
+  {
+    city: "Istanbul", state: "Turkey", flag: "🇹🇷", cityId: "istanbul",
+    communities: [
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~10,000+", neighborhoods: ["Fatih", "Kumkapı", "Laleli"], notes: "Nigerian traders and students form the largest African community. Kumkapı is the African hub." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~8,000+", neighborhoods: ["Fatih", "Zeytinburnu"], notes: "Somali community drawn by Turkey's open-door policy and cultural affinity." },
+      { country: "Sudan", countryFlag: "🇸🇩", population: "~5,000+", neighborhoods: ["Fatih", "Aksaray"], notes: "Sudanese community of students and refugees with cultural organizations." },
+      { country: "Senegal", countryFlag: "🇸🇳", population: "~5,000+", neighborhoods: ["Fatih", "Taksim area"], notes: "Senegalese traders and Mouride community in Istanbul's historic districts." },
+    ],
+  },
+  {
+    city: "Toronto", state: "Canada", flag: "🇨🇦", cityId: "toronto",
+    communities: [
+      { country: "Jamaica", countryFlag: "🇯🇲", population: "~250,000+", neighborhoods: ["Scarborough", "Jane & Finch", "Etobicoke", "Brampton"], notes: "Toronto has the largest Jamaican community outside of Jamaica and NYC. Patois and dancehall culture are everywhere." },
+      { country: "Trinidad & Tobago", countryFlag: "🇹🇹", population: "~60,000+", neighborhoods: ["Scarborough", "Markham", "Brampton"], notes: "Trini community runs Toronto's massive Caribana parade — one of North America's largest festivals." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~40,000+", neighborhoods: ["Brampton", "Mississauga", "North York"], notes: "Rapidly growing Nigerian community. Brampton has become a major hub." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~60,000+", neighborhoods: ["Etobicoke", "Scarborough", "North York"], notes: "One of the largest Somali communities in North America. Dixon Road area is a cultural hub." },
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~30,000+", neighborhoods: ["North York", "Scarborough"], notes: "Growing Habesha community with restaurants and cultural events across the GTA." },
+      { country: "Guyana", countryFlag: "🇬🇾", population: "~80,000+", neighborhoods: ["Scarborough", "Richmond Hill", "Brampton"], notes: "Huge Indo- and Afro-Guyanese community. Guyanese roti shops and cultural events thrive." },
+      { country: "Haiti", countryFlag: "🇭🇹", population: "~30,000+", neighborhoods: ["Scarborough", "North York"], notes: "Haitian community connecting francophone Caribbean culture to Toronto's diversity." },
+      { country: "Barbados", countryFlag: "🇧🇧", population: "~20,000+", neighborhoods: ["Scarborough", "North York"], notes: "Bajan community part of the broader Caribbean-Canadian identity." },
+    ],
+  },
+  {
+    city: "Montreal", state: "Canada", flag: "🇨🇦", cityId: "montreal",
+    communities: [
+      { country: "Haiti", countryFlag: "🇭🇹", population: "~130,000+", neighborhoods: ["Saint-Michel", "Montréal-Nord", "Rivière-des-Prairies"], notes: "Largest Haitian community outside of Haiti and the US. French-speaking Haiti connects naturally to francophone Quebec. Saint-Michel is Little Haiti." },
+      { country: "DR Congo", countryFlag: "🇨🇩", population: "~20,000+", neighborhoods: ["Côte-des-Neiges", "Parc-Extension"], notes: "Congolese community connecting francophone Africa to francophone Canada." },
+      { country: "Cameroon", countryFlag: "🇨🇲", population: "~15,000+", neighborhoods: ["Côte-des-Neiges", "Villeray"], notes: "Cameroonian community thriving in Montreal's francophone environment." },
+      { country: "Senegal", countryFlag: "🇸🇳", population: "~10,000+", neighborhoods: ["Côte-des-Neiges", "Saint-Laurent"], notes: "Senegalese community linking West African francophone culture to Quebec." },
+      { country: "Jamaica", countryFlag: "🇯🇲", population: "~15,000+", neighborhoods: ["NDG", "Côte-des-Neiges"], notes: "Jamaican community contributing to Montreal's English-speaking Caribbean community." },
+    ],
+  },
 ];
+

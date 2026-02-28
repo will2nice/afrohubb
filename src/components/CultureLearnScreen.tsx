@@ -560,7 +560,7 @@ const CultureLearnScreen = () => {
 
         {/* ── Diaspora Hubs Tab ── */}
         <TabsContent value="hubs" className="px-4 mt-3 space-y-3 pb-4">
-          <p className="text-xs text-muted-foreground">Discover which African & Caribbean communities call each US city home.</p>
+          <p className="text-xs text-muted-foreground">Discover which African & Caribbean diaspora communities call each city home — across the US and Europe.</p>
           {diasporaHubs.map((hub) => {
             const isOpen = expandedHub === hub.city;
             return (
