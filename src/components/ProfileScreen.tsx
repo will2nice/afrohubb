@@ -38,17 +38,35 @@ interface FeedPost {
   timeAgo: string;
 }
 
-const feedPosts: FeedPost[] = [
-  { id: 1, photo: eventConcert, caption: "Burna Boy went crazy last night 🔥🎤 Best concert I've been to this year no cap", location: "Houston, TX", likes: 247, comments: 34, timeAgo: "2h" },
-  { id: 2, photo: eventBrunch, caption: "Sunday brunch with the crew. Jollof rice pancakes hit different 🥞🇳🇬", location: "Austin, TX", likes: 189, comments: 22, timeAgo: "8h" },
-  { id: 3, photo: reel1, caption: "Morning runs in the city. Grateful for this life fr 🏃‍♂️✨", location: "Dallas, TX", likes: 312, comments: 18, timeAgo: "1d" },
-  { id: 4, photo: eventAfricanArt, caption: "Hit up the African Art Museum today. The diaspora is so rich with culture 🎨🌍", location: "Houston, TX", likes: 421, comments: 56, timeAgo: "2d" },
-  { id: 5, photo: eventParty, caption: "Saturday night vibes. This DJ had the whole room moving 💃🕺", location: "Austin, TX", likes: 156, comments: 12, timeAgo: "3d" },
-  { id: 6, photo: eventFootball, caption: "Pickup soccer with the boys. We don't lose 😤⚽", location: "San Antonio, TX", likes: 278, comments: 41, timeAgo: "4d" },
-  { id: 7, photo: reel2, caption: "Made my grandma's egusi soup recipe today. Took me right back home 🍲❤️", location: "Houston, TX", likes: 534, comments: 89, timeAgo: "5d" },
-  { id: 8, photo: eventGrime, caption: "London calling. The Afrobeats scene out here is unmatched 🇬🇧🎶", location: "London, UK", likes: 367, comments: 45, timeAgo: "1w" },
-  { id: 9, photo: reel3, caption: "New fits just dropped. Ankara meets streetwear 🪡🔥", location: "NYC", likes: 445, comments: 67, timeAgo: "1w" },
-];
+const modeFeedPosts: Record<string, FeedPost[]> = {
+  dating: [
+    { id: 1, photo: eventConcert, caption: "Burna Boy went crazy last night 🔥🎤 Best concert I've been to this year no cap", location: "Houston, TX", likes: 247, comments: 34, timeAgo: "2h" },
+    { id: 2, photo: eventBrunch, caption: "Sunday brunch with the crew. Jollof rice pancakes hit different 🥞🇳🇬", location: "Austin, TX", likes: 189, comments: 22, timeAgo: "8h" },
+    { id: 3, photo: reel1, caption: "Morning runs in the city. Grateful for this life fr 🏃‍♂️✨", location: "Dallas, TX", likes: 312, comments: 18, timeAgo: "1d" },
+    { id: 4, photo: eventAfricanArt, caption: "Hit up the African Art Museum today. The diaspora is so rich with culture 🎨🌍", location: "Houston, TX", likes: 421, comments: 56, timeAgo: "2d" },
+    { id: 5, photo: eventParty, caption: "Saturday night vibes. This DJ had the whole room moving 💃🕺", location: "Austin, TX", likes: 156, comments: 12, timeAgo: "3d" },
+    { id: 6, photo: reel2, caption: "Made my grandma's egusi soup recipe today. Took me right back home 🍲❤️", location: "Houston, TX", likes: 534, comments: 89, timeAgo: "5d" },
+    { id: 7, photo: reel3, caption: "New fits just dropped. Ankara meets streetwear 🪡🔥", location: "NYC", likes: 445, comments: 67, timeAgo: "1w" },
+  ],
+  community: [
+    { id: 1, photo: eventFootball, caption: "Pickup soccer with the boys. We don't lose 😤⚽ Who's pulling up next weekend?", location: "San Antonio, TX", likes: 278, comments: 41, timeAgo: "3h" },
+    { id: 2, photo: reel1, caption: "5AM gym crew. Iron sharpens iron 💪🏾 Brotherhood over everything", location: "Dallas, TX", likes: 198, comments: 27, timeAgo: "6h" },
+    { id: 3, photo: eventGrime, caption: "Game night got intense 🎮😂 Smash Bros tournament at the crib — I went undefeated", location: "Houston, TX", likes: 342, comments: 53, timeAgo: "1d" },
+    { id: 4, photo: eventBrunch, caption: "Sunday cookout with the squad. Suya on the grill, football on the screen 🥩🏈", location: "Austin, TX", likes: 467, comments: 72, timeAgo: "2d" },
+    { id: 5, photo: reel2, caption: "Hiking with the crew. Views from the top hit different when you earn it 🏔️🤝", location: "Colorado Springs, CO", likes: 389, comments: 38, timeAgo: "4d" },
+    { id: 6, photo: eventParty, caption: "Basketball league finals tonight. We brought the trophy home 🏆🔥", location: "Houston, TX", likes: 521, comments: 64, timeAgo: "5d" },
+    { id: 7, photo: reel3, caption: "Volunteer day at the community center. Giving back is the move 🙏🏾💯", location: "Dallas, TX", likes: 612, comments: 91, timeAgo: "1w" },
+  ],
+  networking: [
+    { id: 1, photo: eventAfricanArt, caption: "Spoke on a panel about Black tech founders today. Representation matters in every room 🎤💼", location: "Houston, TX", likes: 534, comments: 78, timeAgo: "4h" },
+    { id: 2, photo: reel1, caption: "Coffee meeting with my mentor. The game changes when you have guidance 🏾☕📈", location: "Dallas, TX", likes: 287, comments: 45, timeAgo: "1d" },
+    { id: 3, photo: eventConcert, caption: "AfroTech conference was insane. Made connections that'll change the trajectory 🚀🌍", location: "Austin, TX", likes: 678, comments: 112, timeAgo: "2d" },
+    { id: 4, photo: eventBrunch, caption: "Investor lunch downtown. Pitched my startup and got follow-up meetings 🤝💰", location: "Houston, TX", likes: 423, comments: 56, timeAgo: "3d" },
+    { id: 5, photo: reel2, caption: "Late nights building. The grind doesn't stop. New product launch coming soon 🖥️🔥", location: "NYC", likes: 356, comments: 34, timeAgo: "4d" },
+    { id: 6, photo: eventGrime, caption: "Workshop on financial literacy for the diaspora. Knowledge is the real currency 📚💡", location: "Atlanta, GA", likes: 489, comments: 67, timeAgo: "5d" },
+    { id: 7, photo: reel3, caption: "LinkedIn said 500+ connections but these real ones started right here 🤞🏾🔗", location: "Houston, TX", likes: 567, comments: 83, timeAgo: "1w" },
+  ],
+};
 
 const ProfileScreen = () => {
   type ProfileMode = "dating" | "community" | "networking";
@@ -243,7 +261,7 @@ const ProfileScreen = () => {
         {/* ─── GRID VIEW ─── */}
         {viewMode === "grid" ? (
           <div className="grid grid-cols-3 gap-0.5">
-            {feedPosts.map((post) => (
+            {(modeFeedPosts[profileMode] || []).map((post) => (
               <button key={post.id} onClick={() => setViewMode("feed")} className="aspect-square overflow-hidden">
                 <img src={post.photo} alt="" className="w-full h-full object-cover hover:opacity-80 transition-opacity" />
               </button>
@@ -252,7 +270,7 @@ const ProfileScreen = () => {
         ) : (
           /* ─── FEED VIEW ─── */
           <div className="space-y-0">
-            {feedPosts.map((post) => {
+            {(modeFeedPosts[profileMode] || []).map((post) => {
               const isLiked = likedPosts.has(post.id);
               return (
                 <div key={post.id} className="border-b border-border">
