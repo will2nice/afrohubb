@@ -104,8 +104,17 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [nearbyCollapsed, setNearbyCollapsed] = useState(false);
   const [selectedNearbyEvent, setSelectedNearbyEvent] = useState<any>(null);
   const [globeReady, setGlobeReady] = useState(false);
+  const [countries, setCountries] = useState<any[]>([]);
 
-  // Handle resize
+  // Load country borders GeoJSON
+  useEffect(() => {
+    fetch("https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson")
+      .then((res) => res.json())
+      .then((data) => {
+        setCountries(data.features);
+      })
+      .catch(() => {});
+  }, []);
   useEffect(() => {
     const handleResize = () => setDimensions({ width: window.innerWidth, height: window.innerHeight });
     window.addEventListener("resize", handleResize);
@@ -321,6 +330,11 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         backgroundColor="rgba(8,18,35,1)"
         atmosphereColor="hsl(140, 50%, 60%)"
         atmosphereAltitude={0.18}
+        polygonsData={countries}
+        polygonCapColor={() => "rgba(0,0,0,0)"}
+        polygonSideColor={() => "rgba(0,0,0,0)"}
+        polygonStrokeColor={() => "rgba(200,220,255,0.35)"}
+        polygonAltitude={0.005}
         pointsData={pointsData}
         pointLat="lat"
         pointLng="lng"
