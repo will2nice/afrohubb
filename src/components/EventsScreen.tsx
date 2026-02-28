@@ -1,5 +1,7 @@
-import { Search, MapPin, Calendar, Users, Share2, Ticket } from "lucide-react";
-import { events as allEvents, type City } from "@/data/cityData";
+import { useState } from "react";
+import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye } from "lucide-react";
+import { events as allEvents, type City, type EventItem } from "@/data/cityData";
+import EventAttendeesSheet from "@/components/EventAttendeesSheet";
 
 const filters = ["All", "Today", "This Weekend", "Concerts", "Festivals", "Sports", "Art", "Networking"];
 
@@ -8,6 +10,7 @@ interface EventsScreenProps {
 }
 
 const EventsScreen = ({ selectedCity }: EventsScreenProps) => {
+  const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
   const cityEvents = allEvents.filter((e) => e.city === selectedCity.id);
 
   return (
@@ -91,12 +94,16 @@ const EventsScreen = ({ selectedCity }: EventsScreenProps) => {
               </div>
 
               <div className="flex items-center justify-between mt-4">
-                <div className="flex items-center gap-1.5">
-                  <Users size={14} className="text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">
+                <button
+                  onClick={() => setSelectedEvent(event)}
+                  className="flex items-center gap-1.5 group"
+                >
+                  <Users size={14} className="text-muted-foreground group-hover:text-primary transition-colors" />
+                  <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors underline-offset-2 group-hover:underline">
                     {event.attending >= 1000 ? `${(event.attending / 1000).toFixed(1)}K` : event.attending} attending
                   </span>
-                </div>
+                  <Eye size={12} className="text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
                 <div className="flex items-center gap-2">
                   <button className="p-2 rounded-full hover:bg-secondary transition-colors">
                     <Share2 size={16} className="text-muted-foreground" />
@@ -117,6 +124,11 @@ const EventsScreen = ({ selectedCity }: EventsScreenProps) => {
           </article>
         ))}
       </div>
+
+      {/* Attendees Sheet */}
+      {selectedEvent && (
+        <EventAttendeesSheet event={selectedEvent} onClose={() => setSelectedEvent(null)} />
+      )}
     </div>
   );
 };
