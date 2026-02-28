@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Users, Calendar, Navigation, Ticket } from "lucide-react";
+import { MapPin, Users, Calendar, Navigation, ChevronDown, Check } from "lucide-react";
 import { events as allEvents, cities, type City } from "@/data/cityData";
 
 // City coordinates
@@ -34,6 +34,16 @@ const personIcon = new L.DivIcon({
   popupAnchor: [0, -32],
 });
 
+const groupIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,hsl(320,70%,50%),hsl(280,70%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+  </div>`,
+  iconSize: [40, 40],
+  iconAnchor: [20, 40],
+  popupAnchor: [0, -40],
+});
+
 const youIcon = new L.DivIcon({
   className: "custom-marker",
   html: `<div style="width:20px;height:20px;border-radius:50%;background:hsl(43,96%,56%);box-shadow:0 0 0 6px hsla(43,96%,56%,0.25),0 4px 12px rgba(0,0,0,0.4);border:3px solid hsl(0,0%,7%);"></div>`,
@@ -45,7 +55,7 @@ const youIcon = new L.DivIcon({
 const getEventPositions = (cityId: string) => {
   const center = cityCoords[cityId] || cityCoords.austin;
   const cityEvents = allEvents.filter((e) => e.city === cityId);
-  return cityEvents.map((event, i) => {
+  return cityEvents.map((event) => {
     const seed = event.id * 137;
     const lat = center[0] + (((seed % 100) - 50) / 500);
     const lng = center[1] + ((((seed * 7) % 100) - 50) / 400);
@@ -53,16 +63,56 @@ const getEventPositions = (cityId: string) => {
   });
 };
 
-// People nearby (mock)
+// 12 people nearby + 1 group
 const getNearbyPeople = (cityId: string) => {
   const center = cityCoords[cityId] || cityCoords.austin;
-  const names = ["Amara", "Kofi", "Chidera", "Sophie", "Dayo", "Nneka", "Marcus", "Jasmine"];
-  return names.slice(0, 5).map((name, i) => ({
-    name,
-    lat: center[0] + (((i * 53 + 17) % 80 - 40) / 600),
-    lng: center[1] + (((i * 37 + 29) % 80 - 40) / 500),
-    status: i % 2 === 0 ? "Looking for events" : "Down to hang",
+  const people = [
+    { name: "Amara", age: 24, status: "Looking for events", vibe: "🎶" },
+    { name: "Kofi", age: 27, status: "Down to hang", vibe: "🏀" },
+    { name: "Chidera", age: 22, status: "New in town!", vibe: "✈️" },
+    { name: "Sophie", age: 25, status: "Looking for brunch crew", vibe: "🥂" },
+    { name: "Dayo", age: 29, status: "Down to hang", vibe: "🎧" },
+    { name: "Nneka", age: 23, status: "Want to explore the city", vibe: "🌆" },
+    { name: "Marcus", age: 26, status: "Looking for events", vibe: "🔥" },
+    { name: "Jasmine", age: 24, status: "Down for anything", vibe: "💃" },
+    { name: "Tunde", age: 28, status: "Looking for gym buddy", vibe: "💪" },
+    { name: "Priya", age: 25, status: "Foodie exploring", vibe: "🍜" },
+    { name: "Kwame", age: 30, status: "Networking & vibes", vibe: "🤝" },
+    { name: "Zara", age: 21, status: "Just moved here!", vibe: "🌟" },
+  ];
+  return people.map((p, i) => ({
+    ...p,
+    lat: center[0] + (((i * 53 + 17) % 120 - 60) / 600),
+    lng: center[1] + (((i * 37 + 29) % 120 - 60) / 500),
   }));
+};
+
+// Group hangout
+const getGroups = (cityId: string) => {
+  const center = cityCoords[cityId] || cityCoords.austin;
+  return [
+    {
+      name: "Girls Night Out 💅",
+      members: ["Jasmine", "Nneka", "Sophie", "Zara", "Priya"],
+      description: "5 women looking for guys to hang out with tonight! We'll be bar-hopping downtown.",
+      lat: center[0] + 0.012,
+      lng: center[1] - 0.008,
+    },
+    {
+      name: "Culture Crew 🎭",
+      members: ["Amara", "Chidera", "Dayo"],
+      description: "Group exploring art galleries & live music. Everyone welcome!",
+      lat: center[0] - 0.015,
+      lng: center[1] + 0.013,
+    },
+    {
+      name: "Foodies United 🍕",
+      members: ["Tunde", "Kwame", "Marcus", "Kofi"],
+      description: "4 guys doing a food crawl. Looking for more people to join!",
+      lat: center[0] + 0.008,
+      lng: center[1] + 0.018,
+    },
+  ];
 };
 
 // Component to recenter map when city changes
@@ -76,26 +126,56 @@ const RecenterMap = ({ coords }: { coords: [number, number] }) => {
 
 interface MapScreenProps {
   selectedCity: City;
+  onCityChange: (city: City) => void;
 }
 
-const MapScreen = ({ selectedCity }: MapScreenProps) => {
+const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [showEvents, setShowEvents] = useState(true);
   const [showPeople, setShowPeople] = useState(true);
+  const [showGroups, setShowGroups] = useState(true);
+  const [showCityPicker, setShowCityPicker] = useState(false);
   const center = cityCoords[selectedCity.id] || cityCoords.austin;
   const eventPositions = getEventPositions(selectedCity.id);
   const nearbyPeople = getNearbyPeople(selectedCity.id);
+  const groups = getGroups(selectedCity.id);
 
   return (
     <div className="fixed inset-0 bg-background">
-      {/* Header */}
+      {/* Header with city picker */}
       <header className="absolute top-0 left-0 right-0 z-[1000] glass border-b border-border px-4 py-3">
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div className="flex items-center gap-2">
             <Navigation size={18} className="text-primary" />
             <h1 className="font-display text-lg font-bold text-gradient-gold">Explore</h1>
           </div>
-          <span className="text-sm text-muted-foreground">{selectedCity.flag} {selectedCity.name}</span>
+          <button
+            onClick={() => setShowCityPicker(!showCityPicker)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-border"
+          >
+            <MapPin size={14} className="text-primary" />
+            <span className="text-sm font-medium text-foreground">{selectedCity.flag} {selectedCity.name}</span>
+            <ChevronDown size={14} className={`text-muted-foreground transition-transform ${showCityPicker ? "rotate-180" : ""}`} />
+          </button>
         </div>
+
+        {/* City picker dropdown */}
+        {showCityPicker && (
+          <div className="absolute left-4 right-4 top-full mt-1 bg-card border border-border rounded-xl shadow-elevated z-50 overflow-hidden animate-slide-up max-w-lg mx-auto">
+            {cities.map((city) => (
+              <button
+                key={city.id}
+                onClick={() => { onCityChange(city); setShowCityPicker(false); }}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors"
+              >
+                <span className="text-lg">{city.flag}</span>
+                <span className="text-sm font-medium text-foreground flex-1 text-left">{city.name}</span>
+                {city.id === selectedCity.id && (
+                  <Check size={16} className="text-primary" />
+                )}
+              </button>
+            ))}
+          </div>
+        )}
       </header>
 
       {/* Toggle filters */}
@@ -103,7 +183,7 @@ const MapScreen = ({ selectedCity }: MapScreenProps) => {
         <div className="flex gap-2">
           <button
             onClick={() => setShowEvents(!showEvents)}
-            className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${
+            className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${
               showEvents ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"
             }`}
           >
@@ -112,12 +192,21 @@ const MapScreen = ({ selectedCity }: MapScreenProps) => {
           </button>
           <button
             onClick={() => setShowPeople(!showPeople)}
-            className={`px-4 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${
+            className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${
               showPeople ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"
             }`}
           >
             <Users size={14} />
-            People Nearby
+            People ({nearbyPeople.length})
+          </button>
+          <button
+            onClick={() => setShowGroups(!showGroups)}
+            className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${
+              showGroups ? "bg-[hsl(320,70%,50%)] text-white" : "bg-card text-muted-foreground border border-border"
+            }`}
+          >
+            <Users size={14} />
+            Groups ({groups.length})
           </button>
         </div>
       </div>
@@ -131,9 +220,7 @@ const MapScreen = ({ selectedCity }: MapScreenProps) => {
         attributionControl={false}
       >
         <RecenterMap coords={center} />
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        />
+        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
 
         {/* You are here */}
         <Marker position={center} icon={youIcon}>
@@ -172,8 +259,28 @@ const MapScreen = ({ selectedCity }: MapScreenProps) => {
           <Marker key={`person-${i}`} position={[person.lat, person.lng]} icon={personIcon}>
             <Popup className="afro-popup">
               <div className="p-1">
-                <p className="font-bold text-sm">{person.name}</p>
+                <p className="font-bold text-sm">{person.vibe} {person.name}, {person.age}</p>
                 <p className="text-xs text-gray-500">{person.status}</p>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* Group markers */}
+        {showGroups && groups.map((group, i) => (
+          <Marker key={`group-${i}`} position={[group.lat, group.lng]} icon={groupIcon}>
+            <Popup className="afro-popup" maxWidth={260}>
+              <div className="p-1">
+                <p className="font-bold text-sm">{group.name}</p>
+                <p className="text-xs text-gray-500 mt-1">{group.description}</p>
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {group.members.map((m) => (
+                    <span key={m} className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[10px] font-medium">{m}</span>
+                  ))}
+                </div>
+                <button className="w-full mt-2 py-1.5 rounded-full bg-purple-500 text-white text-xs font-semibold">
+                  Request to Join
+                </button>
               </div>
             </Popup>
           </Marker>
@@ -185,7 +292,7 @@ const MapScreen = ({ selectedCity }: MapScreenProps) => {
         <div className="bg-card/95 backdrop-blur-md rounded-2xl border border-border p-4 shadow-elevated">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-display font-bold text-foreground text-sm">Nearby This Week</h3>
-            <span className="text-xs text-primary font-semibold">{eventPositions.length} events</span>
+            <span className="text-xs text-primary font-semibold">{eventPositions.length} events · {nearbyPeople.length} people</span>
           </div>
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
             {eventPositions.slice(0, 5).map((event) => (
