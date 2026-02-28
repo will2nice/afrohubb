@@ -4,6 +4,17 @@ import { cities, feedPosts, type City } from "@/data/cityData";
 
 const chips = ["For You", "Nearby", "Diaspora", "Culture", "Business", "Dating Tips", "New Here"];
 
+// Map chips to filter logic
+const chipTagMap: Record<string, (post: typeof feedPosts[0]) => boolean> = {
+  "For You": () => true,
+  "Nearby": (p) => p.type === "event" || p.time.includes("ago"),
+  "Diaspora": (p) => (p.text?.toLowerCase().includes("diaspora") || p.text?.toLowerCase().includes("moved") || p.text?.toLowerCase().includes("new") || p.text?.toLowerCase().includes("community")) ?? false,
+  "Culture": (p) => (p.text?.toLowerCase().includes("art") || p.text?.toLowerCase().includes("fashion") || p.text?.toLowerCase().includes("culture") || p.text?.toLowerCase().includes("music") || p.type === "event") ?? false,
+  "Business": (p) => (p.text?.toLowerCase().includes("tech") || p.text?.toLowerCase().includes("build") || p.text?.toLowerCase().includes("business") || p.text?.toLowerCase().includes("network") || p.text?.toLowerCase().includes("professional")) ?? false,
+  "Dating Tips": (p) => (p.text?.toLowerCase().includes("love") || p.text?.toLowerCase().includes("date") || p.text?.toLowerCase().includes("vibe") || p.text?.toLowerCase().includes("looking")) ?? false,
+  "New Here": (p) => (p.text?.toLowerCase().includes("moved") || p.text?.toLowerCase().includes("new") || p.text?.toLowerCase().includes("just") || p.text?.toLowerCase().includes("first")) ?? false,
+};
+
 interface FeedScreenProps {
   selectedCity: City;
   onCityChange: (city: City) => void;
@@ -11,8 +22,29 @@ interface FeedScreenProps {
 
 const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
   const [showCityPicker, setShowCityPicker] = useState(false);
+  const [activeChip, setActiveChip] = useState("For You");
+  const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
+  const [savedPosts, setSavedPosts] = useState<Set<number>>(new Set());
 
-  const posts = feedPosts.filter((p) => p.city === selectedCity.id);
+  const cityPosts = feedPosts.filter((p) => p.city === selectedCity.id);
+  const filterFn = chipTagMap[activeChip] || (() => true);
+  const posts = activeChip === "For You" ? cityPosts : cityPosts.filter(filterFn);
+
+  const toggleLike = (id: number) => {
+    setLikedPosts(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleSave = (id: number) => {
+    setSavedPosts(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
 
   return (
     <div className="min-h-screen pb-24">
@@ -40,7 +72,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
 
         {/* City picker dropdown */}
         {showCityPicker && (
-          <div className="absolute left-4 right-4 top-full mt-1 bg-card border border-border rounded-xl shadow-elevated z-50 overflow-hidden animate-slide-up max-w-lg mx-auto">
+          <div className="absolute left-4 right-4 top-full mt-1 bg-card border border-border rounded-xl shadow-elevated z-50 overflow-y-auto max-h-[60vh] animate-slide-up max-w-lg mx-auto">
             {cities.map((city) => (
               <button
                 key={city.id}
@@ -61,11 +93,12 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
       {/* Chips */}
       <div className="px-4 py-3 overflow-x-auto scrollbar-hide max-w-lg mx-auto">
         <div className="flex gap-2 w-max">
-          {chips.map((chip, i) => (
+          {chips.map((chip) => (
             <button
               key={chip}
+              onClick={() => setActiveChip(chip)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                i === 0
+                activeChip === chip
                   ? "gradient-gold text-primary-foreground shadow-gold"
                   : "bg-secondary text-secondary-foreground hover:bg-muted"
               }`}
@@ -78,7 +111,12 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
 
       {/* Feed */}
       <div className="px-4 space-y-4 max-w-lg mx-auto">
-        {posts.map((post) => (
+        {posts.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-muted-foreground text-sm">No posts match this filter yet</p>
+            <button onClick={() => setActiveChip("For You")} className="mt-3 text-sm text-primary font-semibold">Show all posts</button>
+          </div>
+        ) : posts.map((post) => (
           <article
             key={post.id}
             className="bg-card rounded-2xl border border-border overflow-hidden shadow-card animate-slide-up"
@@ -124,9 +162,12 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
             )}
 
             <div className="flex items-center gap-1 px-3 py-3 border-t border-border">
-              <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-secondary transition-colors">
-                <Heart size={18} className="text-muted-foreground" />
-                <span className="text-xs text-muted-foreground">{post.likes}</span>
+              <button 
+                onClick={() => toggleLike(post.id)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-secondary transition-colors"
+              >
+                <Heart size={18} className={likedPosts.has(post.id) ? "text-red-500" : "text-muted-foreground"} fill={likedPosts.has(post.id) ? "currentColor" : "none"} />
+                <span className="text-xs text-muted-foreground">{post.likes + (likedPosts.has(post.id) ? 1 : 0)}</span>
               </button>
               <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-secondary transition-colors">
                 <MessageCircle size={18} className="text-muted-foreground" />
@@ -136,8 +177,11 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
                 <Share2 size={18} className="text-muted-foreground" />
               </button>
               <div className="flex-1" />
-              <button className="p-1.5 rounded-full hover:bg-secondary transition-colors">
-                <Bookmark size={18} className="text-muted-foreground" />
+              <button 
+                onClick={() => toggleSave(post.id)}
+                className="p-1.5 rounded-full hover:bg-secondary transition-colors"
+              >
+                <Bookmark size={18} className={savedPosts.has(post.id) ? "text-primary" : "text-muted-foreground"} fill={savedPosts.has(post.id) ? "currentColor" : "none"} />
               </button>
             </div>
           </article>

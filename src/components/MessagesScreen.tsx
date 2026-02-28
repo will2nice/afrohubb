@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { Search, Users } from "lucide-react";
 import profileWoman1 from "@/assets/profile-woman-1.jpg";
+import profileWoman2 from "@/assets/profile-woman-2.jpg";
 import profileMan1 from "@/assets/profile-man-1.jpg";
 import profileMan2 from "@/assets/profile-man-2.jpg";
+import matchWoman1 from "@/assets/match-woman-1.jpg";
+import matchWoman2 from "@/assets/match-woman-2.jpg";
+import matchWoman3 from "@/assets/match-woman-3.jpg";
+import matchMan1 from "@/assets/match-man-1.jpg";
 import DMChatScreen, { type ChatContact } from "@/components/DMChatScreen";
 
 interface ChatItem {
@@ -15,36 +20,38 @@ interface ChatItem {
   online: boolean;
   age?: number;
   vibe?: string;
+  tab: "matches" | "events" | "requests";
 }
 
-const sections: { label: string; chats: ChatItem[] }[] = [
-  {
-    label: "Matches",
-    chats: [
-      { id: 1, name: "Amara", avatar: profileWoman1, lastMessage: "That sounds amazing! What time?", time: "2m", unread: 2, online: true, age: 24, vibe: "🎶 Vibes" },
-      { id: 2, name: "Kofi", avatar: profileMan1, lastMessage: "See you at the event 🎉", time: "1h", unread: 0, online: false, age: 27, vibe: "🏀 Sports" },
-    ],
-  },
-  {
-    label: "Event Chats",
-    chats: [
-      { id: 3, name: "Afrobeats Night", avatar: null, lastMessage: "DJ set starts at 10!", time: "3h", unread: 5, online: false },
-    ],
-  },
-  {
-    label: "Groups",
-    chats: [
-      { id: 4, name: "Austin Diaspora", avatar: null, lastMessage: "Welcome to the new members!", time: "1d", unread: 0, online: false },
-      { id: 5, name: "Tech & Culture", avatar: null, lastMessage: "Check out this article on...", time: "2d", unread: 0, online: false },
-    ],
-  },
+const allChats: ChatItem[] = [
+  // Matches
+  { id: 1, name: "Amara", avatar: matchWoman1, lastMessage: "That sounds amazing! What time?", time: "2m", unread: 2, online: true, age: 24, vibe: "🎶 Vibes", tab: "matches" },
+  { id: 2, name: "Kofi", avatar: profileMan1, lastMessage: "See you at the event 🎉", time: "1h", unread: 0, online: false, age: 27, vibe: "🏀 Sports", tab: "matches" },
+  { id: 8, name: "Fatou", avatar: matchWoman2, lastMessage: "I love that playlist you shared 🎧", time: "3h", unread: 1, online: true, age: 28, vibe: "🎧 Music", tab: "matches" },
+  { id: 9, name: "Zara", avatar: matchWoman3, lastMessage: "Are you going to Afro Nation?", time: "5h", unread: 0, online: false, age: 21, vibe: "🌟 Explorer", tab: "matches" },
+  { id: 10, name: "Marcus", avatar: matchMan1, lastMessage: "Let's link at the brunch!", time: "1d", unread: 0, online: true, age: 26, vibe: "🔥 Hustle", tab: "matches" },
+  // Event Chats
+  { id: 3, name: "Afrobeats Night", avatar: null, lastMessage: "DJ set starts at 10!", time: "3h", unread: 5, online: false, tab: "events" },
+  { id: 6, name: "Burna Boy Concert", avatar: null, lastMessage: "Section B squad, where you at? 🔥", time: "2h", unread: 12, online: false, tab: "events" },
+  { id: 7, name: "Diaspora Brunch", avatar: null, lastMessage: "Table for 8 reserved ✅", time: "6h", unread: 3, online: false, tab: "events" },
+  { id: 11, name: "Colors Festival", avatar: null, lastMessage: "VIP wristbands are ready!", time: "1d", unread: 0, online: false, tab: "events" },
+  // Groups
+  { id: 4, name: "Austin Diaspora", avatar: null, lastMessage: "Welcome to the new members!", time: "1d", unread: 0, online: false, tab: "events" },
+  { id: 5, name: "Tech & Culture", avatar: null, lastMessage: "Check out this article on...", time: "2d", unread: 0, online: false, tab: "events" },
+  // Requests
+  { id: 12, name: "Nneka", avatar: profileWoman2, lastMessage: "Hey! I saw your profile, you seem cool 😊", time: "4h", unread: 1, online: true, age: 23, vibe: "💃 Dance", tab: "requests" },
+  { id: 13, name: "Tunde", avatar: profileMan2, lastMessage: "We matched! How's it going?", time: "1d", unread: 1, online: false, age: 28, vibe: "💪 Fitness", tab: "requests" },
 ];
+
+type MessageTab = "all" | "matches" | "events" | "requests";
 
 const MessagesScreen = () => {
   const [openChat, setOpenChat] = useState<ChatContact | null>(null);
+  const [activeTab, setActiveTab] = useState<MessageTab>("all");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleChatOpen = (chat: ChatItem) => {
-    if (!chat.avatar || !chat.age) return; // Only open DM for person chats
+    if (!chat.avatar || !chat.age) return;
     setOpenChat({
       id: chat.id,
       name: chat.name,
@@ -59,9 +66,33 @@ const MessagesScreen = () => {
     return <DMChatScreen contact={openChat} onBack={() => setOpenChat(null)} />;
   }
 
+  const filteredChats = allChats
+    .filter(c => activeTab === "all" || c.tab === activeTab)
+    .filter(c => searchQuery === "" || c.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  // Group chats by section for "all" view
+  const sections = activeTab === "all"
+    ? [
+        { label: "Matches", chats: filteredChats.filter(c => c.tab === "matches") },
+        { label: "Event Chats", chats: filteredChats.filter(c => c.tab === "events") },
+        { label: "Requests", chats: filteredChats.filter(c => c.tab === "requests") },
+      ].filter(s => s.chats.length > 0)
+    : [{ label: activeTab.charAt(0).toUpperCase() + activeTab.slice(1), chats: filteredChats }];
+
+  const totalUnread = allChats.reduce((sum, c) => sum + c.unread, 0);
+  const matchUnread = allChats.filter(c => c.tab === "matches").reduce((sum, c) => sum + c.unread, 0);
+  const eventUnread = allChats.filter(c => c.tab === "events").reduce((sum, c) => sum + c.unread, 0);
+  const requestUnread = allChats.filter(c => c.tab === "requests").reduce((sum, c) => sum + c.unread, 0);
+
+  const tabs: { id: MessageTab; label: string; count: number }[] = [
+    { id: "all", label: "All", count: totalUnread },
+    { id: "matches", label: "Matches", count: matchUnread },
+    { id: "events", label: "Events", count: eventUnread },
+    { id: "requests", label: "Requests", count: requestUnread },
+  ];
+
   return (
     <div className="min-h-screen pb-24">
-      {/* Header */}
       <header className="sticky top-0 z-40 glass border-b border-border px-4 py-3">
         <div className="max-w-lg mx-auto">
           <h1 className="font-display text-xl font-bold text-gradient-gold mb-3">Messages</h1>
@@ -70,6 +101,8 @@ const MessagesScreen = () => {
             <input
               type="text"
               placeholder="Search messages..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-secondary text-sm text-foreground placeholder:text-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
             />
           </div>
@@ -79,16 +112,22 @@ const MessagesScreen = () => {
       {/* Tabs */}
       <div className="px-4 py-3 max-w-lg mx-auto">
         <div className="flex gap-1 bg-secondary rounded-xl p-1">
-          {["All", "Matches", "Events", "Requests"].map((tab, i) => (
+          {tabs.map((tab) => (
             <button
-              key={tab}
-              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all ${
-                i === 0
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all relative ${
+                activeTab === tab.id
                   ? "bg-card text-foreground shadow-card"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              {tab}
+              {tab.label}
+              {tab.count > 0 && (
+                <span className="ml-1 inline-flex items-center justify-center w-4 h-4 rounded-full gradient-gold text-[9px] font-bold text-primary-foreground">
+                  {tab.count}
+                </span>
+              )}
             </button>
           ))}
         </div>

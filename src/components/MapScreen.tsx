@@ -1,11 +1,11 @@
-import { useEffect, useState, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet";
+import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Users, Calendar, Navigation, ChevronDown, Check } from "lucide-react";
+import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X } from "lucide-react";
 import { events as allEvents, cities, type City } from "@/data/cityData";
 
-// City coordinates
+// City coordinates - includes Brazil
 const cityCoords: Record<string, [number, number]> = {
   austin: [30.2672, -97.7431],
   dallas: [32.7767, -96.7970],
@@ -37,6 +37,9 @@ const cityCoords: Record<string, [number, number]> = {
   copenhagen: [55.6761, 12.5683],
   oslo: [59.9139, 10.7522],
   helsinki: [60.1699, 24.9384],
+  rio: [-22.9068, -43.1729],
+  saopaulo: [-23.5505, -46.6333],
+  salvador: [-12.9714, -38.5124],
 };
 
 // Custom marker icons
@@ -45,9 +48,7 @@ const eventIcon = new L.DivIcon({
   html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(25,95%,55%),hsl(43,96%,56%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(0,0%,5%)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3v4M8 3v4M2 11h20"/></svg>
   </div>`,
-  iconSize: [36, 36],
-  iconAnchor: [18, 36],
-  popupAnchor: [0, -36],
+  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
 });
 
 const personIcon = new L.DivIcon({
@@ -55,9 +56,7 @@ const personIcon = new L.DivIcon({
   html: `<div style="width:32px;height:32px;border-radius:50%;background:hsl(0,0%,16%);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(43,96%,56%);">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="hsl(43,96%,56%)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
   </div>`,
-  iconSize: [32, 32],
-  iconAnchor: [16, 32],
-  popupAnchor: [0, -32],
+  iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32],
 });
 
 const groupIcon = new L.DivIcon({
@@ -65,19 +64,15 @@ const groupIcon = new L.DivIcon({
   html: `<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,hsl(320,70%,50%),hsl(280,70%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
   </div>`,
-  iconSize: [40, 40],
-  iconAnchor: [20, 40],
-  popupAnchor: [0, -40],
+  iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40],
 });
 
 const youIcon = new L.DivIcon({
   className: "custom-marker",
   html: `<div style="width:20px;height:20px;border-radius:50%;background:hsl(43,96%,56%);box-shadow:0 0 0 6px hsla(43,96%,56%,0.25),0 4px 12px rgba(0,0,0,0.4);border:3px solid hsl(0,0%,7%);"></div>`,
-  iconSize: [20, 20],
-  iconAnchor: [10, 10],
+  iconSize: [20, 20], iconAnchor: [10, 10],
 });
 
-// Get ALL events across ALL cities with positions
 const getAllEventPositions = () => {
   return allEvents.map((event) => {
     const eventCity = cityCoords[event.city] || cityCoords.austin;
@@ -88,7 +83,6 @@ const getAllEventPositions = () => {
   });
 };
 
-// Get ALL people across ALL cities
 const getAllPeople = () => {
   const basePeople = [
     { name: "Amara", age: 24, status: "Looking for events", vibe: "🎶" },
@@ -112,65 +106,36 @@ const getAllPeople = () => {
     barcelona: "BCN", madrid: "MAD", bordeaux: "BDX", stockholm: "STO",
     rome: "ROM", positano: "POS", athens: "ATH", istanbul: "IST",
     berlin: "BER", dublin: "DUB", copenhagen: "CPH", oslo: "OSL", helsinki: "HEL",
+    rio: "RIO", saopaulo: "SP", salvador: "SSA",
   };
 
   const allPeople: { name: string; age: number; status: string; vibe: string; lat: number; lng: number }[] = [];
   Object.keys(cityCoords).forEach((cityId, ci) => {
     const center = cityCoords[cityId];
     const label = cityLabels[cityId] || cityId.toUpperCase().slice(0, 3);
-    // 2-3 people per city
     const count = 2 + (ci % 2);
     for (let i = 0; i < count; i++) {
       const p = basePeople[(ci * 3 + i) % basePeople.length];
-      allPeople.push({
-        ...p,
-        name: `${p.name} (${label})`,
-        lat: center[0] + (((i * 53 + 17) % 120 - 60) / 600),
-        lng: center[1] + (((i * 37 + 29) % 120 - 60) / 500),
-      });
+      allPeople.push({ ...p, name: `${p.name} (${label})`, lat: center[0] + (((i * 53 + 17) % 120 - 60) / 600), lng: center[1] + (((i * 37 + 29) % 120 - 60) / 500) });
     }
   });
   return allPeople;
 };
 
-// Get ALL groups across ALL cities
 const getAllGroups = () => {
   const cityGroups: Record<string, { name: string; members: string[]; description: string }[]> = {
-    austin: [
-      { name: "Girls Night Out 💅", members: ["Jasmine", "Nneka", "Sophie", "Zara", "Priya"], description: "5 women looking for guys to hang out with tonight! Bar-hopping downtown." },
-      { name: "Culture Crew 🎭", members: ["Amara", "Chidera", "Dayo"], description: "Exploring art galleries & live music. Everyone welcome!" },
-    ],
-    dallas: [
-      { name: "Deep Ellum Girls 💃", members: ["Tasha", "Ayo", "Kemi", "Bria", "Fatima"], description: "5 women exploring Deep Ellum tonight!" },
-      { name: "DFW Ballers 🏀", members: ["Kwame", "Tunde", "Deji", "Marcus"], description: "Sports & vibes crew." },
-    ],
-    houston: [
-      { name: "H-Town Queens 👑", members: ["Chioma", "Adaeze", "Fatou", "Nadia", "Imani"], description: "5 women looking to link up in Midtown tonight!" },
-      { name: "Third Ward Crew 🔥", members: ["Dayo", "Marcus", "Jalen", "Emeka"], description: "Exploring Third Ward culture." },
-    ],
-    sanantonio: [
-      { name: "Riverwalk Ladies 🌊", members: ["Maya", "Jasmine", "Priya", "Zara", "Aisha"], description: "5 women on the Riverwalk looking for guys to hang!" },
-    ],
-    paris: [{ name: "Paris Afro Crew 🇫🇷", members: ["Moussa", "Aïssatou", "Sékou"], description: "West African community in Paris!" }],
-    london: [{ name: "London Afrobeats 🇬🇧", members: ["Tayo", "Ngozi", "Kwesi"], description: "Afrobeats lovers in London!" }],
+    austin: [{ name: "Girls Night Out 💅", members: ["Jasmine", "Nneka", "Sophie", "Zara", "Priya"], description: "5 women looking for guys to hang out with tonight!" }, { name: "Culture Crew 🎭", members: ["Amara", "Chidera", "Dayo"], description: "Exploring art galleries & live music." }],
+    dallas: [{ name: "Deep Ellum Girls 💃", members: ["Tasha", "Ayo", "Kemi", "Bria"], description: "Exploring Deep Ellum tonight!" }],
+    houston: [{ name: "H-Town Queens 👑", members: ["Chioma", "Adaeze", "Fatou", "Nadia"], description: "Linking up in Midtown tonight!" }],
     nyc: [{ name: "NYC Diaspora 🗽", members: ["Amara", "Kofi", "Chidera"], description: "African diaspora in NYC!" }],
-    brussels: [{ name: "Matonge Crew 🇨🇩", members: ["Fiston", "Nadège", "Patrick"], description: "Congolese community exploring Brussels nightlife!" }],
-    amsterdam: [{ name: "Kwaku Squad 🇸🇷", members: ["Jaylen", "Shaniqua", "Devon"], description: "Surinamese crew heading to Kwaku Festival!" }],
-    rotterdam: [{ name: "Carnival Crew 🎭", members: ["Denzel", "Priscilla", "Kenzo"], description: "Getting ready for Rotterdam Carnival!" }],
-    antwerp: [{ name: "Congo Culture 🎶", members: ["Grace", "Emmanuel", "Beni"], description: "Celebrating Congolese music in Antwerp!" }],
-    barcelona: [{ name: "Beach Vibes BCN 🏖️", members: ["Aminata", "Ibrahima", "Fatou"], description: "Afro Nation Barcelona crew!" }],
-    madrid: [{ name: "Madrid Diaspora 🇪🇸", members: ["Ousmane", "Mariama", "Djibril"], description: "African professionals in Madrid!" }],
-    bordeaux: [{ name: "Bordeaux Afro 🍷", members: ["Moussa", "Aïssatou", "Sékou"], description: "West African community in Bordeaux!" }],
-    stockholm: [{ name: "Stockholm Somalis 🇸🇪", members: ["Abdi", "Hodan", "Yusuf"], description: "Somali community meetups in Stockholm!" }],
-    rome: [{ name: "Roma Africana 🇮🇹", members: ["Blessing", "Chidi", "Amina"], description: "Nigerian & West African community in Rome!" }],
-    positano: [{ name: "Amalfi Luxe 🛥️", members: ["Tayo", "Zainab"], description: "Luxury diaspora getaway on the coast!" }],
-    athens: [{ name: "Athens Afro 🇬🇷", members: ["Kofi", "Akua", "Kweku"], description: "Ghanaian community events in Athens!" }],
-    istanbul: [{ name: "Istanbul Africans 🇹🇷", members: ["Musa", "Halima", "Ibrahim"], description: "Pan-African student community in Istanbul!" }],
+    london: [{ name: "London Afrobeats 🇬🇧", members: ["Tayo", "Ngozi", "Kwesi"], description: "Afrobeats lovers in London!" }],
+    paris: [{ name: "Paris Afro Crew 🇫🇷", members: ["Moussa", "Aïssatou", "Sékou"], description: "West African community in Paris!" }],
+    rio: [{ name: "Rio Afro Brasileiro 🇧🇷", members: ["Carlos", "Mariana", "João", "Aline"], description: "Celebrating Afro-Brazilian culture in Rio!" }],
+    saopaulo: [{ name: "SP Black Movement 🇧🇷", members: ["Rafael", "Camila", "Lucas"], description: "Black culture & events in São Paulo!" }],
+    salvador: [{ name: "Salvador Axé 🇧🇷", members: ["Ana", "Pedro", "Luísa", "Diego"], description: "The heart of Afro-Brazilian culture!" }],
+    brussels: [{ name: "Matonge Crew 🇨🇩", members: ["Fiston", "Nadège", "Patrick"], description: "Congolese community in Brussels!" }],
+    amsterdam: [{ name: "Kwaku Squad 🇸🇷", members: ["Jaylen", "Shaniqua", "Devon"], description: "Surinamese crew!" }],
     berlin: [{ name: "Berlin Afro Collective 🇩🇪", members: ["Ama", "Yaw", "Efua"], description: "Afro-German community events!" }],
-    dublin: [{ name: "Dublin Naija 🇮🇪", members: ["Chinedu", "Ngozi", "Emeka"], description: "Nigerian community in Dublin!" }],
-    copenhagen: [{ name: "CPH Carnival Crew 🇩🇰", members: ["Ahmed", "Sahra", "Liban"], description: "Somali crew at Copenhagen Carnival!" }],
-    oslo: [{ name: "Oslo Eritreans 🇳🇴", members: ["Yonas", "Selam", "Biniam"], description: "Eritrean community gatherings in Oslo!" }],
-    helsinki: [{ name: "Helsinki Somalis 🇫🇮", members: ["Faarax", "Nimco", "Axmed"], description: "Somali community in Helsinki!" }],
   };
 
   const allGroupsArr: { name: string; members: string[]; description: string; lat: number; lng: number }[] = [];
@@ -178,35 +143,24 @@ const getAllGroups = () => {
     const center = cityCoords[cityId];
     if (!center) return;
     cityGroups[cityId].forEach((g, i) => {
-      allGroupsArr.push({
-        ...g,
-        lat: center[0] + (((i * 43 + 11) % 80 - 40) / 500),
-        lng: center[1] + (((i * 31 + 19) % 80 - 40) / 400),
-      });
+      allGroupsArr.push({ ...g, lat: center[0] + (((i * 43 + 11) % 80 - 40) / 500), lng: center[1] + (((i * 31 + 19) % 80 - 40) / 400) });
     });
   });
   return allGroupsArr;
 };
 
-// Precompute all data
 const allEventPositions = getAllEventPositions();
 const allPeople = getAllPeople();
 const allGroups = getAllGroups();
 
-// World center
-const worldCenter: [number, number] = [30, 0];
-
-// Component to handle map view changes
 const MapController = ({ targetCity, onZoomDone }: { targetCity: string | null; onZoomDone: () => void }) => {
   const map = useMap();
-  
   useEffect(() => {
     if (targetCity && cityCoords[targetCity]) {
       map.setView(cityCoords[targetCity], 12, { animate: true });
       onZoomDone();
     }
   }, [targetCity, map, onZoomDone]);
-  
   return null;
 };
 
@@ -221,12 +175,13 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [showGroups, setShowGroups] = useState(true);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [zoomTarget, setZoomTarget] = useState<string | null>(selectedCity.id);
-  
+  const [nearbyCollapsed, setNearbyCollapsed] = useState(false);
+  const [selectedNearbyEvent, setSelectedNearbyEvent] = useState<typeof allEventPositions[0] | null>(null);
+
   const center = cityCoords[selectedCity.id] || cityCoords.austin;
 
   const handleEventClick = (cityId: string) => {
     setZoomTarget(cityId);
-    // Also update the selected city in the picker
     const city = cities.find(c => c.id === cityId);
     if (city) onCityChange(city);
   };
@@ -237,132 +192,76 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
     setShowCityPicker(false);
   };
 
+  const nearbyEvents = allEventPositions.filter(e => e.city === selectedCity.id).slice(0, 5);
+
   return (
     <div className="fixed inset-0 bg-background">
-      {/* Header with city picker */}
       <header className="absolute top-0 left-0 right-0 z-[1000] glass border-b border-border px-4 py-3">
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div className="flex items-center gap-2">
             <Navigation size={18} className="text-primary" />
             <h1 className="font-display text-lg font-bold text-gradient-gold">Explore</h1>
           </div>
-          <button
-            onClick={() => setShowCityPicker(!showCityPicker)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-border"
-          >
+          <button onClick={() => setShowCityPicker(!showCityPicker)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-border">
             <MapPin size={14} className="text-primary" />
             <span className="text-sm font-medium text-foreground">{selectedCity.flag} {selectedCity.name}</span>
             <ChevronDown size={14} className={`text-muted-foreground transition-transform ${showCityPicker ? "rotate-180" : ""}`} />
           </button>
         </div>
 
-        {/* City picker dropdown */}
         {showCityPicker && (
           <div className="absolute left-4 right-4 top-full mt-1 bg-card border border-border rounded-xl shadow-elevated z-50 overflow-y-auto max-h-[60vh] animate-slide-up max-w-lg mx-auto">
             {cities.map((city) => (
-              <button
-                key={city.id}
-                onClick={() => handleCitySelect(city)}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors"
-              >
+              <button key={city.id} onClick={() => handleCitySelect(city)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors">
                 <span className="text-lg">{city.flag}</span>
                 <span className="text-sm font-medium text-foreground flex-1 text-left">{city.name}</span>
-                {city.id === selectedCity.id && (
-                  <Check size={16} className="text-primary" />
-                )}
+                {city.id === selectedCity.id && <Check size={16} className="text-primary" />}
               </button>
             ))}
           </div>
         )}
       </header>
 
-      {/* Toggle filters */}
       <div className="absolute top-16 left-4 right-4 z-[1000] max-w-lg mx-auto">
         <div className="flex gap-2">
-          <button
-            onClick={() => setShowEvents(!showEvents)}
-            className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${
-              showEvents ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"
-            }`}
-          >
-            <Calendar size={14} />
-            Events ({allEventPositions.length})
+          <button onClick={() => setShowEvents(!showEvents)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${showEvents ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"}`}>
+            <Calendar size={14} /> Events ({allEventPositions.length})
           </button>
-          <button
-            onClick={() => setShowPeople(!showPeople)}
-            className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${
-              showPeople ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"
-            }`}
-          >
-            <Users size={14} />
-            People ({allPeople.length})
+          <button onClick={() => setShowPeople(!showPeople)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${showPeople ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"}`}>
+            <Users size={14} /> People ({allPeople.length})
           </button>
-          <button
-            onClick={() => setShowGroups(!showGroups)}
-            className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${
-              showGroups ? "bg-[hsl(320,70%,50%)] text-white" : "bg-card text-muted-foreground border border-border"
-            }`}
-          >
-            <Users size={14} />
-            Groups ({allGroups.length})
+          <button onClick={() => setShowGroups(!showGroups)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${showGroups ? "bg-[hsl(320,70%,50%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
+            <Users size={14} /> Groups ({allGroups.length})
           </button>
         </div>
       </div>
 
-      {/* Map */}
-      <MapContainer
-        center={center}
-        zoom={12}
-        style={{ height: "100%", width: "100%" }}
-        zoomControl={false}
-        attributionControl={false}
-        minZoom={2}
-        maxBoundsViscosity={0}
-        worldCopyJump={true}
-      >
+      <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }} zoomControl={false} attributionControl={false} minZoom={2} maxBoundsViscosity={0} worldCopyJump={true}>
         <MapController targetCity={zoomTarget} onZoomDone={() => setZoomTarget(null)} />
         <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
 
-        {/* You are here */}
         <Marker position={center} icon={youIcon}>
-          <Popup className="afro-popup">
-            <div className="text-sm font-semibold">📍 You are here</div>
-          </Popup>
+          <Popup className="afro-popup"><div className="text-sm font-semibold">📍 You are here</div></Popup>
         </Marker>
 
-        {/* Event markers - ALL cities */}
         {showEvents && allEventPositions.map((event) => (
-          <Marker
-            key={`event-${event.id}`}
-            position={[event.lat, event.lng]}
-            icon={eventIcon}
-            eventHandlers={{
-              click: () => handleEventClick(event.city),
-            }}
-          >
+          <Marker key={`event-${event.id}`} position={[event.lat, event.lng]} icon={eventIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
                 <img src={event.image} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />
                 <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
                 <p className="text-xs text-gray-500 mt-1">{event.host}</p>
-                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
-                  <span>{event.date}</span>
-                </div>
-                <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
-                  <span>{event.venue}</span>
-                </div>
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500"><span>{event.date}</span></div>
+                <div className="flex items-center gap-2 mt-1 text-xs text-gray-500"><span>{event.venue}</span></div>
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-xs text-gray-500">{event.attending >= 1000 ? `${(event.attending / 1000).toFixed(1)}K` : event.attending} attending</span>
-                  {event.price && (
-                    <span className="text-xs font-bold text-amber-600">{event.price}</span>
-                  )}
+                  {event.price && <span className="text-xs font-bold text-amber-600">{event.price}</span>}
                 </div>
               </div>
             </Popup>
           </Marker>
         ))}
 
-        {/* People markers - ALL cities */}
         {showPeople && allPeople.map((person, i) => (
           <Marker key={`person-${i}`} position={[person.lat, person.lng]} icon={personIcon}>
             <Popup className="afro-popup">
@@ -374,7 +273,6 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </Marker>
         ))}
 
-        {/* Group markers - ALL cities */}
         {showGroups && allGroups.map((group, i) => (
           <Marker key={`group-${i}`} position={[group.lat, group.lng]} icon={groupIcon}>
             <Popup className="afro-popup" maxWidth={260}>
@@ -386,36 +284,78 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
                     <span key={m} className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[10px] font-medium">{m}</span>
                   ))}
                 </div>
-                <button className="w-full mt-2 py-1.5 rounded-full bg-purple-500 text-white text-xs font-semibold">
-                  Request to Join
-                </button>
+                <button className="w-full mt-2 py-1.5 rounded-full bg-purple-500 text-white text-xs font-semibold">Request to Join</button>
               </div>
             </Popup>
           </Marker>
         ))}
       </MapContainer>
 
-      {/* Bottom info card */}
-      <div className="absolute bottom-20 left-4 right-4 z-[1000] max-w-lg mx-auto">
-        <div className="bg-card/95 backdrop-blur-md rounded-2xl border border-border p-4 shadow-elevated">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-display font-bold text-foreground text-sm">Nearby This Week</h3>
-            <span className="text-xs text-primary font-semibold">{allEventPositions.length} events · {allPeople.length} people</span>
-          </div>
-          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-            {allEventPositions.filter(e => e.city === selectedCity.id).slice(0, 5).map((event) => (
-              <div key={event.id} className="flex-shrink-0 w-36 bg-secondary rounded-xl overflow-hidden">
-                <img src={event.image} alt="" className="w-full h-16 object-cover" />
-                <div className="p-2">
-                  <p className="text-[11px] font-semibold text-foreground leading-tight line-clamp-2">{event.title}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{event.date.split("·")[0]}</p>
-                  {event.price && (
-                    <p className="text-[10px] font-bold text-primary mt-0.5">{event.price}</p>
-                  )}
+      {/* Selected event detail overlay */}
+      {selectedNearbyEvent && (
+        <>
+          <div className="fixed inset-0 z-[1001] bg-background/40" onClick={() => setSelectedNearbyEvent(null)} />
+          <div className="absolute bottom-20 left-4 right-4 z-[1002] max-w-lg mx-auto animate-slide-up">
+            <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-elevated">
+              <div className="relative">
+                <img src={selectedNearbyEvent.image} alt="" className="w-full h-40 object-cover" />
+                <button onClick={() => setSelectedNearbyEvent(null)} className="absolute top-2 right-2 w-8 h-8 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center">
+                  <X size={16} className="text-foreground" />
+                </button>
+                {selectedNearbyEvent.price && (
+                  <span className="absolute top-2 left-2 px-3 py-1 rounded-full gradient-gold text-primary-foreground text-xs font-semibold">{selectedNearbyEvent.price}</span>
+                )}
+              </div>
+              <div className="p-4">
+                <h3 className="font-display font-bold text-foreground text-lg">{selectedNearbyEvent.title}</h3>
+                <p className="text-xs text-muted-foreground mt-1">{selectedNearbyEvent.host}</p>
+                <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1"><Calendar size={14} className="text-primary" /><span>{selectedNearbyEvent.date}</span></div>
+                  <div className="flex items-center gap-1"><MapPin size={14} className="text-primary" /><span>{selectedNearbyEvent.venue}</span></div>
+                </div>
+                <div className="flex items-center justify-between mt-4">
+                  <span className="text-xs text-muted-foreground">{selectedNearbyEvent.attending} attending</span>
+                  <button className="px-5 py-2 rounded-full gradient-gold text-primary-foreground text-sm font-semibold shadow-gold">RSVP</button>
                 </div>
               </div>
-            ))}
+            </div>
           </div>
+        </>
+      )}
+
+      {/* Bottom info card - collapsible */}
+      <div className="absolute bottom-20 left-4 right-4 z-[1000] max-w-lg mx-auto">
+        <div className="bg-card/95 backdrop-blur-md rounded-2xl border border-border shadow-elevated overflow-hidden">
+          <button
+            onClick={() => setNearbyCollapsed(!nearbyCollapsed)}
+            className="w-full flex items-center justify-between px-4 py-3"
+          >
+            <h3 className="font-display font-bold text-foreground text-sm">Nearby This Week</h3>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-primary font-semibold">{nearbyEvents.length} events</span>
+              {nearbyCollapsed ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />}
+            </div>
+          </button>
+          {!nearbyCollapsed && (
+            <div className="px-4 pb-3">
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+                {nearbyEvents.map((event) => (
+                  <button
+                    key={event.id}
+                    onClick={() => setSelectedNearbyEvent(event)}
+                    className="flex-shrink-0 w-36 bg-secondary rounded-xl overflow-hidden text-left hover:ring-2 hover:ring-primary/30 transition-all"
+                  >
+                    <img src={event.image} alt="" className="w-full h-16 object-cover" />
+                    <div className="p-2">
+                      <p className="text-[11px] font-semibold text-foreground leading-tight line-clamp-2">{event.title}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{event.date.split("·")[0]}</p>
+                      {event.price && <p className="text-[10px] font-bold text-primary mt-0.5">{event.price}</p>}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
