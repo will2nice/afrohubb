@@ -50,10 +50,10 @@ const ReelsScreen = () => {
   const reel = reels[currentReel];
 
   const handleScroll = (direction: "up" | "down") => {
-    if (direction === "down" && currentReel < reels.length - 1) {
-      setCurrentReel((i) => i + 1);
-    } else if (direction === "up" && currentReel > 0) {
-      setCurrentReel((i) => i - 1);
+    if (direction === "down") {
+      setCurrentReel((i) => Math.min(i + 1, reels.length - 1));
+    } else if (direction === "up") {
+      setCurrentReel((i) => Math.max(i - 1, 0));
     }
   };
 
@@ -81,7 +81,7 @@ const ReelsScreen = () => {
       }}
     >
       {/* Full-screen reel */}
-      <div className="relative w-full h-full animate-fade-in" key={reel.id}>
+      {reel && <div className="relative w-full h-full animate-fade-in" key={reel.id}>
         <img
           src={reel.image}
           alt=""
@@ -171,7 +171,7 @@ const ReelsScreen = () => {
             />
           ))}
         </div>
-      </div>
+      </div>}
     </div>
   );
 };
