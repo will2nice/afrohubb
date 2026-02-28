@@ -1,85 +1,32 @@
-import { MapPin, Search, Bell, Heart, MessageCircle, Share2, Bookmark, Users } from "lucide-react";
-import eventParty from "@/assets/event-party.jpg";
-import eventBrunch from "@/assets/event-brunch.jpg";
-import eventConcert from "@/assets/event-concert.jpg";
-import profileWoman1 from "@/assets/profile-woman-1.jpg";
-import profileMan1 from "@/assets/profile-man-1.jpg";
-import profileMan2 from "@/assets/profile-man-2.jpg";
+import { useState } from "react";
+import { MapPin, Search, Bell, Heart, MessageCircle, Share2, Bookmark, Users, ChevronDown, Check } from "lucide-react";
+import { cities, feedPosts, type City } from "@/data/cityData";
 
 const chips = ["For You", "Nearby", "Diaspora", "Culture", "Business", "Dating Tips", "New Here"];
 
-const posts = [
-  {
-    id: 1,
-    author: "Amara Johnson",
-    avatar: profileWoman1,
-    location: "Austin, TX",
-    time: "2h ago",
-    text: "Just moved to Austin from Lagos! Looking for my people here 🇳🇬✨ Who's going to Afrobeats Night this Friday?",
-    image: eventParty,
-    likes: 47,
-    comments: 12,
-    type: "post" as const,
-  },
-  {
-    id: 2,
-    author: "Diaspora Brunch Club",
-    avatar: null,
-    location: "Houston, TX",
-    time: "Today",
-    text: null,
-    image: eventBrunch,
-    likes: 128,
-    comments: 34,
-    type: "event" as const,
-    eventTitle: "Diaspora Brunch — Sunday Edition",
-    eventDate: "Sun, Mar 9 · 11:00 AM",
-    eventVenue: "The Grove Houston",
-    attending: 86,
-  },
-  {
-    id: 3,
-    author: "Kwame Asante",
-    avatar: profileMan1,
-    location: "Dallas, TX",
-    time: "5h ago",
-    text: "The tech meetup last night was incredible. So many brilliant minds from the diaspora building amazing things. Can't wait for the next one! 💡",
-    image: null,
-    likes: 93,
-    comments: 21,
-    type: "post" as const,
-  },
-  {
-    id: 4,
-    author: null,
-    avatar: null,
-    location: "Austin, TX",
-    time: "This Saturday",
-    text: null,
-    image: eventConcert,
-    likes: 256,
-    comments: 45,
-    type: "event" as const,
-    eventTitle: "Afrobeats Live — Burna Boy Tribute Night",
-    eventDate: "Sat, Mar 8 · 9:00 PM",
-    eventVenue: "Empire Control Room",
-    attending: 342,
-  },
-];
+interface FeedScreenProps {
+  selectedCity: City;
+  onCityChange: (city: City) => void;
+}
 
-const FeedScreen = () => {
+const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
+  const [showCityPicker, setShowCityPicker] = useState(false);
+
+  const posts = feedPosts.filter((p) => p.city === selectedCity.id);
+
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
       <header className="sticky top-0 z-40 glass border-b border-border px-4 py-3">
         <div className="flex items-center justify-between max-w-lg mx-auto">
-          <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setShowCityPicker(!showCityPicker)}
+            className="flex items-center gap-1.5 group"
+          >
             <MapPin size={16} className="text-primary" />
-            <span className="text-sm font-medium text-foreground">Austin, TX</span>
-            <svg width="10" height="6" viewBox="0 0 10 6" className="text-muted-foreground ml-0.5">
-              <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="1.5" fill="none" strokeLinecap="round"/>
-            </svg>
-          </div>
+            <span className="text-sm font-medium text-foreground">{selectedCity.flag} {selectedCity.name}</span>
+            <ChevronDown size={14} className={`text-muted-foreground transition-transform ${showCityPicker ? "rotate-180" : ""}`} />
+          </button>
           <div className="flex items-center gap-3">
             <button className="p-2 rounded-full hover:bg-secondary transition-colors">
               <Search size={20} className="text-muted-foreground" />
@@ -90,6 +37,25 @@ const FeedScreen = () => {
             </button>
           </div>
         </div>
+
+        {/* City picker dropdown */}
+        {showCityPicker && (
+          <div className="absolute left-4 right-4 top-full mt-1 bg-card border border-border rounded-xl shadow-elevated z-50 overflow-hidden animate-slide-up max-w-lg mx-auto">
+            {cities.map((city) => (
+              <button
+                key={city.id}
+                onClick={() => { onCityChange(city); setShowCityPicker(false); }}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors"
+              >
+                <span className="text-lg">{city.flag}</span>
+                <span className="text-sm font-medium text-foreground flex-1 text-left">{city.name}</span>
+                {city.id === selectedCity.id && (
+                  <Check size={16} className="text-primary" />
+                )}
+              </button>
+            ))}
+          </div>
+        )}
       </header>
 
       {/* Chips */}
@@ -117,15 +83,10 @@ const FeedScreen = () => {
             key={post.id}
             className="bg-card rounded-2xl border border-border overflow-hidden shadow-card animate-slide-up"
           >
-            {/* Author row */}
             {post.author && (
               <div className="flex items-center gap-3 px-4 pt-4 pb-2">
                 {post.avatar ? (
-                  <img
-                    src={post.avatar}
-                    alt={post.author}
-                    className="w-10 h-10 rounded-full object-cover ring-2 ring-border"
-                  />
+                  <img src={post.avatar} alt={post.author} className="w-10 h-10 rounded-full object-cover ring-2 ring-border" />
                 ) : (
                   <div className="w-10 h-10 rounded-full gradient-gold flex items-center justify-center">
                     <Users size={18} className="text-primary-foreground" />
@@ -133,53 +94,35 @@ const FeedScreen = () => {
                 )}
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-semibold text-foreground truncate">{post.author}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {post.location} · {post.time}
-                  </p>
+                  <p className="text-xs text-muted-foreground">{post.location} · {post.time}</p>
                 </div>
                 {post.type === "event" && (
-                  <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold gradient-gold text-primary-foreground uppercase tracking-wider">
-                    Event
-                  </span>
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold gradient-gold text-primary-foreground uppercase tracking-wider">Event</span>
                 )}
               </div>
             )}
 
-            {/* Text */}
             {post.text && (
               <p className="px-4 pb-3 text-sm text-foreground leading-relaxed">{post.text}</p>
             )}
 
-            {/* Image */}
             {post.image && (
               <div className="relative">
-                <img
-                  src={post.image}
-                  alt=""
-                  className="w-full aspect-[4/3] object-cover"
-                  loading="lazy"
-                />
+                <img src={post.image} alt="" className="w-full aspect-[4/3] object-cover" loading="lazy" />
                 {post.type === "event" && post.eventTitle && (
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/95 to-transparent p-4 pt-12">
-                    <h3 className="font-display font-bold text-foreground text-lg leading-tight">
-                      {post.eventTitle}
-                    </h3>
+                    <h3 className="font-display font-bold text-foreground text-lg leading-tight">{post.eventTitle}</h3>
                     <p className="text-sm text-primary mt-1">{post.eventDate}</p>
                     <p className="text-xs text-muted-foreground mt-0.5">{post.eventVenue}</p>
                     <div className="flex items-center justify-between mt-3">
-                      <span className="text-xs text-muted-foreground">
-                        {post.attending} attending
-                      </span>
-                      <button className="px-5 py-2 rounded-full gradient-gold text-primary-foreground text-sm font-semibold shadow-gold transition-transform hover:scale-105 active:scale-95">
-                        RSVP
-                      </button>
+                      <span className="text-xs text-muted-foreground">{post.attending} attending</span>
+                      <button className="px-5 py-2 rounded-full gradient-gold text-primary-foreground text-sm font-semibold shadow-gold transition-transform hover:scale-105 active:scale-95">RSVP</button>
                     </div>
                   </div>
                 )}
               </div>
             )}
 
-            {/* Actions */}
             <div className="flex items-center gap-1 px-3 py-3 border-t border-border">
               <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-secondary transition-colors">
                 <Heart size={18} className="text-muted-foreground" />
