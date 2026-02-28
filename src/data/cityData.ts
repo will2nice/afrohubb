@@ -48,6 +48,10 @@ export const cities: City[] = [
   { id: "copenhagen", name: "Copenhagen, Denmark", flag: "🇩🇰" },
   { id: "oslo", name: "Oslo, Norway", flag: "🇳🇴" },
   { id: "helsinki", name: "Helsinki, Finland", flag: "🇫🇮" },
+  // Brazil
+  { id: "rio", name: "Rio de Janeiro, Brazil", flag: "🇧🇷" },
+  { id: "saopaulo", name: "São Paulo, Brazil", flag: "🇧🇷" },
+  { id: "salvador", name: "Salvador, Brazil", flag: "🇧🇷" },
 ];
 
 export interface FeedPost {
@@ -650,4 +654,25 @@ export const events: EventItem[] = [
   { id: 661, title: "Somali Cultural Day Helsinki", host: "Somali Society FI", date: "Sun, Aug 17 · 12:00 PM", venue: "Kaisaniemi Park", city: "helsinki", distance: "0.5 km", image: eventAfricanArt, attending: 2500, free: true, category: "Festival" },
   { id: 662, title: "Burna Boy — Helsinki Show", host: "Spaceship Ent.", date: "Fri, Aug 15 · 8:00 PM", venue: "Helsinki Ice Hall", city: "helsinki", distance: "2.0 km", image: eventRapConcert, attending: 6000, free: false, price: "€55", category: "Afrobeats" },
   { id: 663, title: "African Food Festival Helsinki", host: "Afro Kitchen FI", date: "Sat, Aug 16 · 11:00 AM", venue: "Senate Square", city: "helsinki", distance: "0.3 km", image: eventBrunch, attending: 1500, free: true, category: "Party" },
+
+  // Rio de Janeiro
+  { id: 700, title: "Carnaval Afro Bloco", host: "Bloco Afro Rio", date: "Sat, Feb 28 · 2:00 PM", venue: "Copacabana Beach", city: "rio", distance: "1.0 km", image: eventUkAfrobeats, attending: 15000, free: true, category: "Festival" },
+  { id: 701, title: "Samba & Afrobeats Fusion", host: "AfroHub Rio", date: "Fri, Feb 27 · 10:00 PM", venue: "Lapa Arches", city: "rio", distance: "2.5 km", image: eventParty, attending: 2000, free: false, price: "R$50", category: "Party" },
+  { id: 702, title: "Baile Funk x Amapiano Night", host: "Vibes Rio", date: "Sat, Feb 28 · 11:00 PM", venue: "Pedra do Sal", city: "rio", distance: "3.0 km", image: eventParty, attending: 800, free: false, price: "R$30", category: "Party" },
+  { id: 703, title: "Afro-Brazilian Heritage Walk", host: "Rio Culture", date: "Sun, Mar 1 · 10:00 AM", venue: "Little Africa District", city: "rio", distance: "2.0 km", image: eventAfricanArt, attending: 300, free: true, category: "Culture" },
+  { id: 704, title: "Capoeira & Live Music", host: "Mestre Bimba Academy", date: "Sat, Feb 28 · 4:00 PM", venue: "Ipanema Beach", city: "rio", distance: "1.5 km", image: eventFootball, attending: 500, free: true, category: "Sports" },
+
+  // São Paulo
+  { id: 710, title: "Afro Nation São Paulo", host: "Afro Nation BR", date: "Sat, Mar 7 · 1:00 PM", venue: "Interlagos Park", city: "saopaulo", distance: "8.0 km", image: eventUkAfrobeats, attending: 25000, free: false, price: "R$120", category: "Festival" },
+  { id: 711, title: "Baile Black São Paulo", host: "Movimento Black SP", date: "Fri, Mar 6 · 11:00 PM", venue: "Casa de Francisca", city: "saopaulo", distance: "1.5 km", image: eventParty, attending: 1200, free: false, price: "R$40", category: "Party" },
+  { id: 712, title: "Burna Boy — SP Concert", host: "Spaceship Ent.", date: "Sat, Mar 7 · 8:00 PM", venue: "Allianz Parque", city: "saopaulo", distance: "5.0 km", image: eventRapConcert, attending: 40000, free: false, price: "R$180", category: "Afrobeats" },
+  { id: 713, title: "Afro-Brazilian Art Exhibition", host: "MASP", date: "Mar 5–30 · 10:00 AM", venue: "MASP Museum", city: "saopaulo", distance: "0.5 km", image: eventAfricanArt, attending: 5000, free: false, price: "R$25", category: "Culture" },
+  { id: 714, title: "Black Entrepreneurship Fair", host: "Feira Preta", date: "Sun, Mar 8 · 10:00 AM", venue: "Memorial da América Latina", city: "saopaulo", distance: "3.0 km", image: eventBrunch, attending: 8000, free: true, category: "Networking" },
+
+  // Salvador
+  { id: 720, title: "Pelourinho Night — Olodum", host: "Olodum Cultural", date: "Tue, Mar 3 · 8:00 PM", venue: "Pelourinho Square", city: "salvador", distance: "0.5 km", image: eventConcert, attending: 3000, free: true, category: "Festival" },
+  { id: 721, title: "Axé & Afrobeats Festival", host: "AfroHub Salvador", date: "Sat, Mar 7 · 2:00 PM", venue: "Farol da Barra", city: "salvador", distance: "2.0 km", image: eventUkAfrobeats, attending: 10000, free: false, price: "R$60", category: "Festival" },
+  { id: 722, title: "Candomblé Cultural Night", host: "Salvador Heritage", date: "Fri, Mar 6 · 7:00 PM", venue: "Casa do Benin", city: "salvador", distance: "1.0 km", image: eventAfricanArt, attending: 400, free: true, category: "Culture" },
+  { id: 723, title: "Capoeira World Meeting", host: "ABPC", date: "Sun, Mar 8 · 9:00 AM", venue: "Forte de Santo Antônio", city: "salvador", distance: "1.5 km", image: eventFootball, attending: 2000, free: true, category: "Sports" },
+  { id: 724, title: "Acarajé Festival", host: "Salvador Food", date: "Sat, Mar 7 · 11:00 AM", venue: "Rio Vermelho", city: "salvador", distance: "3.0 km", image: eventBrunch, attending: 5000, free: true, category: "Party" },
 ];

@@ -5,6 +5,18 @@ import EventAttendeesSheet from "@/components/EventAttendeesSheet";
 
 const filters = ["All", "Today", "This Weekend", "Concerts", "Festivals", "Sports", "Art", "Networking"];
 
+// Map filter chips to event filtering logic
+const filterMap: Record<string, (e: EventItem) => boolean> = {
+  "All": () => true,
+  "Today": (e) => e.date.toLowerCase().includes("today") || e.date.toLowerCase().includes("fri,") || e.date.toLowerCase().includes("mon,"),
+  "This Weekend": (e) => e.date.toLowerCase().includes("sat,") || e.date.toLowerCase().includes("sun,") || e.date.toLowerCase().includes("weekend"),
+  "Concerts": (e) => (e.category?.toLowerCase().includes("afrobeats") || e.category?.toLowerCase().includes("concert") || e.category?.toLowerCase().includes("hip-hop") || e.category?.toLowerCase().includes("r&b") || e.title.toLowerCase().includes("concert") || e.title.toLowerCase().includes("live")) ?? false,
+  "Festivals": (e) => e.category?.toLowerCase().includes("festival") ?? false,
+  "Sports": (e) => (e.category?.toLowerCase().includes("soccer") || e.category?.toLowerCase().includes("sports") || e.category?.toLowerCase().includes("watch party") || e.category?.toLowerCase().includes("fifa")) ?? false,
+  "Art": (e) => (e.title.toLowerCase().includes("art") || e.title.toLowerCase().includes("film") || e.category?.toLowerCase().includes("culture")) ?? false,
+  "Networking": (e) => (e.category?.toLowerCase().includes("networking") || e.title.toLowerCase().includes("mixer") || e.title.toLowerCase().includes("professional")) ?? false,
+};
+
 interface EventsScreenProps {
   selectedCity: City;
   onCityChange: (city: City) => void;
@@ -14,7 +26,14 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [rsvpEvents, setRsvpEvents] = useState<Set<number>>(new Set());
+  const [activeFilter, setActiveFilter] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
+
   const cityEvents = allEvents.filter((e) => e.city === selectedCity.id);
+  const filterFn = filterMap[activeFilter] || (() => true);
+  const filteredEvents = cityEvents.filter(filterFn).filter(e => 
+    searchQuery === "" || e.title.toLowerCase().includes(searchQuery.toLowerCase()) || e.host.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const toggleRsvp = (event: EventItem) => {
     setRsvpEvents((prev) => {
@@ -23,7 +42,6 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
         next.delete(event.id);
       } else {
         next.add(event.id);
-        // Auto-open attendees when you RSVP
         setSelectedEvent(event);
       }
       return next;
@@ -47,9 +65,8 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
             </button>
           </div>
 
-          {/* City picker dropdown */}
           {showCityPicker && (
-            <div className="absolute left-4 right-4 top-14 bg-card border border-border rounded-xl shadow-elevated z-50 overflow-hidden animate-slide-up max-w-lg mx-auto">
+            <div className="absolute left-4 right-4 top-14 bg-card border border-border rounded-xl shadow-elevated z-50 overflow-y-auto max-h-[60vh] animate-slide-up max-w-lg mx-auto">
               {cities.map((city) => (
                 <button
                   key={city.id}
@@ -58,9 +75,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                 >
                   <span className="text-lg">{city.flag}</span>
                   <span className="text-sm font-medium text-foreground flex-1 text-left">{city.name}</span>
-                  {city.id === selectedCity.id && (
-                    <Check size={16} className="text-primary" />
-                  )}
+                  {city.id === selectedCity.id && <Check size={16} className="text-primary" />}
                 </button>
               ))}
             </div>
@@ -71,6 +86,8 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
             <input
               type="text"
               placeholder="Search events..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-secondary text-sm text-foreground placeholder:text-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
             />
           </div>
@@ -80,11 +97,12 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
       {/* Filter chips */}
       <div className="px-4 py-3 overflow-x-auto scrollbar-hide max-w-lg mx-auto">
         <div className="flex gap-2 w-max">
-          {filters.map((filter, i) => (
+          {filters.map((filter) => (
             <button
               key={filter}
+              onClick={() => setActiveFilter(filter)}
               className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                i === 0
+                activeFilter === filter
                   ? "gradient-gold text-primary-foreground shadow-gold"
                   : "bg-secondary text-secondary-foreground hover:bg-muted"
               }`}
@@ -95,9 +113,22 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
         </div>
       </div>
 
+      {/* Results count */}
+      {activeFilter !== "All" && (
+        <div className="px-4 pb-2 max-w-lg mx-auto">
+          <p className="text-xs text-muted-foreground">{filteredEvents.length} events found</p>
+        </div>
+      )}
+
       {/* Events list */}
       <div className="px-4 space-y-4 max-w-lg mx-auto">
-        {cityEvents.map((event) => {
+        {filteredEvents.length === 0 ? (
+          <div className="text-center py-16">
+            <Calendar size={40} className="text-muted-foreground mx-auto mb-3 opacity-40" />
+            <p className="text-sm text-muted-foreground">No events match this filter</p>
+            <button onClick={() => setActiveFilter("All")} className="mt-3 text-sm text-primary font-semibold">Show all events</button>
+          </div>
+        ) : filteredEvents.map((event) => {
           const isGoing = rsvpEvents.has(event.id);
           return (
             <article
@@ -189,7 +220,6 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
         })}
       </div>
 
-      {/* Attendees Sheet */}
       {selectedEvent && (
         <EventAttendeesSheet event={selectedEvent} onClose={() => setSelectedEvent(null)} />
       )}
