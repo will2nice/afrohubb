@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Users } from "lucide-react";
+import { Search, Users, BadgeCheck } from "lucide-react";
 import profileWoman1 from "@/assets/profile-woman-1.jpg";
 import profileWoman2 from "@/assets/profile-woman-2.jpg";
 import profileMan1 from "@/assets/profile-man-1.jpg";
@@ -8,6 +8,8 @@ import matchWoman1 from "@/assets/match-woman-1.jpg";
 import matchWoman2 from "@/assets/match-woman-2.jpg";
 import matchWoman3 from "@/assets/match-woman-3.jpg";
 import matchMan1 from "@/assets/match-man-1.jpg";
+import founderWilly from "@/assets/founder-willy.jpg";
+import founderTom from "@/assets/founder-tom.jpg";
 import DMChatScreen, { type ChatContact } from "@/components/DMChatScreen";
 
 interface ChatItem {
@@ -20,8 +22,14 @@ interface ChatItem {
   online: boolean;
   age?: number;
   vibe?: string;
-  tab: "matches" | "events" | "requests";
+  tab: "matches" | "events" | "requests" | "founders";
+  isFounder?: boolean;
 }
+
+const founderChats: ChatItem[] = [
+  { id: 100, name: "Willy", avatar: founderWilly, lastMessage: "Welcome to AfroHub! 🌍 I'm one of the founders — so glad you're here. Let's build this community together!", time: "Now", unread: 1, online: true, age: 28, vibe: "👑 Founder", tab: "founders", isFounder: true },
+  { id: 101, name: "Tom", avatar: founderTom, lastMessage: "Hey! Welcome to the fam 🤝 I'm Tom, co-founder. Hit me up if you ever need anything!", time: "Now", unread: 1, online: true, age: 27, vibe: "👑 Founder", tab: "founders", isFounder: true },
+];
 
 const allChats: ChatItem[] = [
   // Matches
@@ -69,6 +77,9 @@ const MessagesScreen = () => {
   const filteredChats = allChats
     .filter(c => activeTab === "all" || c.tab === activeTab)
     .filter(c => searchQuery === "" || c.name.toLowerCase().includes(searchQuery.toLowerCase()));
+
+  // Founders always show at top (filtered by search only)
+  const filteredFounders = founderChats.filter(c => searchQuery === "" || c.name.toLowerCase().includes(searchQuery.toLowerCase()));
 
   // Group chats by section for "all" view
   const sections = activeTab === "all"
@@ -135,6 +146,44 @@ const MessagesScreen = () => {
 
       {/* Chat list */}
       <div className="max-w-lg mx-auto">
+        {/* Founders - pinned at top */}
+        {filteredFounders.length > 0 && (
+          <div>
+            <p className="px-4 py-2 text-xs font-semibold text-primary uppercase tracking-wider flex items-center gap-1">
+              <BadgeCheck size={12} /> From the Founders
+            </p>
+            {filteredFounders.map((chat) => (
+              <button
+                key={chat.id}
+                onClick={() => handleChatOpen(chat)}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors bg-primary/5 border-l-2 border-primary"
+              >
+                <div className="relative">
+                  <img src={chat.avatar!} alt={chat.name} className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/40" />
+                  <div className="absolute bottom-0 right-0 w-3.5 h-3.5 rounded-full bg-green-500 ring-2 ring-card" />
+                </div>
+                <div className="flex-1 min-w-0 text-left">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-sm font-bold text-foreground">{chat.name}</p>
+                      <span className="px-1.5 py-0.5 rounded-md bg-primary/15 text-primary text-[9px] font-bold uppercase tracking-wide">Founder</span>
+                    </div>
+                    <span className="text-xs text-muted-foreground ml-2">{chat.time}</span>
+                  </div>
+                  <p className={`text-xs truncate mt-0.5 ${chat.unread ? "text-foreground font-medium" : "text-muted-foreground"}`}>
+                    {chat.lastMessage}
+                  </p>
+                </div>
+                {chat.unread > 0 && (
+                  <div className="w-5 h-5 rounded-full gradient-gold flex items-center justify-center">
+                    <span className="text-[10px] font-bold text-primary-foreground">{chat.unread}</span>
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+
         {sections.map((section) => (
           <div key={section.label}>
             <p className="px-4 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
