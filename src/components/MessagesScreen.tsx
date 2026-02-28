@@ -28,7 +28,7 @@ interface ChatItem {
 
 const founderChats: ChatItem[] = [
   { id: 100, name: "Willie", avatar: founderWilly, lastMessage: "Welcome to AfroHub! 🌍 I'm one of the founders — so glad you're here. Let's build this community together!", time: "Now", unread: 1, online: true, age: 28, vibe: "👑 Founder", tab: "founders", isFounder: true },
-  { id: 101, name: "Tong", avatar: founderTom, lastMessage: "Hey! Welcome to the fam 🤝 I'm Tong, co-founder. Hit me up if you ever need anything!", time: "Now", unread: 1, online: true, age: 27, vibe: "👑 Founder", tab: "founders", isFounder: true },
+  { id: 101, name: "Daniel", avatar: founderTom, lastMessage: "Hey! Welcome to the fam 🤝 I'm Daniel, co-founder. Hit me up if you ever need anything!", time: "Now", unread: 1, online: true, age: 27, vibe: "👑 Founder", tab: "founders", isFounder: true },
 ];
 
 const allChats: ChatItem[] = [
