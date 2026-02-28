@@ -7,6 +7,7 @@ import MatchScreen from "@/components/MatchScreen";
 import EventsScreen from "@/components/EventsScreen";
 import MessagesScreen from "@/components/MessagesScreen";
 import CultureLearnScreen from "@/components/CultureLearnScreen";
+import CampusScreen from "@/components/CampusScreen";
 import ProfileScreen from "@/components/ProfileScreen";
 import { cities, type City } from "@/data/cityData";
 
@@ -24,6 +25,7 @@ const Index = () => {
       {activeTab === "events" && <EventsScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "messages" && <MessagesScreen />}
       {activeTab === "culture" && <CultureLearnScreen />}
+      {activeTab === "campus" && <CampusScreen />}
       {activeTab === "profile" && <ProfileScreen />}
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} unreadMessages={unreadMessages} />
     </div>
