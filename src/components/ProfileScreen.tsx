@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark } from "lucide-react";
+import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase } from "lucide-react";
 import profileMan1 from "@/assets/profile-man-1.jpg";
 import eventConcert from "@/assets/event-concert.jpg";
 import eventBrunch from "@/assets/event-brunch.jpg";
@@ -51,9 +51,31 @@ const feedPosts: FeedPost[] = [
 ];
 
 const ProfileScreen = () => {
+  type ProfileMode = "dating" | "community" | "networking";
   const [showSettings, setShowSettings] = useState(false);
+  const [profileMode, setProfileMode] = useState<ProfileMode>("dating");
   const [viewMode, setViewMode] = useState<"feed" | "grid">("feed");
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
+
+  const profileModes: { key: ProfileMode; icon: React.ReactNode; label: string; desc: string; color: string }[] = [
+    { key: "dating", icon: <Heart size={18} />, label: "Dating", desc: "Looking for relationships", color: "from-red-500 to-pink-500" },
+    { key: "community", icon: <Trophy size={18} />, label: "Community", desc: "Friends, sports, hangouts", color: "from-emerald-500 to-teal-500" },
+    { key: "networking", icon: <Briefcase size={18} />, label: "Networking", desc: "Mentors & professionals", color: "from-blue-500 to-indigo-500" },
+  ];
+
+  const activeMode = profileModes.find(m => m.key === profileMode)!;
+
+  const modeBios: Record<ProfileMode, string> = {
+    dating: "Building startups & community. Living my best diaspora life ✨🌍",
+    community: "Looking for pickup basketball, soccer, and guys to hang with. Brotherhood first 🏀⚽🤝",
+    networking: "Entrepreneur & startup founder. Looking to connect with mentors, investors & ambitious minds 💼🚀",
+  };
+
+  const modeInterests: Record<ProfileMode, string[]> = {
+    dating: ["Afrobeats", "Tech", "Soccer", "Travel", "Fashion", "Cooking", "Entrepreneurship"],
+    community: ["Basketball", "Soccer", "Gym", "Hiking", "Game Nights", "Pickup Sports", "Brotherhood"],
+    networking: ["Startups", "Tech", "Investing", "Mentorship", "Real Estate", "Marketing", "Leadership"],
+  };
 
   const toggleLike = (postId: number) => {
     setLikedPosts(prev => {
@@ -142,7 +164,7 @@ const ProfileScreen = () => {
             </div>
             <h2 className="font-display text-xl font-bold text-foreground mt-3">Kofi Asante</h2>
             <p className="text-sm text-muted-foreground mt-0.5">Houston, TX · 🇬🇭 Ghana</p>
-            <p className="text-sm text-foreground/70 mt-2 text-center max-w-[280px]">Building startups & community. Living my best diaspora life ✨🌍</p>
+            <p className="text-sm text-foreground/70 mt-2 text-center max-w-[280px]">{modeBios[profileMode]}</p>
 
             {/* Stats */}
             <div className="flex items-center gap-8 mt-5">
@@ -161,10 +183,31 @@ const ProfileScreen = () => {
           </div>
         </div>
 
+        {/* Profile Mode Switcher */}
+        <div className="px-4 pb-3">
+          <div className="bg-card border border-border rounded-2xl p-1.5 flex gap-1">
+            {profileModes.map((mode) => (
+              <button
+                key={mode.key}
+                onClick={() => setProfileMode(mode.key)}
+                className={`flex-1 flex flex-col items-center gap-1 py-3 rounded-xl transition-all ${
+                  profileMode === mode.key
+                    ? `bg-gradient-to-br ${mode.color} text-white shadow-lg`
+                    : "text-muted-foreground hover:bg-secondary/50"
+                }`}
+              >
+                {mode.icon}
+                <span className="text-[11px] font-bold">{mode.label}</span>
+              </button>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground text-center mt-2">{activeMode.desc}</p>
+        </div>
+
         {/* Interests */}
         <div className="px-4 pb-3">
           <div className="flex flex-wrap gap-2 justify-center">
-            {interests.map((interest) => (
+            {modeInterests[profileMode].map((interest) => (
               <span
                 key={interest}
                 className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-medium text-foreground"
