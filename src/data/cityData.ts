@@ -22,13 +22,32 @@ export interface City {
 }
 
 export const cities: City[] = [
+  // USA
   { id: "austin", name: "Austin, TX", flag: "🇺🇸" },
   { id: "dallas", name: "Dallas, TX", flag: "🇺🇸" },
   { id: "houston", name: "Houston, TX", flag: "🇺🇸" },
   { id: "sanantonio", name: "San Antonio, TX", flag: "🇺🇸" },
-  { id: "paris", name: "Paris, France", flag: "🇫🇷" },
-  { id: "london", name: "London, England", flag: "🇬🇧" },
   { id: "nyc", name: "New York City, NY", flag: "🇺🇸" },
+  // Europe
+  { id: "london", name: "London, England", flag: "🇬🇧" },
+  { id: "paris", name: "Paris, France", flag: "🇫🇷" },
+  { id: "brussels", name: "Brussels, Belgium", flag: "🇧🇪" },
+  { id: "amsterdam", name: "Amsterdam, Netherlands", flag: "🇳🇱" },
+  { id: "rotterdam", name: "Rotterdam, Netherlands", flag: "🇳🇱" },
+  { id: "antwerp", name: "Antwerp, Belgium", flag: "🇧🇪" },
+  { id: "barcelona", name: "Barcelona, Spain", flag: "🇪🇸" },
+  { id: "madrid", name: "Madrid, Spain", flag: "🇪🇸" },
+  { id: "bordeaux", name: "Bordeaux, France", flag: "🇫🇷" },
+  { id: "stockholm", name: "Stockholm, Sweden", flag: "🇸🇪" },
+  { id: "rome", name: "Rome, Italy", flag: "🇮🇹" },
+  { id: "positano", name: "Positano, Italy", flag: "🇮🇹" },
+  { id: "athens", name: "Athens, Greece", flag: "🇬🇷" },
+  { id: "istanbul", name: "Istanbul, Turkey", flag: "🇹🇷" },
+  { id: "berlin", name: "Berlin, Germany", flag: "🇩🇪" },
+  { id: "dublin", name: "Dublin, Ireland", flag: "🇮🇪" },
+  { id: "copenhagen", name: "Copenhagen, Denmark", flag: "🇩🇰" },
+  { id: "oslo", name: "Oslo, Norway", flag: "🇳🇴" },
+  { id: "helsinki", name: "Helsinki, Finland", flag: "🇫🇮" },
 ];
 
 export interface FeedPost {
@@ -493,4 +512,111 @@ export const events: EventItem[] = [
     distance: "4.5 mi", image: eventUkAfrobeats, attending: 40000, free: false,
     price: "$199", category: "Festival",
   },
+  // ========== EUROPEAN CITIES ==========
+
+  // Brussels
+  { id: 500, title: "Afro Nation Brussels", host: "Afro Nation EU", date: "Sat, Jul 5 · 2:00 PM", venue: "Bois de la Cambre", city: "brussels", distance: "3.2 km", image: eventUkAfrobeats, attending: 8000, free: false, price: "€55", category: "Festival" },
+  { id: 501, title: "Burna Boy — Brussels Stop", host: "Spaceship Ent.", date: "Fri, Jul 4 · 8:00 PM", venue: "Forest National", city: "brussels", distance: "5.1 km", image: eventRapConcert, attending: 8500, free: false, price: "€75", category: "Afrobeats" },
+  { id: 502, title: "Congolese Rumba Night", host: "Matonge Culture Hub", date: "Sat, Jul 5 · 10:00 PM", venue: "Espace Matonge", city: "brussels", distance: "1.0 km", image: eventParty, attending: 450, free: false, price: "€20", category: "Party" },
+  { id: 503, title: "Diaspora Brunch Brussels", host: "Afro Brunch BXL", date: "Sun, Jul 6 · 11:00 AM", venue: "Place du Châtelain", city: "brussels", distance: "1.5 km", image: eventBrunch, attending: 120, free: false, price: "€35", category: "Party" },
+  { id: 504, title: "AFCON Watch Party — Brussels", host: "AfroHub Sports BXL", date: "Sun, Jul 6 · 4:00 PM", venue: "O'Reilly's Sports Bar", city: "brussels", distance: "0.8 km", image: eventFootball, attending: 200, free: true, category: "Watch Party" },
+
+  // Amsterdam
+  { id: 510, title: "Afrobeats Festival Amsterdam", host: "Afro Nation NL", date: "Sat, Jul 12 · 1:00 PM", venue: "Westerpark", city: "amsterdam", distance: "2.5 km", image: eventUkAfrobeats, attending: 12000, free: false, price: "€50", category: "Festival" },
+  { id: 511, title: "Davido — Amsterdam Live", host: "Live Nation NL", date: "Fri, Jul 11 · 8:30 PM", venue: "AFAS Live", city: "amsterdam", distance: "4.0 km", image: eventConcert, attending: 6000, free: false, price: "€65", category: "Afrobeats" },
+  { id: 512, title: "Amapiano Nights Amsterdam", host: "Amapiano NL", date: "Sat, Jul 12 · 11:00 PM", venue: "Paradiso", city: "amsterdam", distance: "1.2 km", image: eventParty, attending: 800, free: false, price: "€25", category: "Party" },
+  { id: 513, title: "Surinamese Heritage Festival", host: "Suriname Society NL", date: "Sun, Jul 13 · 12:00 PM", venue: "Bijlmerpark", city: "amsterdam", distance: "6.0 km", image: eventAfricanArt, attending: 3500, free: true, category: "Festival" },
+  { id: 514, title: "Kwaku Summer Festival", host: "Kwaku Foundation", date: "Jul 12–13 · All Day", venue: "Nelson Mandelapark", city: "amsterdam", distance: "5.5 km", image: eventUkAfrobeats, attending: 20000, free: true, category: "Festival" },
+
+  // Rotterdam
+  { id: 520, title: "Rotterdam Carnival — Afro Edition", host: "Zomercarnaval", date: "Sat, Jul 19 · 12:00 PM", venue: "City Center Rotterdam", city: "rotterdam", distance: "0.5 km", image: eventUkAfrobeats, attending: 25000, free: true, category: "Festival" },
+  { id: 521, title: "Afrobeats vs Dancehall Night", host: "Vibes Rotterdam", date: "Fri, Jul 18 · 10:00 PM", venue: "Maassilo", city: "rotterdam", distance: "3.0 km", image: eventParty, attending: 1200, free: false, price: "€20", category: "Party" },
+  { id: 522, title: "Cape Verdean Night Rotterdam", host: "Cabo Verde Society NL", date: "Sat, Jul 19 · 9:00 PM", venue: "Annabel Rotterdam", city: "rotterdam", distance: "1.5 km", image: eventParty, attending: 500, free: false, price: "€15", category: "Party" },
+  { id: 523, title: "African Food Market Rotterdam", host: "AfroHub Rotterdam", date: "Sun, Jul 20 · 11:00 AM", venue: "Markthal", city: "rotterdam", distance: "0.8 km", image: eventBrunch, attending: 2000, free: true, category: "Party" },
+
+  // Antwerp
+  { id: 530, title: "Antwerp Afro Night", host: "AfroHub Antwerp", date: "Sat, Jul 5 · 10:00 PM", venue: "Café d'Anvers", city: "antwerp", distance: "1.0 km", image: eventParty, attending: 600, free: false, price: "€18", category: "Party" },
+  { id: 531, title: "Congolese Music Festival", host: "Congo Culture BE", date: "Sun, Jul 6 · 2:00 PM", venue: "Park Spoor Noord", city: "antwerp", distance: "2.5 km", image: eventConcert, attending: 3000, free: true, category: "Festival" },
+  { id: 532, title: "Diaspora Art Exhibition Antwerp", host: "MoMu & AfroArt", date: "Jul 5–20 · 10:00 AM", venue: "MoMu Antwerp", city: "antwerp", distance: "0.5 km", image: eventAfricanArt, attending: 1500, free: false, price: "€12", category: "Party" },
+  { id: 533, title: "Wizkid — Antwerp Show", host: "Starboy Ent.", date: "Fri, Jul 4 · 8:00 PM", venue: "Sportpaleis", city: "antwerp", distance: "4.0 km", image: eventConcert, attending: 15000, free: false, price: "€70", category: "Afrobeats" },
+
+  // Barcelona
+  { id: 540, title: "Afro Nation Barcelona", host: "Afro Nation", date: "Jul 3–5 · 12:00 PM", venue: "Playa de la Mar Bella", city: "barcelona", distance: "4.0 km", image: eventUkAfrobeats, attending: 35000, free: false, price: "€89", category: "Festival" },
+  { id: 541, title: "Burna Boy — Barcelona Live", host: "Spaceship Ent.", date: "Thu, Jul 3 · 9:00 PM", venue: "Palau Sant Jordi", city: "barcelona", distance: "5.5 km", image: eventRapConcert, attending: 17000, free: false, price: "€80", category: "Afrobeats" },
+  { id: 542, title: "Amapiano Beach Party", host: "Vibes Barcelona", date: "Sat, Jul 5 · 3:00 PM", venue: "Bogatell Beach", city: "barcelona", distance: "3.0 km", image: eventParty, attending: 2000, free: false, price: "€30", category: "Party" },
+  { id: 543, title: "Afro-Latin Fusion Night", host: "AfroHub Barcelona", date: "Fri, Jul 4 · 11:00 PM", venue: "Razzmatazz", city: "barcelona", distance: "2.5 km", image: eventParty, attending: 1500, free: false, price: "€25", category: "Party" },
+  { id: 544, title: "Diaspora Brunch Barcelona", host: "Afro Brunch BCN", date: "Sun, Jul 6 · 11:00 AM", venue: "La Boqueria Area", city: "barcelona", distance: "1.0 km", image: eventBrunch, attending: 100, free: false, price: "€40", category: "Party" },
+
+  // Madrid
+  { id: 550, title: "Afrobeats Madrid Festival", host: "AfroHub Madrid", date: "Sat, Jul 12 · 2:00 PM", venue: "Casa de Campo", city: "madrid", distance: "4.0 km", image: eventUkAfrobeats, attending: 8000, free: false, price: "€45", category: "Festival" },
+  { id: 551, title: "Rema — Madrid Show", host: "Mavin Records", date: "Fri, Jul 11 · 9:00 PM", venue: "WiZink Center", city: "madrid", distance: "2.0 km", image: eventConcert, attending: 12000, free: false, price: "€60", category: "Afrobeats" },
+  { id: 552, title: "Rooftop Afro Party Madrid", host: "Sky Vibes Madrid", date: "Sat, Jul 12 · 10:00 PM", venue: "Azotea del Círculo", city: "madrid", distance: "0.5 km", image: eventParty, attending: 300, free: false, price: "€35", category: "Party" },
+  { id: 553, title: "Fútbol & Jollof Sunday", host: "Naija FC Madrid", date: "Sun, Jul 13 · 12:00 PM", venue: "Retiro Park", city: "madrid", distance: "1.5 km", image: eventFootball, attending: 150, free: true, category: "Soccer" },
+  { id: 554, title: "Equatorial Guinea Culture Night", host: "GQ Community Madrid", date: "Fri, Jul 11 · 8:00 PM", venue: "Centro Cultural Conde Duque", city: "madrid", distance: "1.0 km", image: eventAfricanArt, attending: 400, free: true, category: "Party" },
+
+  // Bordeaux
+  { id: 560, title: "Bordeaux Afro Festival", host: "AfroHub Bordeaux", date: "Sat, Jul 19 · 3:00 PM", venue: "Quais de Bordeaux", city: "bordeaux", distance: "1.0 km", image: eventUkAfrobeats, attending: 5000, free: false, price: "€35", category: "Festival" },
+  { id: 561, title: "Fally Ipupa — Bordeaux Live", host: "Wati B Productions", date: "Fri, Jul 18 · 9:00 PM", venue: "Arkéa Arena", city: "bordeaux", distance: "6.0 km", image: eventRapConcert, attending: 8000, free: false, price: "€55", category: "Afrobeats" },
+  { id: 562, title: "Soirée Afro-Caribéenne", host: "Vibes Bordeaux", date: "Sat, Jul 19 · 11:00 PM", venue: "I.Boat", city: "bordeaux", distance: "1.5 km", image: eventParty, attending: 600, free: false, price: "€15", category: "Party" },
+  { id: 563, title: "Brunch Diaspora Bordeaux", host: "Afro Brunch BDX", date: "Sun, Jul 20 · 11:00 AM", venue: "Darwin Écosystème", city: "bordeaux", distance: "2.0 km", image: eventBrunch, attending: 90, free: false, price: "€30", category: "Party" },
+
+  // Stockholm
+  { id: 570, title: "Stockholm Afrobeats Night", host: "AfroHub Stockholm", date: "Sat, Aug 2 · 10:00 PM", venue: "Berns", city: "stockholm", distance: "0.5 km", image: eventParty, attending: 800, free: false, price: "350 SEK", category: "Party" },
+  { id: 571, title: "Somali Cultural Festival", host: "Somali Society SE", date: "Sun, Aug 3 · 12:00 PM", venue: "Kungsträdgården", city: "stockholm", distance: "0.3 km", image: eventAfricanArt, attending: 4000, free: true, category: "Festival" },
+  { id: 572, title: "Wizkid — Stockholm Live", host: "Starboy Ent.", date: "Fri, Aug 1 · 8:00 PM", venue: "Avicii Arena", city: "stockholm", distance: "3.0 km", image: eventConcert, attending: 12000, free: false, price: "600 SEK", category: "Afrobeats" },
+  { id: 573, title: "Eritrean Music Night", host: "Eritrea House SE", date: "Sat, Aug 2 · 8:00 PM", venue: "Münchenbryggeriet", city: "stockholm", distance: "1.5 km", image: eventConcert, attending: 500, free: false, price: "250 SEK", category: "Party" },
+
+  // Rome
+  { id: 580, title: "Roma Afro Festival", host: "AfroHub Roma", date: "Sat, Jul 26 · 3:00 PM", venue: "Villa Ada", city: "rome", distance: "4.0 km", image: eventUkAfrobeats, attending: 6000, free: false, price: "€30", category: "Festival" },
+  { id: 581, title: "Nigerian Independence Party Roma", host: "Naija Community IT", date: "Wed, Oct 1 · 8:00 PM", venue: "Lanificio 159", city: "rome", distance: "5.0 km", image: eventParty, attending: 800, free: false, price: "€20", category: "Party" },
+  { id: 582, title: "Davido — Roma Concert", host: "Live Nation IT", date: "Fri, Jul 25 · 9:00 PM", venue: "Auditorium Parco della Musica", city: "rome", distance: "3.5 km", image: eventConcert, attending: 5000, free: false, price: "€60", category: "Afrobeats" },
+  { id: 583, title: "African Art in Rome", host: "MAXXI Museum", date: "Jul 25–Aug 15 · 10:00 AM", venue: "MAXXI Museum", city: "rome", distance: "3.0 km", image: eventAfricanArt, attending: 2500, free: false, price: "€15", category: "Party" },
+
+  // Positano
+  { id: 590, title: "Amalfi Coast Sunset Party", host: "Luxe Vibes Positano", date: "Sat, Aug 9 · 5:00 PM", venue: "Da Adolfo Beach Club", city: "positano", distance: "0.5 km", image: eventParty, attending: 150, free: false, price: "€80", category: "Party" },
+  { id: 591, title: "Afrobeats on the Coast", host: "AfroHub Italia", date: "Fri, Aug 8 · 9:00 PM", venue: "Music on the Rocks", city: "positano", distance: "0.3 km", image: eventConcert, attending: 400, free: false, price: "€50", category: "Party" },
+  { id: 592, title: "Yacht Party Positano", host: "Elite Events IT", date: "Sun, Aug 10 · 1:00 PM", venue: "Positano Marina", city: "positano", distance: "0.2 km", image: eventBrunch, attending: 60, free: false, price: "€120", category: "Party" },
+
+  // Athens
+  { id: 600, title: "Athens Afro Festival", host: "AfroHub Athens", date: "Sat, Aug 16 · 3:00 PM", venue: "Technopolis", city: "athens", distance: "2.0 km", image: eventUkAfrobeats, attending: 4000, free: false, price: "€25", category: "Festival" },
+  { id: 601, title: "Amapiano Beach Athens", host: "Vibes Athens", date: "Sat, Aug 16 · 11:00 PM", venue: "Bolivar Beach Bar", city: "athens", distance: "8.0 km", image: eventParty, attending: 1200, free: false, price: "€20", category: "Party" },
+  { id: 602, title: "Burna Boy — Athens Live", host: "Spaceship Ent.", date: "Fri, Aug 15 · 9:00 PM", venue: "OAKA Stadium", city: "athens", distance: "6.0 km", image: eventRapConcert, attending: 15000, free: false, price: "€70", category: "Afrobeats" },
+  { id: 603, title: "African Cuisine Festival Athens", host: "Afro Food GR", date: "Sun, Aug 17 · 12:00 PM", venue: "Monastiraki Square", city: "athens", distance: "0.5 km", image: eventBrunch, attending: 800, free: true, category: "Party" },
+
+  // Istanbul
+  { id: 610, title: "Istanbul Afrobeats Night", host: "AfroHub Istanbul", date: "Sat, Aug 23 · 10:00 PM", venue: "Klein Kadıköy", city: "istanbul", distance: "1.5 km", image: eventParty, attending: 700, free: false, price: "₺400", category: "Party" },
+  { id: 611, title: "African Students Festival Istanbul", host: "African Union IST", date: "Sun, Aug 24 · 1:00 PM", venue: "Maçka Park", city: "istanbul", distance: "2.0 km", image: eventAfricanArt, attending: 2000, free: true, category: "Festival" },
+  { id: 612, title: "Bosphorus Yacht Party", host: "Elite Events IST", date: "Sat, Aug 23 · 4:00 PM", venue: "Bosphorus Strait", city: "istanbul", distance: "0.5 km", image: eventParty, attending: 120, free: false, price: "₺800", category: "Party" },
+  { id: 613, title: "Wizkid — Istanbul Show", host: "Starboy Ent.", date: "Fri, Aug 22 · 9:00 PM", venue: "Volkswagen Arena", city: "istanbul", distance: "5.0 km", image: eventConcert, attending: 8000, free: false, price: "₺600", category: "Afrobeats" },
+
+  // Berlin
+  { id: 620, title: "Karneval der Kulturen — Afro Stage", host: "KdK Berlin", date: "Jun 7–9 · All Day", venue: "Kreuzberg Streets", city: "berlin", distance: "2.0 km", image: eventUkAfrobeats, attending: 30000, free: true, category: "Festival" },
+  { id: 621, title: "Afrobeats Berlin Warehouse", host: "AfroHub Berlin", date: "Sat, Jun 7 · 11:00 PM", venue: "Sisyphos", city: "berlin", distance: "8.0 km", image: eventParty, attending: 2000, free: false, price: "€18", category: "Party" },
+  { id: 622, title: "Nigerian Independence Gala Berlin", host: "Naija Community DE", date: "Wed, Oct 1 · 7:00 PM", venue: "Festsaal Kreuzberg", city: "berlin", distance: "2.5 km", image: eventParty, attending: 600, free: false, price: "€25", category: "Party" },
+  { id: 623, title: "Rema — Berlin Concert", host: "Mavin Records", date: "Fri, Jun 6 · 8:30 PM", venue: "Mercedes-Benz Arena", city: "berlin", distance: "3.0 km", image: eventConcert, attending: 14000, free: false, price: "€55", category: "Afrobeats" },
+  { id: 624, title: "African Film Festival Berlin", host: "Afrika Filmfest", date: "Jun 6–10 · 6:00 PM", venue: "Babylon Cinema", city: "berlin", distance: "1.5 km", image: eventAfricanArt, attending: 1800, free: false, price: "€12", category: "Party" },
+
+  // Dublin
+  { id: 630, title: "Dublin Afrobeats Festival", host: "AfroHub Dublin", date: "Sat, Jul 26 · 2:00 PM", venue: "Phoenix Park", city: "dublin", distance: "3.5 km", image: eventUkAfrobeats, attending: 5000, free: false, price: "€35", category: "Festival" },
+  { id: 631, title: "Burna Boy — Dublin Live", host: "Spaceship Ent.", date: "Fri, Jul 25 · 8:00 PM", venue: "3Arena", city: "dublin", distance: "2.0 km", image: eventRapConcert, attending: 9000, free: false, price: "€65", category: "Afrobeats" },
+  { id: 632, title: "Jollof Wars Dublin", host: "Naija Community IE", date: "Sun, Jul 27 · 12:00 PM", venue: "Smithfield Square", city: "dublin", distance: "1.0 km", image: eventBrunch, attending: 500, free: false, price: "€10", category: "Party" },
+  { id: 633, title: "African Professionals Mixer", host: "Afro Network IE", date: "Thu, Jul 24 · 6:00 PM", venue: "The Marker Hotel", city: "dublin", distance: "2.5 km", image: eventAfricanArt, attending: 200, free: true, category: "Networking" },
+
+  // Copenhagen
+  { id: 640, title: "Copenhagen Carnival — Afro Float", host: "CPH Carnival", date: "Jun 7–8 · All Day", venue: "Fælledparken", city: "copenhagen", distance: "2.0 km", image: eventUkAfrobeats, attending: 15000, free: true, category: "Festival" },
+  { id: 641, title: "Amapiano Night Copenhagen", host: "Vibes CPH", date: "Sat, Jun 7 · 11:00 PM", venue: "Culture Box", city: "copenhagen", distance: "0.5 km", image: eventParty, attending: 500, free: false, price: "150 DKK", category: "Party" },
+  { id: 642, title: "Davido — Copenhagen Show", host: "Live Nation DK", date: "Fri, Jun 6 · 8:00 PM", venue: "Royal Arena", city: "copenhagen", distance: "3.0 km", image: eventConcert, attending: 10000, free: false, price: "500 DKK", category: "Afrobeats" },
+  { id: 643, title: "Somali Heritage Day CPH", host: "Somali Society DK", date: "Sun, Jun 8 · 12:00 PM", venue: "Nørrebroparken", city: "copenhagen", distance: "1.5 km", image: eventAfricanArt, attending: 2000, free: true, category: "Festival" },
+
+  // Oslo
+  { id: 650, title: "Oslo Afro Festival", host: "AfroHub Oslo", date: "Sat, Aug 9 · 2:00 PM", venue: "Frognerparken", city: "oslo", distance: "2.5 km", image: eventUkAfrobeats, attending: 4000, free: false, price: "350 NOK", category: "Festival" },
+  { id: 651, title: "Afrobeats Night Oslo", host: "Vibes Oslo", date: "Sat, Aug 9 · 10:00 PM", venue: "Blå", city: "oslo", distance: "1.0 km", image: eventParty, attending: 600, free: false, price: "200 NOK", category: "Party" },
+  { id: 652, title: "Wizkid — Oslo Concert", host: "Starboy Ent.", date: "Fri, Aug 8 · 8:00 PM", venue: "Oslo Spektrum", city: "oslo", distance: "0.5 km", image: eventConcert, attending: 8000, free: false, price: "500 NOK", category: "Afrobeats" },
+  { id: 653, title: "Eritrean Festival Oslo", host: "Eritrea Community NO", date: "Sun, Aug 10 · 1:00 PM", venue: "Tøyenparken", city: "oslo", distance: "2.0 km", image: eventAfricanArt, attending: 3000, free: true, category: "Festival" },
+
+  // Helsinki
+  { id: 660, title: "Helsinki Afro Night", host: "AfroHub Helsinki", date: "Sat, Aug 16 · 10:00 PM", venue: "Ääniwalli", city: "helsinki", distance: "1.0 km", image: eventParty, attending: 400, free: false, price: "€20", category: "Party" },
+  { id: 661, title: "Somali Cultural Day Helsinki", host: "Somali Society FI", date: "Sun, Aug 17 · 12:00 PM", venue: "Kaisaniemi Park", city: "helsinki", distance: "0.5 km", image: eventAfricanArt, attending: 2500, free: true, category: "Festival" },
+  { id: 662, title: "Burna Boy — Helsinki Show", host: "Spaceship Ent.", date: "Fri, Aug 15 · 8:00 PM", venue: "Helsinki Ice Hall", city: "helsinki", distance: "2.0 km", image: eventRapConcert, attending: 6000, free: false, price: "€55", category: "Afrobeats" },
+  { id: 663, title: "African Food Festival Helsinki", host: "Afro Kitchen FI", date: "Sat, Aug 16 · 11:00 AM", venue: "Senate Square", city: "helsinki", distance: "0.3 km", image: eventBrunch, attending: 1500, free: true, category: "Party" },
 ];

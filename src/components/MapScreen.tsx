@@ -14,6 +14,23 @@ const cityCoords: Record<string, [number, number]> = {
   paris: [48.8566, 2.3522],
   london: [51.5074, -0.1278],
   nyc: [40.7128, -74.006],
+  brussels: [50.8503, 4.3517],
+  amsterdam: [52.3676, 4.9041],
+  rotterdam: [51.9244, 4.4777],
+  antwerp: [51.2194, 4.4025],
+  barcelona: [41.3874, 2.1686],
+  madrid: [40.4168, -3.7038],
+  bordeaux: [44.8378, -0.5792],
+  stockholm: [59.3293, 18.0686],
+  rome: [41.9028, 12.4964],
+  positano: [40.6281, 14.4850],
+  athens: [37.9838, 23.7275],
+  istanbul: [41.0082, 28.9784],
+  berlin: [52.5200, 13.4050],
+  dublin: [53.3498, -6.2603],
+  copenhagen: [55.6761, 12.5683],
+  oslo: [59.9139, 10.7522],
+  helsinki: [60.1699, 24.9384],
 };
 
 // Custom marker icons
@@ -58,10 +75,17 @@ const youIcon = new L.DivIcon({
 const texasCities = ["austin", "dallas", "houston", "sanantonio"];
 const isTexasCity = (cityId: string) => texasCities.includes(cityId);
 
+// European city IDs that should show each other's data when zoomed out
+const europeCities = [
+  "london", "paris", "brussels", "amsterdam", "rotterdam", "antwerp",
+  "barcelona", "madrid", "bordeaux", "stockholm", "rome", "positano",
+  "athens", "istanbul", "berlin", "dublin", "copenhagen", "oslo", "helsinki",
+];
+const isEuropeCity = (cityId: string) => europeCities.includes(cityId);
+
 // Generate random nearby positions for events
 const getEventPositions = (cityId: string) => {
-  // For Texas cities, show ALL Texas events
-  const cityIds = isTexasCity(cityId) ? texasCities : [cityId];
+  const cityIds = isTexasCity(cityId) ? texasCities : isEuropeCity(cityId) ? europeCities : [cityId];
   const filteredEvents = allEvents.filter((e) => cityIds.includes(e.city));
   return filteredEvents.map((event) => {
     const eventCity = cityCoords[event.city] || cityCoords.austin;
@@ -90,7 +114,6 @@ const getNearbyPeople = (cityId: string) => {
   ];
 
   if (isTexasCity(cityId)) {
-    // Spread people across all Texas cities
     const allPeople: typeof people extends (infer T)[] ? (T & { lat: number; lng: number })[] : never[] = [];
     texasCities.forEach((txCity, ci) => {
       const txCenter = cityCoords[txCity];
@@ -104,6 +127,29 @@ const getNearbyPeople = (cityId: string) => {
       });
     });
     return allPeople;
+  }
+
+  if (isEuropeCity(cityId)) {
+    const euroPeople: typeof people extends (infer T)[] ? (T & { lat: number; lng: number })[] : never[] = [];
+    const cityLabels: Record<string, string> = {
+      london: "LDN", paris: "PAR", brussels: "BXL", amsterdam: "AMS", rotterdam: "RTD",
+      antwerp: "ANT", barcelona: "BCN", madrid: "MAD", bordeaux: "BDX", stockholm: "STO",
+      rome: "ROM", positano: "POS", athens: "ATH", istanbul: "IST", berlin: "BER",
+      dublin: "DUB", copenhagen: "CPH", oslo: "OSL", helsinki: "HEL",
+    };
+    europeCities.forEach((euCity, ci) => {
+      const euCenter = cityCoords[euCity];
+      if (!euCenter) return;
+      const personIdx = ci % people.length;
+      const p = people[personIdx];
+      euroPeople.push({
+        ...p,
+        name: `${p.name} (${cityLabels[euCity] || euCity})`,
+        lat: euCenter[0] + (((ci * 53 + 17) % 120 - 60) / 600),
+        lng: euCenter[1] + (((ci * 37 + 29) % 120 - 60) / 500),
+      });
+    });
+    return euroPeople;
   }
 
   const center = cityCoords[cityId] || cityCoords.austin;
@@ -146,9 +192,26 @@ const getGroups = (cityId: string) => {
       { name: "SA Soccer League ⚽", members: ["Kwame", "Rashid", "Moussa", "Emeka"], description: "Looking for players for our 5-a-side team!" },
       { name: "Taco Crawl 🌮", members: ["Tunde", "Priya", "Chidera"], description: "Best tacos in SA food crawl. Everyone welcome!" },
     ],
+    // European cities
+    brussels: [{ name: "Matonge Crew 🇨🇩", members: ["Fiston", "Nadège", "Patrick"], description: "Congolese community exploring Brussels nightlife!" }],
+    amsterdam: [{ name: "Kwaku Squad 🇸🇷", members: ["Jaylen", "Shaniqua", "Devon"], description: "Surinamese crew heading to Kwaku Festival!" }],
+    rotterdam: [{ name: "Carnival Crew 🎭", members: ["Denzel", "Priscilla", "Kenzo"], description: "Getting ready for Rotterdam Carnival!" }],
+    antwerp: [{ name: "Congo Culture 🎶", members: ["Grace", "Emmanuel", "Beni"], description: "Celebrating Congolese music in Antwerp!" }],
+    barcelona: [{ name: "Beach Vibes BCN 🏖️", members: ["Aminata", "Ibrahima", "Fatou"], description: "Afro Nation Barcelona crew!" }],
+    madrid: [{ name: "Madrid Diaspora 🇪🇸", members: ["Ousmane", "Mariama", "Djibril"], description: "African professionals in Madrid!" }],
+    bordeaux: [{ name: "Bordeaux Afro 🍷", members: ["Moussa", "Aïssatou", "Sékou"], description: "West African community in Bordeaux!" }],
+    stockholm: [{ name: "Stockholm Somalis 🇸🇪", members: ["Abdi", "Hodan", "Yusuf"], description: "Somali community meetups in Stockholm!" }],
+    rome: [{ name: "Roma Africana 🇮🇹", members: ["Blessing", "Chidi", "Amina"], description: "Nigerian & West African community in Rome!" }],
+    positano: [{ name: "Amalfi Luxe 🛥️", members: ["Tayo", "Zainab"], description: "Luxury diaspora getaway on the coast!" }],
+    athens: [{ name: "Athens Afro 🇬🇷", members: ["Kofi", "Akua", "Kweku"], description: "Ghanaian community events in Athens!" }],
+    istanbul: [{ name: "Istanbul Africans 🇹🇷", members: ["Musa", "Halima", "Ibrahim"], description: "Pan-African student community in Istanbul!" }],
+    berlin: [{ name: "Berlin Afro Collective 🇩🇪", members: ["Ama", "Yaw", "Efua"], description: "Afro-German community events!" }],
+    dublin: [{ name: "Dublin Naija 🇮🇪", members: ["Chinedu", "Ngozi", "Emeka"], description: "Nigerian community in Dublin!" }],
+    copenhagen: [{ name: "CPH Carnival Crew 🇩🇰", members: ["Ahmed", "Sahra", "Liban"], description: "Somali crew at Copenhagen Carnival!" }],
+    oslo: [{ name: "Oslo Eritreans 🇳🇴", members: ["Yonas", "Selam", "Biniam"], description: "Eritrean community gatherings in Oslo!" }],
+    helsinki: [{ name: "Helsinki Somalis 🇫🇮", members: ["Faarax", "Nimco", "Axmed"], description: "Somali community in Helsinki!" }],
   };
   if (isTexasCity(cityId)) {
-    // Show all Texas groups
     const allGroups: { name: string; members: string[]; description: string; lat: number; lng: number }[] = [];
     texasCities.forEach((txCity) => {
       const txCenter = cityCoords[txCity];
@@ -163,6 +226,22 @@ const getGroups = (cityId: string) => {
     });
     return allGroups;
   }
+  if (isEuropeCity(cityId)) {
+    const allGroups: { name: string; members: string[]; description: string; lat: number; lng: number }[] = [];
+    europeCities.forEach((euCity) => {
+      const euCenter = cityCoords[euCity];
+      if (!euCenter) return;
+      const euGroups = cityGroups[euCity] || [];
+      euGroups.forEach((g, i) => {
+        allGroups.push({
+          ...g,
+          lat: euCenter[0] + (((i * 43 + 11) % 80 - 40) / 500),
+          lng: euCenter[1] + (((i * 31 + 19) % 80 - 40) / 400),
+        });
+      });
+    });
+    return allGroups;
+  }
   const groups = cityGroups[cityId] || cityGroups.austin;
   return groups.map((g, i) => ({
     ...g,
@@ -171,16 +250,18 @@ const getGroups = (cityId: string) => {
   }));
 };
 
-// Texas center point (between all 4 cities) for zoomed-out view
+// Region center points for zoomed-out views
 const texasCenter: [number, number] = [30.5, -97.0];
+const europeCenter: [number, number] = [48.5, 10.0];
 
 // Component to recenter map when city changes
 const RecenterMap = ({ coords, cityId }: { coords: [number, number]; cityId: string }) => {
   const map = useMap();
   useEffect(() => {
     if (isTexasCity(cityId)) {
-      // Zoom out to show all Texas cities
       map.setView(texasCenter, 7, { animate: true });
+    } else if (isEuropeCity(cityId)) {
+      map.setView(europeCenter, 4, { animate: true });
     } else {
       map.setView(coords, 13, { animate: true });
     }
@@ -224,7 +305,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
         {/* City picker dropdown */}
         {showCityPicker && (
-          <div className="absolute left-4 right-4 top-full mt-1 bg-card border border-border rounded-xl shadow-elevated z-50 overflow-hidden animate-slide-up max-w-lg mx-auto">
+          <div className="absolute left-4 right-4 top-full mt-1 bg-card border border-border rounded-xl shadow-elevated z-50 overflow-y-auto max-h-[60vh] animate-slide-up max-w-lg mx-auto">
             {cities.map((city) => (
               <button
                 key={city.id}
@@ -277,8 +358,8 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
       {/* Map */}
       <MapContainer
-        center={isTexasCity(selectedCity.id) ? texasCenter : center}
-        zoom={isTexasCity(selectedCity.id) ? 7 : 13}
+        center={isTexasCity(selectedCity.id) ? texasCenter : isEuropeCity(selectedCity.id) ? europeCenter : center}
+        zoom={isTexasCity(selectedCity.id) ? 7 : isEuropeCity(selectedCity.id) ? 4 : 13}
         style={{ height: "100%", width: "100%" }}
         zoomControl={false}
         attributionControl={false}
