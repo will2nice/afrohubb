@@ -17,7 +17,7 @@ const Index = () => {
     <div className="max-w-lg mx-auto min-h-screen bg-background relative">
       {activeTab === "feed" && <FeedScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "reels" && <ReelsScreen />}
-      {activeTab === "map" && <MapScreen selectedCity={selectedCity} />}
+      {activeTab === "map" && <MapScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "match" && <MatchScreen />}
       {activeTab === "events" && <EventsScreen selectedCity={selectedCity} />}
       {activeTab === "messages" && <MessagesScreen />}
