@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase } from "lucide-react";
 import { events as allEvents, cities, type City } from "@/data/cityData";
 import { cityResources, type CityResource } from "@/data/resourceData";
+import { diasporaHubs, type DiasporaHub } from "@/data/diasporaHubs";
 
 // City coordinates - includes Brazil
 const cityCoords: Record<string, [number, number]> = {
@@ -222,6 +223,51 @@ const getResourcePositions = () => {
   });
 };
 
+// Generate hub icon with flags arranged in a circle
+const createHubIcon = (hub: DiasporaHub) => {
+  const flags = hub.communities.map(c => c.countryFlag);
+  const count = flags.length;
+  const size = 56;
+  const radius = 20;
+  const centerX = size / 2;
+  const centerY = size / 2;
+  
+  const flagElements = flags.slice(0, 6).map((flag, i) => {
+    const angle = (i * (2 * Math.PI / Math.min(count, 6))) - Math.PI / 2;
+    const x = centerX + radius * Math.cos(angle) - 7;
+    const y = centerY + radius * Math.sin(angle) - 7;
+    return `<span style="position:absolute;left:${x}px;top:${y}px;font-size:13px;line-height:1;">${flag}</span>`;
+  }).join("");
+
+  const totalPop = hub.communities.reduce((sum, c) => {
+    const num = parseInt(c.population.replace(/[^0-9]/g, "")) || 0;
+    return sum + num;
+  }, 0);
+  const popLabel = totalPop >= 100000 ? `${Math.round(totalPop / 1000)}K` : totalPop >= 1000 ? `${Math.round(totalPop / 1000)}K` : `${totalPop}`;
+
+  return new L.DivIcon({
+    className: "custom-marker",
+    html: `<div style="width:${size}px;height:${size}px;position:relative;">
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
+        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,hsl(25,95%,55%),hsl(43,96%,56%));display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px hsl(0,0%,7%),0 0 16px rgba(243,186,47,0.4);z-index:2;">
+          <span style="font-size:9px;font-weight:800;color:hsl(0,0%,5%);letter-spacing:-0.5px;">${popLabel}</span>
+        </div>
+      </div>
+      ${flagElements}
+    </div>`,
+    iconSize: [size, size],
+    iconAnchor: [size / 2, size / 2],
+    popupAnchor: [0, -size / 2],
+  });
+};
+
+// Prepare hub positions
+const hubPositions = diasporaHubs.filter(h => cityCoords[h.cityId]).map(hub => ({
+  ...hub,
+  lat: cityCoords[hub.cityId][0],
+  lng: cityCoords[hub.cityId][1],
+}));
+
 const allEventPositions = getAllEventPositions();
 const allPeople = getAllPeople();
 const allGroups = getAllGroups();
@@ -248,6 +294,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [showPeople, setShowPeople] = useState(true);
   const [showGroups, setShowGroups] = useState(true);
   const [showResources, setShowResources] = useState(true);
+  const [showHubs, setShowHubs] = useState(true);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [zoomTarget, setZoomTarget] = useState<string | null>(selectedCity.id);
   const [nearbyCollapsed, setNearbyCollapsed] = useState(false);
@@ -310,6 +357,9 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </button>
           <button onClick={() => setShowResources(!showResources)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showResources ? "bg-[hsl(150,70%,40%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
             <Heart size={14} /> Resources
+          </button>
+          <button onClick={() => setShowHubs(!showHubs)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showHubs ? "bg-[hsl(25,95%,55%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
+            <MapPin size={14} /> Hubs
           </button>
         </div>
       </div>
@@ -386,6 +436,33 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
                 <button className={`w-full mt-2 py-1.5 rounded-full text-white text-xs font-semibold ${resource.type === "nonprofit" ? "bg-emerald-500" : "bg-blue-500"}`}>
                   {resource.type === "nonprofit" ? "Learn More" : "View Openings"}
                 </button>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {showHubs && hubPositions.map((hub) => (
+          <Marker key={`hub-${hub.cityId}`} position={[hub.lat, hub.lng]} icon={createHubIcon(hub)} eventHandlers={{ click: () => handleEventClick(hub.cityId) }}>
+            <Popup className="afro-popup" maxWidth={300}>
+              <div className="p-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg">{hub.flag}</span>
+                  <div>
+                    <h3 className="font-bold text-sm">{hub.city}</h3>
+                    <p className="text-[10px] text-gray-500">{hub.state} · Diaspora Hub</p>
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  {hub.communities.map((c, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-sm">{c.countryFlag}</span>
+                        <span className="text-xs font-medium">{c.country}</span>
+                      </div>
+                      <span className="text-[10px] font-bold text-amber-600">{c.population}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </Popup>
           </Marker>
