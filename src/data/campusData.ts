@@ -53,6 +53,21 @@ export interface CampusPeer {
   flag: string;
 }
 
+export interface CampusAlumni {
+  id: number;
+  name: string;
+  schoolId: number;
+  graduationYear: number;
+  degree: string;
+  currentRole: string;
+  company: string;
+  location: string;
+  avatar: string;
+  bio: string;
+  origin: string;
+  flag: string;
+}
+
 // HBCUs
 export const campusSchools: CampusSchool[] = [
   { id: 1, name: "Howard University", shortName: "Howard", type: "hbcu", city: "Washington", state: "DC", mascot: "Bison", colors: "Blue & White", memberCount: 1240, upcomingEvents: 8 },
@@ -113,4 +128,17 @@ export const campusPeers: CampusPeer[] = [
   { id: 8, name: "David N.", age: 22, schoolId: 5, major: "Engineering", year: "Senior", avatar: profileMan1, bio: "FAMU Rattler for life 🐍", origin: "Cameroon", flag: "🇨🇲" },
   { id: 9, name: "Aisha B.", age: 20, schoolId: 103, major: "Journalism", year: "Junior", avatar: profileWoman2, bio: "Words are power. Longhorn & proud 🤘", origin: "USA", flag: "🇺🇸" },
   { id: 10, name: "Marcus L.", age: 21, schoolId: 108, major: "Kinesiology", year: "Junior", avatar: profileMan2, bio: "Athlete & scholar at UMD 🏃🏾‍♂️", origin: "Jamaica", flag: "🇯🇲" },
+];
+
+export const campusAlumni: CampusAlumni[] = [
+  { id: 1, name: "Olu A.", schoolId: 1, graduationYear: 2019, degree: "B.S. Finance", currentRole: "Investment Analyst", company: "Goldman Sachs", location: "New York, NY", avatar: matchMan1, bio: "Howard made, Wall Street paid 💰", origin: "Nigeria", flag: "🇳🇬" },
+  { id: 2, name: "Jasmine W.", schoolId: 2, graduationYear: 2020, degree: "B.A. Psychology", currentRole: "Clinical Researcher", company: "Emory University", location: "Atlanta, GA", avatar: matchWoman1, bio: "Spelman '20. Researching mental health in Black communities.", origin: "USA", flag: "🇺🇸" },
+  { id: 3, name: "Kofi M.", schoolId: 3, graduationYear: 2018, degree: "B.A. Economics", currentRole: "Startup Founder", company: "AfroTech Ventures", location: "San Francisco, CA", avatar: matchMan2, bio: "Morehouse Man building the future of African tech.", origin: "Ghana", flag: "🇬🇭" },
+  { id: 4, name: "Amina T.", schoolId: 1, graduationYear: 2021, degree: "B.S. Computer Science", currentRole: "Software Engineer", company: "Google", location: "Mountain View, CA", avatar: matchWoman2, bio: "From the Yard to the Valley 🐾→💻", origin: "Ethiopia", flag: "🇪🇹" },
+  { id: 5, name: "DeShawn P.", schoolId: 5, graduationYear: 2017, degree: "B.S. Mechanical Engineering", currentRole: "Senior Engineer", company: "Boeing", location: "Houston, TX", avatar: matchMan3, bio: "FAMU Rattler. Building things that fly 🚀", origin: "USA", flag: "🇺🇸" },
+  { id: 6, name: "Nkechi O.", schoolId: 101, graduationYear: 2022, degree: "B.A. Government", currentRole: "Policy Fellow", company: "Brookings Institution", location: "Washington, DC", avatar: matchWoman3, bio: "Harvard ASA president '21. Shaping policy for the diaspora.", origin: "Nigeria", flag: "🇳🇬" },
+  { id: 7, name: "Isaiah R.", schoolId: 6, graduationYear: 2020, degree: "B.S. IT", currentRole: "Product Manager", company: "Microsoft", location: "Seattle, WA", avatar: profileMan1, bio: "Aggie Pride forever. PM life 📊", origin: "USA", flag: "🇺🇸" },
+  { id: 8, name: "Sadia H.", schoolId: 106, graduationYear: 2023, degree: "B.A. Public Health", currentRole: "Health Equity Analyst", company: "NYC Dept. of Health", location: "New York, NY", avatar: profileWoman1, bio: "NYU ASA alum. Fighting health disparities 🏥", origin: "Somalia", flag: "🇸🇴" },
+  { id: 9, name: "Brandon C.", schoolId: 108, graduationYear: 2019, degree: "B.S. Kinesiology", currentRole: "Athletic Director", company: "DC Public Schools", location: "Washington, DC", avatar: profileMan2, bio: "Terp for life. Building the next generation of athletes.", origin: "Jamaica", flag: "🇯🇲" },
+  { id: 10, name: "Chiamaka E.", schoolId: 102, graduationYear: 2021, degree: "B.A. Film", currentRole: "Documentary Filmmaker", company: "Independent", location: "Los Angeles, CA", avatar: profileWoman2, bio: "UCLA ASA '21. Telling our stories on screen 🎬", origin: "Nigeria", flag: "🇳🇬" },
 ];
