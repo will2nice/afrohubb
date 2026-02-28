@@ -8,6 +8,9 @@ import { events as allEvents, cities, type City } from "@/data/cityData";
 // City coordinates
 const cityCoords: Record<string, [number, number]> = {
   austin: [30.2672, -97.7431],
+  dallas: [32.7767, -96.7970],
+  houston: [29.7604, -95.3698],
+  sanantonio: [29.4241, -98.4936],
   paris: [48.8566, 2.3522],
   london: [51.5074, -0.1278],
   nyc: [40.7128, -74.006],
@@ -87,32 +90,46 @@ const getNearbyPeople = (cityId: string) => {
   }));
 };
 
-// Group hangout
+// Groups per city
 const getGroups = (cityId: string) => {
   const center = cityCoords[cityId] || cityCoords.austin;
-  return [
-    {
-      name: "Girls Night Out 💅",
-      members: ["Jasmine", "Nneka", "Sophie", "Zara", "Priya"],
-      description: "5 women looking for guys to hang out with tonight! We'll be bar-hopping downtown.",
-      lat: center[0] + 0.012,
-      lng: center[1] - 0.008,
-    },
-    {
-      name: "Culture Crew 🎭",
-      members: ["Amara", "Chidera", "Dayo"],
-      description: "Group exploring art galleries & live music. Everyone welcome!",
-      lat: center[0] - 0.015,
-      lng: center[1] + 0.013,
-    },
-    {
-      name: "Foodies United 🍕",
-      members: ["Tunde", "Kwame", "Marcus", "Kofi"],
-      description: "4 guys doing a food crawl. Looking for more people to join!",
-      lat: center[0] + 0.008,
-      lng: center[1] + 0.018,
-    },
-  ];
+  const cityGroups: Record<string, { name: string; members: string[]; description: string }[]> = {
+    austin: [
+      { name: "Girls Night Out 💅", members: ["Jasmine", "Nneka", "Sophie", "Zara", "Priya"], description: "5 women looking for guys to hang out with tonight! Bar-hopping downtown." },
+      { name: "Culture Crew 🎭", members: ["Amara", "Chidera", "Dayo"], description: "Exploring art galleries & live music. Everyone welcome!" },
+      { name: "Foodies United 🍕", members: ["Tunde", "Kwame", "Marcus", "Kofi"], description: "4 guys doing a food crawl. Join us!" },
+      { name: "Soccer Squad ⚽", members: ["Kofi", "Dayo", "Tunde", "Marcus"], description: "Looking for players for pickup soccer at Zilker!" },
+      { name: "Brunch Babes 🥂", members: ["Amara", "Sophie", "Zara"], description: "Sunday brunch crew looking for more people!" },
+    ],
+    dallas: [
+      { name: "Deep Ellum Girls 💃", members: ["Tasha", "Ayo", "Kemi", "Bria", "Fatima"], description: "5 women exploring Deep Ellum tonight! Come hang!" },
+      { name: "DFW Ballers 🏀", members: ["Kwame", "Tunde", "Deji", "Marcus"], description: "Sports & vibes crew. Looking for more!" },
+      { name: "Afro Foodies DFW 🍜", members: ["Priya", "Nneka", "Sophie"], description: "Food crawl through Bishop Arts District!" },
+      { name: "FIFA Squad 🎮", members: ["Deji", "Kofi", "Jalen", "Emeka"], description: "FIFA tournament prep. Need 2 more players!" },
+      { name: "Networking Crew 🤝", members: ["Kwame", "Tasha", "Marcus"], description: "Professionals linking up in Dallas!" },
+    ],
+    houston: [
+      { name: "H-Town Queens 👑", members: ["Chioma", "Adaeze", "Fatou", "Nadia", "Imani"], description: "5 women looking to link up in Midtown tonight!" },
+      { name: "Third Ward Crew 🔥", members: ["Dayo", "Marcus", "Jalen", "Emeka"], description: "Exploring Third Ward culture. Pull up!" },
+      { name: "Yacht Life 🛥️", members: ["Sophie", "Zara", "Priya"], description: "Planning a yacht party. Need more people!" },
+      { name: "Soccer Sundays ⚽", members: ["Kofi", "Tunde", "Rashid", "Moussa"], description: "Weekly pickup soccer at Bear Creek!" },
+      { name: "Art & Music 🎨", members: ["Amara", "Chidera", "Nneka"], description: "Gallery hopping in the Museum District!" },
+    ],
+    sanantonio: [
+      { name: "Riverwalk Ladies 🌊", members: ["Maya", "Jasmine", "Priya", "Zara", "Aisha"], description: "5 women on the Riverwalk looking for guys to hang!" },
+      { name: "Alamo City Squad 🤠", members: ["Kofi", "Dayo", "Tunde", "Marcus"], description: "Guys exploring SA nightlife. Join us!" },
+      { name: "Fiesta Crew 🎉", members: ["Sophie", "Nneka", "Amara"], description: "Getting ready for Fiesta season!" },
+      { name: "SA Soccer League ⚽", members: ["Kwame", "Rashid", "Moussa", "Emeka"], description: "Looking for players for our 5-a-side team!" },
+      { name: "Taco Crawl 🌮", members: ["Tunde", "Priya", "Chidera"], description: "Best tacos in SA food crawl. Everyone welcome!" },
+    ],
+  };
+  const defaultGroups = cityGroups.austin;
+  const groups = cityGroups[cityId] || defaultGroups;
+  return groups.map((g, i) => ({
+    ...g,
+    lat: center[0] + (((i * 43 + 11) % 80 - 40) / 500),
+    lng: center[1] + (((i * 31 + 19) % 80 - 40) / 400),
+  }));
 };
 
 // Component to recenter map when city changes
