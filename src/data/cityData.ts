@@ -7,6 +7,9 @@ import eventFootball from "@/assets/event-football.jpg";
 import eventRapConcert from "@/assets/event-rap-concert.jpg";
 import eventGrime from "@/assets/event-grime.jpg";
 import eventUkAfrobeats from "@/assets/event-uk-afrobeats.jpg";
+import eventNyfw from "@/assets/event-nyfw.jpg";
+import eventNycHiphop from "@/assets/event-nyc-hiphop.jpg";
+import eventStreetwearShow from "@/assets/event-streetwear-show.jpg";
 import profileWoman1 from "@/assets/profile-woman-1.jpg";
 import profileMan1 from "@/assets/profile-man-1.jpg";
 import profileMan2 from "@/assets/profile-man-2.jpg";
@@ -22,6 +25,7 @@ export const cities: City[] = [
   { id: "austin", name: "Austin, TX", flag: "🇺🇸" },
   { id: "paris", name: "Paris, France", flag: "🇫🇷" },
   { id: "london", name: "London, England", flag: "🇬🇧" },
+  { id: "nyc", name: "New York City, NY", flag: "🇺🇸" },
 ];
 
 export interface FeedPost {
@@ -135,6 +139,34 @@ export const feedPosts: FeedPost[] = [
     text: "Just copped tickets for Wizkid at Wembley. MIL went in 30 minutes 😭 London, this summer is going to be LEGENDARY 🦅🇳🇬",
     image: eventConcert, likes: 1456, comments: 378, type: "post", city: "london",
   },
+  // New York City
+  {
+    id: 30, author: "Marcus Williams", avatar: profileMan1, location: "New York City, NY", time: "30m ago",
+    text: "Jadakiss & The Lox just announced a surprise show at the Apollo. Harlem stand UP 🗽🔥 This is real hip-hop, no cap.",
+    image: eventNycHiphop, likes: 1823, comments: 567, type: "post", city: "nyc",
+  },
+  {
+    id: 31, author: "AfroHub NYC", avatar: null, location: "New York City, NY", time: "Today",
+    text: null, image: eventNyfw, likes: 2341, comments: 412, type: "event", city: "nyc",
+    eventTitle: "New York Fashion Week — Fall 2026", eventDate: "Sep 8–13 · All Day",
+    eventVenue: "Spring Studios, Manhattan", attending: 50000,
+  },
+  {
+    id: 32, author: "Jasmine Carter", avatar: profileWoman2, location: "New York City, NY", time: "1h ago",
+    text: "NYFW lineup is INSANE this year — KidSuper, Balenciaga, Yeezy, YSL, and Louis Vuitton all in one week?! My wallet is crying but my closet is thriving 👗✨",
+    image: eventStreetwearShow, likes: 1567, comments: 389, type: "post", city: "nyc",
+  },
+  {
+    id: 33, author: null, avatar: null, location: "New York City, NY", time: "Next Week",
+    text: null, image: eventNycHiphop, likes: 3421, comments: 876, type: "event", city: "nyc",
+    eventTitle: "Dipset — Diplomatic Immunity Tour", eventDate: "Fri, Sep 12 · 9:00 PM",
+    eventVenue: "Madison Square Garden", attending: 18000,
+  },
+  {
+    id: 34, author: "Devon Jackson", avatar: profileMan2, location: "New York City, NY", time: "3h ago",
+    text: "Who Decides War show was absolutely MIND-BLOWING. Ev Bravado is a genius. The craftsmanship, the storytelling through fashion… NYC is the center of the universe fr 🌍🪡",
+    image: eventNyfw, likes: 2189, comments: 534, type: "post", city: "nyc",
+  },
 ];
 
 export const events: EventItem[] = [
@@ -230,5 +262,47 @@ export const events: EventItem[] = [
     id: 27, title: "Burna Boy — Love, Damini Tour", host: "Spaceship Entertainment",
     date: "Sat, Jul 26 · 8:00 PM", venue: "Tottenham Hotspur Stadium", city: "london",
     distance: "7.2 mi", image: eventRapConcert, attending: 62000, free: false,
+  },
+  // New York City — Hip-Hop
+  {
+    id: 30, title: "Jadakiss & The Lox — Live at the Apollo", host: "D-Block Entertainment",
+    date: "Thu, Sep 11 · 8:00 PM", venue: "Apollo Theater, Harlem", city: "nyc",
+    distance: "5.2 mi", image: eventNycHiphop, attending: 1500, free: false,
+  },
+  {
+    id: 31, title: "Dipset — Diplomatic Immunity Tour", host: "Diplomat Records",
+    date: "Fri, Sep 12 · 9:00 PM", venue: "Madison Square Garden", city: "nyc",
+    distance: "2.1 mi", image: eventNycHiphop, attending: 18000, free: false,
+  },
+  {
+    id: 32, title: "Who Decides War — NYFW Show", host: "Who Decides War",
+    date: "Mon, Sep 8 · 6:00 PM", venue: "Spring Studios", city: "nyc",
+    distance: "1.8 mi", image: eventNyfw, attending: 800, free: false,
+  },
+  // New York City — Fashion Shows
+  {
+    id: 33, title: "KidSuper — NYFW Runway Show", host: "KidSuper Studios",
+    date: "Tue, Sep 9 · 4:00 PM", venue: "Brooklyn Navy Yard", city: "nyc",
+    distance: "3.4 mi", image: eventStreetwearShow, attending: 1200, free: false,
+  },
+  {
+    id: 34, title: "Balenciaga — Fall 2026 Collection", host: "Balenciaga",
+    date: "Wed, Sep 10 · 7:00 PM", venue: "The Park Avenue Armory", city: "nyc",
+    distance: "2.8 mi", image: eventNyfw, attending: 2000, free: false,
+  },
+  {
+    id: 35, title: "Yeezy — Season 10 Showcase", host: "Yeezy",
+    date: "Thu, Sep 11 · 5:00 PM", venue: "Pier 17, Seaport District", city: "nyc",
+    distance: "1.5 mi", image: eventNyfw, attending: 3500, free: false,
+  },
+  {
+    id: 36, title: "YSL — Saint Laurent Fall Show", host: "Yves Saint Laurent",
+    date: "Fri, Sep 12 · 6:30 PM", venue: "The Met Cloisters", city: "nyc",
+    distance: "9.1 mi", image: eventNyfw, attending: 1800, free: false,
+  },
+  {
+    id: 37, title: "Louis Vuitton — Men's Fall 2026", host: "Louis Vuitton",
+    date: "Sat, Sep 13 · 8:00 PM", venue: "Javits Center", city: "nyc",
+    distance: "3.6 mi", image: eventNyfw, attending: 5000, free: false,
   },
 ];
