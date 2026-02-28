@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { X, Heart, MessageCircle, Users, ChevronDown, Sparkles } from "lucide-react";
+import { X, Heart, MessageCircle, Users, Sparkles } from "lucide-react";
 import { type EventItem } from "@/data/cityData";
 import { getEventAttendees, type Attendee } from "@/data/eventAttendees";
+import DMChatScreen, { type ChatContact } from "@/components/DMChatScreen";
 
 interface EventAttendeesSheetProps {
   event: EventItem;
@@ -10,6 +11,7 @@ interface EventAttendeesSheetProps {
 
 const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   const [filter, setFilter] = useState<"women" | "men" | "all">("women");
+  const [chatContact, setChatContact] = useState<ChatContact | null>(null);
   const { females, males } = getEventAttendees(event.id, event.attending);
 
   const displayedAttendees =
@@ -21,6 +23,27 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   const formattedAttending = event.attending >= 1000
     ? `${(event.attending / 1000).toFixed(1)}K`
     : event.attending;
+
+  const openChat = (person: Attendee) => {
+    setChatContact({
+      id: person.id,
+      name: person.name,
+      age: person.age,
+      photo: person.photo,
+      vibe: person.vibe,
+      online: true,
+    });
+  };
+
+  if (chatContact) {
+    return (
+      <DMChatScreen
+        contact={chatContact}
+        eventContext={event.title}
+        onBack={() => setChatContact(null)}
+      />
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col">
@@ -84,7 +107,7 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
         {/* Attendees list */}
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 pb-24">
           {displayedAttendees.map((person) => (
-            <AttendeeCard key={person.id} person={person} />
+            <AttendeeCard key={person.id} person={person} onMessage={() => openChat(person)} />
           ))}
           {displayedAttendees.length === 0 && (
             <div className="text-center py-12">
@@ -97,7 +120,7 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   );
 };
 
-const AttendeeCard = ({ person }: { person: Attendee }) => {
+const AttendeeCard = ({ person, onMessage }: { person: Attendee; onMessage: () => void }) => {
   const [liked, setLiked] = useState(false);
 
   return (
@@ -134,7 +157,7 @@ const AttendeeCard = ({ person }: { person: Attendee }) => {
             className={liked ? "text-red-500 fill-red-500" : "text-muted-foreground"}
           />
         </button>
-        <button className="p-2 rounded-full hover:bg-secondary transition-colors">
+        <button onClick={onMessage} className="p-2 rounded-full hover:bg-secondary transition-colors">
           <MessageCircle size={18} className="text-primary" />
         </button>
       </div>
