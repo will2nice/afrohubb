@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { X, Heart, MessageCircle, SlidersHorizontal, MapPin, Sparkles, ChevronDown, Calendar, Users, LayoutGrid, Square, Globe, BookOpen, Church, Flag, Check } from "lucide-react";
 import profileMan1 from "@/assets/profile-man-1.jpg";
-import { matchProfiles, getPrompts, getEventProfiles, allLanguages, allReligions, allCountries, allTribes } from "@/data/matchProfiles";
+import { matchProfiles, getPrompts, getEventProfiles, allLanguages, allReligions, allCountriesWithFlags, countryFlagMap } from "@/data/matchProfiles";
 import { events as allEvents, type City } from "@/data/cityData";
 
 interface MatchScreenProps {
@@ -15,10 +15,9 @@ interface ProfileFilters {
   languages: string[];
   religions: string[];
   countries: string[];
-  tribes: string[];
 }
 
-const emptyFilters: ProfileFilters = { languages: [], religions: [], countries: [], tribes: [] };
+const emptyFilters: ProfileFilters = { languages: [], religions: [], countries: [] };
 
 const MatchScreen = ({ selectedCity }: MatchScreenProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -29,7 +28,7 @@ const MatchScreen = ({ selectedCity }: MatchScreenProps) => {
   const [viewMode, setViewMode] = useState<ViewMode>("single");
   const [selectedGridProfile, setSelectedGridProfile] = useState<number | null>(null);
   const [profileFilters, setProfileFilters] = useState<ProfileFilters>(emptyFilters);
-  const [activeFilterTab, setActiveFilterTab] = useState<keyof ProfileFilters>("languages");
+  const [activeFilterTab, setActiveFilterTab] = useState<keyof ProfileFilters>("countries");
 
   const texasCities = ["austin", "dallas", "houston", "sanantonio"];
   const isTexas = texasCities.includes(selectedCity.id);
@@ -46,12 +45,11 @@ const MatchScreen = ({ selectedCity }: MatchScreenProps) => {
       if (profileFilters.languages.length > 0 && !p.languages.some(l => profileFilters.languages.includes(l))) return false;
       if (profileFilters.religions.length > 0 && !profileFilters.religions.includes(p.religion)) return false;
       if (profileFilters.countries.length > 0 && !profileFilters.countries.includes(p.country)) return false;
-      if (profileFilters.tribes.length > 0 && !profileFilters.tribes.includes(p.tribe)) return false;
       return true;
     });
   }, [baseProfiles, profileFilters]);
 
-  const activeFilterCount = profileFilters.languages.length + profileFilters.religions.length + profileFilters.countries.length + profileFilters.tribes.length;
+  const activeFilterCount = profileFilters.languages.length + profileFilters.religions.length + profileFilters.countries.length;
 
   const profile = activeProfiles[currentIndex % Math.max(activeProfiles.length, 1)];
   const profilePrompts = profile ? getPrompts(profile.id) : [];
@@ -105,10 +103,9 @@ const MatchScreen = ({ selectedCity }: MatchScreenProps) => {
   };
 
   const filterTabs: { key: keyof ProfileFilters; label: string; icon: React.ReactNode; options: string[] }[] = [
+    { key: "countries", label: "Country", icon: <Flag size={16} />, options: allCountriesWithFlags.map(c => c.slice(c.indexOf(' ') + 1)) },
     { key: "languages", label: "Language", icon: <Globe size={16} />, options: allLanguages },
     { key: "religions", label: "Religion", icon: <Church size={16} />, options: allReligions },
-    { key: "countries", label: "Country", icon: <Flag size={16} />, options: allCountries },
-    { key: "tribes", label: "Tribe", icon: <BookOpen size={16} />, options: allTribes },
   ];
 
   // ─── Filter Sheet ───
@@ -171,7 +168,9 @@ const MatchScreen = ({ selectedCity }: MatchScreenProps) => {
                       isSelected ? "bg-primary/10" : "hover:bg-secondary/50"
                     }`}
                   >
-                    <span className="text-sm font-medium text-foreground">{option}</span>
+                    <span className="text-sm font-medium text-foreground">
+                      {activeFilterTab === "countries" && countryFlagMap[option] ? `${countryFlagMap[option]} ` : ""}{option}
+                    </span>
                     {isSelected && (
                       <div className="w-6 h-6 rounded-full gradient-gold flex items-center justify-center">
                         <Check size={14} className="text-primary-foreground" />
@@ -426,7 +425,7 @@ const MatchScreen = ({ selectedCity }: MatchScreenProps) => {
               </div>
             </div>
 
-            {/* Profile details: language, religion, tribe */}
+            {/* Profile details: language, religion */}
             <div className="px-5 py-3 border-t border-border flex flex-wrap gap-2">
               {profile.languages.map((lang) => (
                 <span key={lang} className="px-2.5 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-medium text-foreground flex items-center gap-1">
@@ -435,9 +434,6 @@ const MatchScreen = ({ selectedCity }: MatchScreenProps) => {
               ))}
               <span className="px-2.5 py-1 rounded-full bg-secondary border border-border text-xs font-medium text-foreground flex items-center gap-1">
                 <Church size={10} className="text-muted-foreground" /> {profile.religion}
-              </span>
-              <span className="px-2.5 py-1 rounded-full bg-secondary border border-border text-xs font-medium text-foreground flex items-center gap-1">
-                <BookOpen size={10} className="text-muted-foreground" /> {profile.tribe}
               </span>
             </div>
 

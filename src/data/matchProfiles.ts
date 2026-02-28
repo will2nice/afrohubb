@@ -85,8 +85,9 @@ export const matchProfiles: MatchProfile[] = [
 // Collect unique filter options from profiles
 export const allLanguages = [...new Set(matchProfiles.flatMap(p => p.languages))].sort();
 export const allReligions = [...new Set(matchProfiles.map(p => p.religion))].sort();
-export const allCountries = [...new Set(matchProfiles.map(p => p.country))].sort();
-export const allTribes = [...new Set(matchProfiles.map(p => p.tribe))].sort();
+export const allCountriesWithFlags = [...new Set(matchProfiles.map(p => `${p.flag} ${p.country}`))].sort((a, b) => a.slice(2).localeCompare(b.slice(2)));
+export const allCountries = allCountriesWithFlags.map(c => c.slice(c.indexOf(' ') + 1));
+export const countryFlagMap: Record<string, string> = Object.fromEntries(matchProfiles.map(p => [p.country, p.flag]));
 
 export const prompts = [
   { q: "A perfect weekend is…", a: "Farmer's market, jollof rice, and a rooftop sunset" },
