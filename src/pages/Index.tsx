@@ -1,12 +1,22 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useState } from "react";
+import BottomNav, { type Tab } from "@/components/BottomNav";
+import FeedScreen from "@/components/FeedScreen";
+import MatchScreen from "@/components/MatchScreen";
+import EventsScreen from "@/components/EventsScreen";
+import MessagesScreen from "@/components/MessagesScreen";
+import ProfileScreen from "@/components/ProfileScreen";
 
 const Index = () => {
+  const [activeTab, setActiveTab] = useState<Tab>("feed");
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="max-w-lg mx-auto min-h-screen bg-background relative">
+      {activeTab === "feed" && <FeedScreen />}
+      {activeTab === "match" && <MatchScreen />}
+      {activeTab === "events" && <EventsScreen />}
+      {activeTab === "messages" && <MessagesScreen />}
+      {activeTab === "profile" && <ProfileScreen />}
+      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );
 };
