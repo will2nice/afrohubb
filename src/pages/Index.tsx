@@ -19,7 +19,7 @@ const Index = () => {
       {activeTab === "feed" && <FeedScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "reels" && <ReelsScreen />}
       {activeTab === "map" && <MapScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
-      {activeTab === "match" && <MatchScreen />}
+      {activeTab === "match" && <MatchScreen selectedCity={selectedCity} />}
       {activeTab === "events" && <EventsScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "messages" && <MessagesScreen />}
       {activeTab === "profile" && <ProfileScreen />}
