@@ -54,21 +54,26 @@ const youIcon = new L.DivIcon({
   iconAnchor: [10, 10],
 });
 
+// Texas city IDs that should show each other's data
+const texasCities = ["austin", "dallas", "houston", "sanantonio"];
+const isTexasCity = (cityId: string) => texasCities.includes(cityId);
+
 // Generate random nearby positions for events
 const getEventPositions = (cityId: string) => {
-  const center = cityCoords[cityId] || cityCoords.austin;
-  const cityEvents = allEvents.filter((e) => e.city === cityId);
-  return cityEvents.map((event) => {
+  // For Texas cities, show ALL Texas events
+  const cityIds = isTexasCity(cityId) ? texasCities : [cityId];
+  const filteredEvents = allEvents.filter((e) => cityIds.includes(e.city));
+  return filteredEvents.map((event) => {
+    const eventCity = cityCoords[event.city] || cityCoords.austin;
     const seed = event.id * 137;
-    const lat = center[0] + (((seed % 100) - 50) / 500);
-    const lng = center[1] + ((((seed * 7) % 100) - 50) / 400);
+    const lat = eventCity[0] + (((seed % 100) - 50) / 500);
+    const lng = eventCity[1] + ((((seed * 7) % 100) - 50) / 400);
     return { ...event, lat, lng };
   });
 };
 
-// 12 people nearby + 1 group
+// 12 people per city (for Texas, show all Texas people spread across cities)
 const getNearbyPeople = (cityId: string) => {
-  const center = cityCoords[cityId] || cityCoords.austin;
   const people = [
     { name: "Amara", age: 24, status: "Looking for events", vibe: "🎶" },
     { name: "Kofi", age: 27, status: "Down to hang", vibe: "🏀" },
@@ -83,6 +88,25 @@ const getNearbyPeople = (cityId: string) => {
     { name: "Kwame", age: 30, status: "Networking & vibes", vibe: "🤝" },
     { name: "Zara", age: 21, status: "Just moved here!", vibe: "🌟" },
   ];
+
+  if (isTexasCity(cityId)) {
+    // Spread people across all Texas cities
+    const allPeople: typeof people extends (infer T)[] ? (T & { lat: number; lng: number })[] : never[] = [];
+    texasCities.forEach((txCity, ci) => {
+      const txCenter = cityCoords[txCity];
+      people.slice(ci * 3, ci * 3 + 3).forEach((p, i) => {
+        allPeople.push({
+          ...p,
+          name: `${p.name} (${txCity === "sanantonio" ? "SA" : txCity.charAt(0).toUpperCase() + txCity.slice(1)})`,
+          lat: txCenter[0] + (((i * 53 + 17) % 120 - 60) / 600),
+          lng: txCenter[1] + (((i * 37 + 29) % 120 - 60) / 500),
+        });
+      });
+    });
+    return allPeople;
+  }
+
+  const center = cityCoords[cityId] || cityCoords.austin;
   return people.map((p, i) => ({
     ...p,
     lat: center[0] + (((i * 53 + 17) % 120 - 60) / 600),
@@ -123,8 +147,23 @@ const getGroups = (cityId: string) => {
       { name: "Taco Crawl 🌮", members: ["Tunde", "Priya", "Chidera"], description: "Best tacos in SA food crawl. Everyone welcome!" },
     ],
   };
-  const defaultGroups = cityGroups.austin;
-  const groups = cityGroups[cityId] || defaultGroups;
+  if (isTexasCity(cityId)) {
+    // Show all Texas groups
+    const allGroups: { name: string; members: string[]; description: string; lat: number; lng: number }[] = [];
+    texasCities.forEach((txCity) => {
+      const txCenter = cityCoords[txCity];
+      const txGroups = cityGroups[txCity] || [];
+      txGroups.forEach((g, i) => {
+        allGroups.push({
+          ...g,
+          lat: txCenter[0] + (((i * 43 + 11) % 80 - 40) / 500),
+          lng: txCenter[1] + (((i * 31 + 19) % 80 - 40) / 400),
+        });
+      });
+    });
+    return allGroups;
+  }
+  const groups = cityGroups[cityId] || cityGroups.austin;
   return groups.map((g, i) => ({
     ...g,
     lat: center[0] + (((i * 43 + 11) % 80 - 40) / 500),
@@ -132,12 +171,20 @@ const getGroups = (cityId: string) => {
   }));
 };
 
+// Texas center point (between all 4 cities) for zoomed-out view
+const texasCenter: [number, number] = [30.5, -97.0];
+
 // Component to recenter map when city changes
-const RecenterMap = ({ coords }: { coords: [number, number] }) => {
+const RecenterMap = ({ coords, cityId }: { coords: [number, number]; cityId: string }) => {
   const map = useMap();
   useEffect(() => {
-    map.setView(coords, 13, { animate: true });
-  }, [coords, map]);
+    if (isTexasCity(cityId)) {
+      // Zoom out to show all Texas cities
+      map.setView(texasCenter, 7, { animate: true });
+    } else {
+      map.setView(coords, 13, { animate: true });
+    }
+  }, [coords, cityId, map]);
   return null;
 };
 
@@ -230,13 +277,13 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
       {/* Map */}
       <MapContainer
-        center={center}
-        zoom={13}
+        center={isTexasCity(selectedCity.id) ? texasCenter : center}
+        zoom={isTexasCity(selectedCity.id) ? 7 : 13}
         style={{ height: "100%", width: "100%" }}
         zoomControl={false}
         attributionControl={false}
       >
-        <RecenterMap coords={center} />
+        <RecenterMap coords={center} cityId={selectedCity.id} />
         <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
 
         {/* You are here */}
