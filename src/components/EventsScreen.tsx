@@ -1,4 +1,4 @@
-import { Search, MapPin, Calendar, Users, Share2 } from "lucide-react";
+import { Search, MapPin, Calendar, Users, Share2, Ticket } from "lucide-react";
 import { events as allEvents, type City } from "@/data/cityData";
 
 const filters = ["All", "Today", "This Weekend", "Concerts", "Festivals", "Sports", "Art", "Networking"];
@@ -57,13 +57,20 @@ const EventsScreen = ({ selectedCity }: EventsScreenProps) => {
           >
             <div className="relative">
               <img src={event.image} alt={event.title} className="w-full aspect-[16/9] object-cover" loading="lazy" />
+              <div className="absolute top-3 left-3 flex gap-1.5">
+                {event.category && (
+                  <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-card/90 text-foreground border border-border backdrop-blur-sm">
+                    {event.category}
+                  </span>
+                )}
+              </div>
               <div className="absolute top-3 right-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                   event.free
                     ? "bg-card/90 text-primary border border-primary/30"
                     : "gradient-gold text-primary-foreground"
                 }`}>
-                  {event.free ? "Free" : "Tickets"}
+                  {event.free ? "Free" : event.price || "Tickets"}
                 </span>
               </div>
             </div>
@@ -94,8 +101,15 @@ const EventsScreen = ({ selectedCity }: EventsScreenProps) => {
                   <button className="p-2 rounded-full hover:bg-secondary transition-colors">
                     <Share2 size={16} className="text-muted-foreground" />
                   </button>
-                  <button className="px-5 py-2 rounded-full gradient-gold text-primary-foreground text-sm font-semibold shadow-gold transition-transform hover:scale-105 active:scale-95">
-                    RSVP
+                  <button className="px-5 py-2 rounded-full gradient-gold text-primary-foreground text-sm font-semibold shadow-gold transition-transform hover:scale-105 active:scale-95 flex items-center gap-1.5">
+                    {event.price ? (
+                      <>
+                        <Ticket size={14} />
+                        Get Tickets
+                      </>
+                    ) : (
+                      "RSVP"
+                    )}
                   </button>
                 </div>
               </div>
