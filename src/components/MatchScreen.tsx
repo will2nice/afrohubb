@@ -58,6 +58,7 @@ const MatchScreen = ({ selectedCity }: MatchScreenProps) => {
   const [activeFilterTab, setActiveFilterTab] = useState<keyof ProfileFilters>("countries");
   const [discoverTab, setDiscoverTab] = useState<DiscoverTab>("singles");
   const [doubleDateIndex, setDoubleDateIndex] = useState(0);
+  const [doubleDateViewMode, setDoubleDateViewMode] = useState<ViewMode>("single");
   const [showRecommend, setShowRecommend] = useState(false);
   const [recommendedProfile, setRecommendedProfile] = useState<MatchProfile | null>(null);
   const [recommendSent, setRecommendSent] = useState(false);
@@ -136,6 +137,9 @@ const MatchScreen = ({ selectedCity }: MatchScreenProps) => {
 
   const doubleDatePairs = useMemo(() => generateDoubleDatePairs(activeProfiles), [activeProfiles]);
   const currentPair = doubleDatePairs[doubleDateIndex % Math.max(doubleDatePairs.length, 1)];
+  const gridDoubleDatePairs = Array.from({ length: Math.min(6, doubleDatePairs.length) }, (_, i) =>
+    doubleDatePairs[(doubleDateIndex + i) % doubleDatePairs.length]
+  );
 
   const handleDoubleDateLike = () => {
     setDoubleDateIndex((i) => i + 1);
@@ -295,10 +299,16 @@ const MatchScreen = ({ selectedCity }: MatchScreenProps) => {
           <h1 className="font-display text-xl font-bold text-gradient-gold">Discover</h1>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => setViewMode(viewMode === "single" ? "grid" : "single")}
+              onClick={() => {
+                if (discoverTab === "doubleDate") {
+                  setDoubleDateViewMode(doubleDateViewMode === "single" ? "grid" : "single");
+                } else {
+                  setViewMode(viewMode === "single" ? "grid" : "single");
+                }
+              }}
               className="p-2 rounded-full hover:bg-secondary transition-colors"
             >
-              {viewMode === "single" ? (
+              {(discoverTab === "singles" ? viewMode : doubleDateViewMode) === "single" ? (
                 <LayoutGrid size={20} className="text-muted-foreground" />
               ) : (
                 <Square size={20} className="text-muted-foreground" />
@@ -407,19 +417,60 @@ const MatchScreen = ({ selectedCity }: MatchScreenProps) => {
               <h3 className="font-display text-lg font-bold text-foreground mb-2">No double date pairs</h3>
               <p className="text-sm text-muted-foreground">Try adjusting your filters</p>
             </div>
-          ) : currentPair ? (
+          ) : doubleDateViewMode === "grid" ? (
+            /* ─── DOUBLE DATE GRID VIEW ─── */
             <>
-              {/* Double date card */}
+              <div className="grid grid-cols-2 gap-3">
+                {gridDoubleDatePairs.map((pair) => (
+                  <button
+                    key={pair.id}
+                    onClick={() => {
+                      const idx = doubleDatePairs.findIndex(p => p.id === pair.id);
+                      if (idx >= 0) setDoubleDateIndex(idx);
+                      setDoubleDateViewMode("single");
+                    }}
+                    className="bg-card rounded-2xl border border-border overflow-hidden shadow-card text-left transition-transform hover:scale-[1.02] active:scale-95 animate-fade-in"
+                  >
+                    <div className="flex">
+                      <div className="flex-1 relative">
+                        <img src={pair.profile1.photo} alt={pair.profile1.name} className="w-full aspect-[3/4] object-cover" />
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/95 to-transparent p-1.5 pt-6">
+                          <p className="font-display text-[10px] font-bold text-foreground truncate">{pair.profile1.flag} {pair.profile1.name}</p>
+                        </div>
+                      </div>
+                      <div className="w-px bg-border" />
+                      <div className="flex-1 relative">
+                        <img src={pair.profile2.photo} alt={pair.profile2.name} className="w-full aspect-[3/4] object-cover" />
+                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/95 to-transparent p-1.5 pt-6">
+                          <p className="font-display text-[10px] font-bold text-foreground truncate">{pair.profile2.flag} {pair.profile2.name}</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="px-2 py-2">
+                      <p className="text-[10px] text-muted-foreground truncate">{pair.tagline}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              <div className="flex justify-center py-6">
+                <button
+                  onClick={() => setDoubleDateIndex((i) => i + 6)}
+                  className="px-6 py-3 rounded-full gradient-gold text-primary-foreground font-semibold shadow-gold transition-transform hover:scale-105 active:scale-95"
+                >
+                  Show More Pairs
+                </button>
+              </div>
+            </>
+          ) : currentPair ? (
+            /* ─── DOUBLE DATE SINGLE CARD VIEW ─── */
+            <>
               <div className="bg-card rounded-3xl border border-border overflow-hidden shadow-elevated animate-slide-up">
-                {/* Tagline */}
                 <div className="px-5 py-3 bg-gradient-to-r from-pink-500/10 to-rose-500/10 border-b border-border">
                   <div className="flex items-center gap-2">
                     <HeartHandshake size={16} className="text-pink-500" />
                     <p className="text-sm font-semibold text-foreground">{currentPair.tagline}</p>
                   </div>
                 </div>
-
-                {/* Side-by-side photos */}
                 <div className="flex">
                   <div className="flex-1 relative">
                     <img src={currentPair.profile1.photo} alt={currentPair.profile1.name} className="w-full aspect-[3/4] object-cover" />
@@ -453,8 +504,6 @@ const MatchScreen = ({ selectedCity }: MatchScreenProps) => {
                     </div>
                   </div>
                 </div>
-
-                {/* Shared interests */}
                 <div className="px-5 py-3 border-t border-border">
                   <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Their interests</p>
                   <div className="flex flex-wrap gap-1.5">
@@ -465,13 +514,12 @@ const MatchScreen = ({ selectedCity }: MatchScreenProps) => {
                 </div>
               </div>
 
-              {/* Double date actions */}
               <div className="flex items-center justify-center gap-6 py-6">
                 <button onClick={handleDoubleDatePass} className="w-16 h-16 rounded-full bg-secondary border border-border flex items-center justify-center shadow-card transition-transform hover:scale-110 active:scale-90">
                   <X size={28} className="text-muted-foreground" />
                 </button>
                 <button onClick={handleDoubleDateLike} className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center shadow-lg transition-transform hover:scale-110 active:scale-90">
-                  <HeartHandshake size={32} className="text-white" />
+                  <HeartHandshake size={32} className="text-accent-foreground" />
                 </button>
                 <button className="w-16 h-16 rounded-full bg-secondary border border-border flex items-center justify-center shadow-card transition-transform hover:scale-110 active:scale-90">
                   <MessageCircle size={28} className="text-primary" />
