@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BookOpen, Music, Volume2, ChevronRight, Globe, Sparkles } from "lucide-react";
+import { BookOpen, Music, Volume2, ChevronRight, Globe, Sparkles, Link2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 /* ── Language Phrases ── */
@@ -224,6 +224,154 @@ const dances: Dance[] = [
   },
 ];
 
+/* ── Cultural Connections ── */
+interface CulturalConnection {
+  title: string;
+  flags: string[];
+  places: string[];
+  category: "language" | "dance" | "tradition" | "music";
+  summary: string;
+  details: string;
+  examples: string[];
+}
+
+const connections: CulturalConnection[] = [
+  {
+    title: "Yoruba Survives the Atlantic",
+    flags: ["🇳🇬", "🇧🇷", "🇨🇺", "🇺🇸"],
+    places: ["Nigeria", "Brazil", "Cuba", "USA (South Carolina)"],
+    category: "language",
+    summary: "The Yoruba language and spiritual traditions survived slavery and thrive in the Americas today.",
+    details:
+      "When enslaved Yoruba people were brought to the Americas, they preserved their language through religion and oral tradition. In Brazil, Candomblé ceremonies are still conducted in Yoruba. In Cuba, Lucumí (a Yoruba dialect) is spoken in Santería rituals. The Gullah Geechee people of coastal South Carolina and Georgia retained West African linguistic structures, words, and cultural practices for over 300 years — their creole language contains Yoruba, Mende, and Twi elements.",
+    examples: [
+      "Brazilian Portuguese borrowed 'axé' (spiritual power) directly from Yoruba 'àṣẹ'",
+      "Cuban Lucumí prayers use nearly identical Yoruba vocabulary to this day",
+      "Gullah Geechee 'buckra' (white person) comes from Efik/Ibibio languages of Nigeria",
+      "The naming tradition 'Day names' in Gullah communities mirrors Akan naming practices from Ghana",
+    ],
+  },
+  {
+    title: "Zouk, Kompa & Caribbean Unity",
+    flags: ["🇭🇹", "🇬🇵", "🇲🇶", "🇨🇻", "🇧🇷"],
+    places: ["Haiti", "Guadeloupe", "Martinique", "Cape Verde", "Brazil"],
+    category: "dance",
+    summary: "Kompa from Haiti and Zouk from the French Antilles share deep roots and have spread across the lusophone and francophone world.",
+    details:
+      "Haitian Kompa (Compas) was created by Nemours Jean-Baptiste in 1955, blending méringue with jazz and African rhythms. Zouk emerged in the 1980s from Guadeloupe and Martinique, heavily influenced by Kompa. Cape Verdean artists adopted Zouk and created 'Cabo Zouk,' now a staple genre. In Brazil, Zouk became a major partner dance style (Brazilian Zouk), taught in dance schools worldwide. These genres show how Caribbean and African diaspora music traditions flow freely across language barriers.",
+    examples: [
+      "Kassav' (Guadeloupe) brought Zouk worldwide — their sound was built on Kompa foundations",
+      "Cape Verdean Zouk artists like Nelson Freitas blend Creole lyrics with Antillean rhythms",
+      "Brazilian Zouk dance evolved its own style, now taught in 60+ countries",
+      "Kompa and Zouk nights are staples in African & Caribbean diaspora communities in Paris, Montreal, and NYC",
+    ],
+  },
+  {
+    title: "Nigeria & Black America: Cultural Mirrors",
+    flags: ["🇳🇬", "🇺🇸"],
+    places: ["Nigeria", "Black America"],
+    category: "tradition",
+    summary: "From naming ceremonies to call-and-response in music, Nigerian and Black American cultures share deep parallels.",
+    details:
+      "The cultural exchange between Nigeria and Black America runs centuries deep. Call-and-response patterns in Black church traditions mirror Yoruba and Igbo communal practices. Hip-hop's braggadocio has roots in West African griot storytelling. Nollywood and Black Hollywood increasingly collaborate. Afrobeats and R&B/hip-hop have merged into a dominant global sound. Nigerian jollof debates mirror Black American food pride. Both communities share values of communal celebration, resilience through art, and the centrality of rhythm in daily life.",
+    examples: [
+      "Call-and-response in Black churches traces directly to West African communal singing",
+      "The griot tradition of praise-singing influenced the braggadocio style in hip-hop",
+      "Afrobeats x R&B collabs (Burna Boy & Beyoncé, Wizkid & Drake) dominate global charts",
+      "Both cultures center food as community — cookouts mirror owambe party culture",
+    ],
+  },
+  {
+    title: "South Sudan & Senegal: Cattle, Dance & Pride",
+    flags: ["🇸🇸", "🇸🇳"],
+    places: ["South Sudan", "Senegal"],
+    category: "tradition",
+    summary: "Despite being thousands of miles apart, cattle-herding traditions and expressive dance cultures connect these nations.",
+    details:
+      "The Dinka of South Sudan and the Fulani pastoralists who traverse Senegal both center their cultures around cattle — wealth, status, marriage dowries, and identity are all tied to their herds. Both cultures feature tall, elegant dance forms where height and grace are celebrated. The Dinka's 'jumping dance' and Senegalese Sabar drumming ceremonies both serve as community gatherings where young people showcase skill and attract partners. Scarification and body adornment practices also show striking parallels across these distant communities.",
+    examples: [
+      "Dinka cattle camps and Fulani transhumance both organize entire societies around herds",
+      "Both cultures use dance as courtship — Dinka jumping dances and Senegalese Sabar ceremonies",
+      "Body adornment and scarification carry cultural significance in both traditions",
+      "Oral poetry praising cattle exists in both Dinka and Fulani traditions",
+    ],
+  },
+  {
+    title: "Angola, Cuba & Brazil: The Bantu Thread",
+    flags: ["🇦🇴", "🇨🇺", "🇧🇷"],
+    places: ["Angola", "Cuba", "Brazil"],
+    category: "language",
+    summary: "Bantu languages from Angola left permanent marks on Cuban and Brazilian Spanish and Portuguese.",
+    details:
+      "The massive slave trade from the Kongo and Mbundu kingdoms to Cuba and Brazil created lasting linguistic bridges. Brazilian Portuguese contains hundreds of Bantu-origin words: 'samba,' 'moleque' (kid), 'caçula' (youngest child), 'dendê' (palm oil). Cuban Spanish absorbed Bantu words through the Palo Monte religious tradition. Capoeira, the Brazilian martial art-dance, comes directly from Angolan 'engolo' (a ceremonial fighting dance). Semba music from Angola is the direct ancestor of Brazilian Samba — even the name is the same root word.",
+    examples: [
+      "'Samba' comes from the Kimbundu word 'semba' meaning 'invitation to dance'",
+      "Brazilian 'quilombo' (maroon community) is from Kimbundu 'kilombo' (war camp)",
+      "Capoeira evolved from Angolan 'engolo,' a traditional kicking game",
+      "Cuban Palo Monte rituals preserve Kikongo language phrases to this day",
+    ],
+  },
+  {
+    title: "Gullah Geechee: Africa in America",
+    flags: ["🇺🇸", "🇸🇱", "🇬🇭", "🇳🇬"],
+    places: ["South Carolina", "Georgia", "Sierra Leone", "Ghana"],
+    category: "language",
+    summary: "The Gullah Geechee people of the US Sea Islands preserved African languages, rice-farming, and traditions for over 300 years.",
+    details:
+      "Along the coasts of South Carolina, Georgia, and northern Florida, the Gullah Geechee community maintained one of the strongest direct links to West Africa in the entire diaspora. Their creole language contains words from Mende, Vai, Yoruba, Twi, and other West African languages. Their sweetgrass basket-weaving techniques are identical to those in Sierra Leone. Their rice cultivation methods were brought directly from the 'Rice Coast' of West Africa. Communities like those on Hilton Head Island, St. Helena, and Sapelo Island still practice traditions nearly unchanged from their African origins.",
+    examples: [
+      "Gullah word 'yam' and food traditions trace to Wolof and Mandinka origins",
+      "Sweetgrass baskets sold in Charleston, SC are made with techniques from Sierra Leone",
+      "The Gullah 'ring shout' ceremony mirrors circular dances found across West Africa",
+      "Gullah naming practices follow West African day-naming and ancestral naming customs",
+    ],
+  },
+  {
+    title: "Amapiano & Afrobeats: Pan-African Sound",
+    flags: ["🇿🇦", "🇳🇬", "🇬🇭", "🇹🇿"],
+    places: ["South Africa", "Nigeria", "Ghana", "Tanzania"],
+    category: "music",
+    summary: "Amapiano from South Africa and Afrobeats from West Africa are merging into a unified continental sound.",
+    details:
+      "What started as regional genres are now blending into a Pan-African musical identity. Nigerian Afrobeats artists sample Amapiano log drums; South African producers feature Afrobeats vocalists. Ghanaian Drill borrows from both. Tanzanian Bongo Flava artists collaborate across all these scenes. The result is a new generation of African music that transcends borders, languages, and colonial-era divisions — young Africans in Lagos, Joburg, Accra, and Dar es Salaam are consuming each other's music like never before.",
+    examples: [
+      "Burna Boy's 'City Boys' blends Afrobeats with Amapiano production",
+      "South African DJ Maphorisa collaborates regularly with Nigerian artists",
+      "Ghana's 'Asakaa' drill scene borrows ad-libs and flows from both Afrobeats and Amapiano",
+      "Spotify's 'African Heat' playlist merges all these scenes for a global audience",
+    ],
+  },
+  {
+    title: "Ethiopian & Eritrean Shared Heritage",
+    flags: ["🇪🇹", "🇪🇷"],
+    places: ["Ethiopia", "Eritrea"],
+    category: "tradition",
+    summary: "Despite political division, Ethiopian and Eritrean cultures share coffee ceremonies, Ge'ez script, Esketa dance, and deep culinary traditions.",
+    details:
+      "Ethiopia and Eritrea share the ancient Ge'ez script, the coffee ceremony (jebena buna), injera as a staple food, and Orthodox Christian traditions dating back to the 4th century. The Esketa shoulder dance is performed in both countries. Tigrinya is spoken natively in Eritrea and Ethiopia's Tigray region. Despite a painful border war, diaspora communities in DC, Minneapolis, and London often share restaurants, churches, and cultural spaces — the cultural bonds run deeper than political borders.",
+    examples: [
+      "The coffee ceremony (jebena buna) is virtually identical in both countries",
+      "Ge'ez script is used in both Amharic (Ethiopia) and Tigrinya (Eritrea)",
+      "Esketa dance is claimed and performed proudly by both nations",
+      "DC's 'Little Ethiopia' on U Street serves both Ethiopian and Eritrean communities",
+    ],
+  },
+];
+
+const categoryIcon: Record<string, string> = {
+  language: "🗣️",
+  dance: "💃",
+  tradition: "🤝",
+  music: "🎵",
+};
+
+const categoryLabel: Record<string, string> = {
+  language: "Language Link",
+  dance: "Dance Connection",
+  tradition: "Shared Traditions",
+  music: "Musical Bridge",
+};
+
 const difficultyColor: Record<string, string> = {
   Beginner: "text-green-400 bg-green-400/10",
   Intermediate: "text-primary bg-primary/10",
@@ -233,6 +381,7 @@ const difficultyColor: Record<string, string> = {
 const CultureLearnScreen = () => {
   const [expandedLang, setExpandedLang] = useState<string | null>(null);
   const [expandedDance, setExpandedDance] = useState<string | null>(null);
+  const [expandedConn, setExpandedConn] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -248,13 +397,17 @@ const CultureLearnScreen = () => {
       <Tabs defaultValue="languages" className="w-full">
         <div className="px-4 pt-3">
           <TabsList className="w-full bg-secondary">
-            <TabsTrigger value="languages" className="flex-1 gap-1.5 data-[state=active]:gradient-gold data-[state=active]:text-primary-foreground">
-              <Globe size={14} />
+            <TabsTrigger value="languages" className="flex-1 gap-1 text-xs data-[state=active]:gradient-gold data-[state=active]:text-primary-foreground">
+              <Globe size={13} />
               Phrases
             </TabsTrigger>
-            <TabsTrigger value="dances" className="flex-1 gap-1.5 data-[state=active]:gradient-gold data-[state=active]:text-primary-foreground">
-              <Music size={14} />
+            <TabsTrigger value="dances" className="flex-1 gap-1 text-xs data-[state=active]:gradient-gold data-[state=active]:text-primary-foreground">
+              <Music size={13} />
               Dances
+            </TabsTrigger>
+            <TabsTrigger value="connections" className="flex-1 gap-1 text-xs data-[state=active]:gradient-gold data-[state=active]:text-primary-foreground">
+              <Link2 size={13} />
+              Connections
             </TabsTrigger>
           </TabsList>
         </div>
@@ -339,6 +492,56 @@ const CultureLearnScreen = () => {
                     <div className="rounded-lg bg-primary/5 border border-primary/10 p-3">
                       <p className="text-xs font-semibold text-primary mb-1">💡 Fun Fact</p>
                       <p className="text-xs text-muted-foreground leading-relaxed">{d.funFact}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </TabsContent>
+
+        {/* ── Connections Tab ── */}
+        <TabsContent value="connections" className="px-4 mt-3 space-y-3 pb-4">
+          <p className="text-xs text-muted-foreground">Discover the cultural threads that connect Black and African communities across the globe.</p>
+          {connections.map((c) => {
+            const isOpen = expandedConn === c.title;
+            return (
+              <div key={c.title} className="rounded-xl border border-border bg-card overflow-hidden shadow-card">
+                <button
+                  onClick={() => setExpandedConn(isOpen ? null : c.title)}
+                  className="w-full flex items-center justify-between p-4 text-left"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-sm">{categoryIcon[c.category]}</span>
+                      <span className="text-[10px] font-semibold text-primary uppercase tracking-wide">{categoryLabel[c.category]}</span>
+                    </div>
+                    <p className="font-display font-semibold text-foreground text-sm leading-tight">{c.title}</p>
+                    <div className="flex items-center gap-1 mt-1.5">
+                      {c.flags.map((f, i) => (
+                        <span key={i} className="text-base">{f}</span>
+                      ))}
+                      <span className="text-[10px] text-muted-foreground ml-1">{c.places.length} regions</span>
+                    </div>
+                  </div>
+                  <ChevronRight
+                    size={18}
+                    className={`text-muted-foreground transition-transform duration-200 shrink-0 ${isOpen ? "rotate-90" : ""}`}
+                  />
+                </button>
+
+                {isOpen && (
+                  <div className="border-t border-border px-4 py-4 space-y-3">
+                    <p className="text-xs text-muted-foreground">{c.places.join(" · ")}</p>
+                    <p className="text-sm text-foreground/90 leading-relaxed">{c.details}</p>
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold text-primary">🔗 Key Examples</p>
+                      {c.examples.map((ex, i) => (
+                        <div key={i} className="flex items-start gap-2">
+                          <span className="text-primary mt-0.5 text-xs">▸</span>
+                          <p className="text-xs text-muted-foreground leading-relaxed">{ex}</p>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}
