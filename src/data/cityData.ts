@@ -12,6 +12,7 @@ import eventNycHiphop from "@/assets/event-nyc-hiphop.jpg";
 import eventStreetwearShow from "@/assets/event-streetwear-show.jpg";
 import profileWoman1 from "@/assets/profile-woman-1.jpg";
 import profileMan1 from "@/assets/profile-man-1.jpg";
+import networkingConference from "@/assets/networking-conference.jpg";
 import profileMan2 from "@/assets/profile-man-2.jpg";
 import profileWoman2 from "@/assets/profile-woman-2.jpg";
 
@@ -793,8 +794,12 @@ export const events: EventItem[] = [
   { id: 912, title: "Afro-Caribbean Day Party", host: "Caribbean Society DC", date: "Sat, Mar 15 · 3:00 PM", venue: "Decades DC", city: "dc", distance: "0.8 mi", image: eventParty, attending: 500, free: false, price: "$35", category: "Party" },
   { id: 913, title: "Black Excellence Brunch DC", host: "Black Professionals DC", date: "Sun, Mar 16 · 11:00 AM", venue: "The LINE Hotel DC", city: "dc", distance: "2.0 mi", image: eventBrunch, attending: 200, free: false, price: "$50", category: "Party" },
   { id: 914, title: "AFCON Watch Party — DC", host: "AfroHub Sports DC", date: "Sun, Mar 16 · 4:00 PM", venue: "Public Bar Live", city: "dc", distance: "1.2 mi", image: eventFootball, attending: 300, free: true, category: "Watch Party" },
+  { id: 915, title: "AfroTech DC", host: "AfroTech", date: "Fri, Mar 21 · 9:00 AM", venue: "Walter E. Washington Convention Center", city: "dc", distance: "1.0 mi", image: networkingConference, attending: 5000, free: false, price: "$199", category: "Networking" },
+  { id: 916, title: "Howard Homecoming Block Party", host: "Howard University Alumni", date: "Sat, Mar 22 · 2:00 PM", venue: "Howard University Yard", city: "dc", distance: "0.5 mi", image: eventParty, attending: 3000, free: true, category: "Festival" },
+  { id: 917, title: "U Street Amapiano Night", host: "Amapiano DC", date: "Sat, Mar 22 · 10:00 PM", venue: "Flash DC", city: "dc", distance: "0.8 mi", image: eventGrime, attending: 600, free: false, price: "$25", category: "Party" },
+  { id: 918, title: "Black in Gov Mixer", host: "Black Fed Network", date: "Thu, Mar 20 · 6:00 PM", venue: "The Hamilton", city: "dc", distance: "1.5 mi", image: eventBrunch, attending: 250, free: false, price: "$40", category: "Networking" },
+  { id: 919, title: "Chocolate City Comedy Show", host: "DC Comedy Collective", date: "Fri, Mar 21 · 8:00 PM", venue: "Howard Theatre", city: "dc", distance: "1.0 mi", image: eventConcert, attending: 700, free: false, price: "$30", category: "Party" },
 
-  // Portland
   { id: 920, title: "Portland Afrobeats Night", host: "AfroHub Portland", date: "Sat, Mar 15 · 10:00 PM", venue: "Holocene", city: "portland", distance: "1.0 mi", image: eventParty, attending: 400, free: false, price: "$20", category: "Party" },
   { id: 921, title: "African Food & Culture Fest", host: "African Community PDX", date: "Sat, Mar 15 · 11:00 AM", venue: "Pioneer Courthouse Square", city: "portland", distance: "0.5 mi", image: eventBrunch, attending: 1500, free: true, category: "Festival" },
   { id: 922, title: "Congolese Night Portland", host: "Congo Society PDX", date: "Fri, Mar 14 · 9:00 PM", venue: "Doug Fir Lounge", city: "portland", distance: "1.5 mi", image: eventConcert, attending: 300, free: false, price: "$15", category: "Party" },
@@ -943,4 +948,10 @@ export const events: EventItem[] = [
   { id: 1230, title: "SLC Afrobeats Night", host: "AfroHub SLC", date: "Sat, Mar 15 · 10:00 PM", venue: "The Urban Lounge", city: "saltlakecity", distance: "1.0 mi", image: eventParty, attending: 350, free: false, price: "$20", category: "Party" },
   { id: 1231, title: "Utah African Festival", host: "African Society UT", date: "Sat, Mar 15 · 11:00 AM", venue: "Liberty Park", city: "saltlakecity", distance: "1.5 mi", image: eventAfricanArt, attending: 1500, free: true, category: "Festival" },
   { id: 1232, title: "Congolese Community Day SLC", host: "Congo Society UT", date: "Sun, Mar 16 · 1:00 PM", venue: "Pioneer Park", city: "saltlakecity", distance: "0.5 mi", image: eventBrunch, attending: 400, free: true, category: "Community" },
+
+  // AfroTech Conference Events
+  { id: 1300, title: "AfroTech Austin", host: "AfroTech", date: "Sat, Mar 22 · 9:00 AM", venue: "Austin Convention Center", city: "austin", distance: "0.5 mi", image: networkingConference, attending: 8000, free: false, price: "$199", category: "Networking" },
+  { id: 1301, title: "AfroTech Dallas", host: "AfroTech", date: "Fri, Mar 21 · 9:00 AM", venue: "Kay Bailey Hutchison Convention Center", city: "dallas", distance: "1.0 mi", image: networkingConference, attending: 5000, free: false, price: "$199", category: "Networking" },
+  { id: 1302, title: "AfroTech Houston", host: "AfroTech", date: "Sat, Mar 22 · 9:00 AM", venue: "George R. Brown Convention Center", city: "houston", distance: "0.8 mi", image: networkingConference, attending: 6000, free: false, price: "$199", category: "Networking" },
+  { id: 1303, title: "AfroTech San Francisco", host: "AfroTech", date: "Fri, Mar 28 · 9:00 AM", venue: "Moscone Center", city: "sanfrancisco", distance: "0.5 mi", image: networkingConference, attending: 10000, free: false, price: "$249", category: "Networking" },
 ];
