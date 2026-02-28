@@ -133,13 +133,13 @@ const dances: Dance[] = [
     difficulty: "Beginner",
   },
   {
-    name: "Lagobi (Lágòbì)",
-    origin: "Lagos, Nigeria",
-    flag: "🇳🇬",
-    era: "2010s",
+    name: "Logobi",
+    origin: "Côte d'Ivoire / Congo",
+    flag: "🇨🇮",
+    era: "2000s",
     description:
-      "A smooth, groovy dance from Lagos that involves fluid waist movements and footwork synchronized to Afrobeats rhythms. It embodies the effortless cool of Lagos nightlife and has been featured in countless Afrobeats music videos.",
-    funFact: "Lagobi literally translates to 'Lagos dance' and captures the swagger that defines the city's party scene.",
+      "A high-energy street dance originating from the Ivorian and Congolese diaspora in France. Logobi features sharp, jerky arm movements, quick footwork, and exaggerated poses, often performed to Coupé-Décalé and Logobi GT-style beats. It became a viral sensation in French-speaking Africa and Europe.",
+    funFact: "Logobi GT's self-titled track helped the dance explode across YouTube in the late 2000s, making it one of the first African dances to go viral online.",
     difficulty: "Intermediate",
   },
   {
