@@ -57,6 +57,8 @@ export interface EventItem {
   image: string;
   attending: number;
   free: boolean;
+  price?: string;
+  category?: string;
 }
 
 export const feedPosts: FeedPost[] = [
@@ -268,41 +270,49 @@ export const events: EventItem[] = [
     id: 30, title: "Jadakiss & The Lox — Live at the Apollo", host: "D-Block Entertainment",
     date: "Thu, Sep 11 · 8:00 PM", venue: "Apollo Theater, Harlem", city: "nyc",
     distance: "5.2 mi", image: eventNycHiphop, attending: 1500, free: false,
+    price: "$85", category: "Hip-Hop",
   },
   {
     id: 31, title: "Dipset — Diplomatic Immunity Tour", host: "Diplomat Records",
     date: "Fri, Sep 12 · 9:00 PM", venue: "Madison Square Garden", city: "nyc",
     distance: "2.1 mi", image: eventNycHiphop, attending: 18000, free: false,
+    price: "$120", category: "Hip-Hop",
   },
   {
-    id: 32, title: "Who Decides War — NYFW Show", host: "Who Decides War",
-    date: "Mon, Sep 8 · 6:00 PM", venue: "Spring Studios", city: "nyc",
+    id: 32, title: "Who Decides War — NYFW Show", host: "Ev Bravado × Tërrön Duvernay",
+    date: "Mon, Sep 8 · 6:00 PM", venue: "Spring Studios, Tribeca", city: "nyc",
     distance: "1.8 mi", image: eventNyfw, attending: 800, free: false,
+    price: "$250", category: "Fashion",
   },
   // New York City — Fashion Shows
   {
-    id: 33, title: "KidSuper — NYFW Runway Show", host: "KidSuper Studios",
+    id: 33, title: "KidSuper — \"Dreams Don't Die\" Runway", host: "KidSuper Studios",
     date: "Tue, Sep 9 · 4:00 PM", venue: "Brooklyn Navy Yard", city: "nyc",
     distance: "3.4 mi", image: eventStreetwearShow, attending: 1200, free: false,
+    price: "$175", category: "Fashion",
   },
   {
-    id: 34, title: "Balenciaga — Fall 2026 Collection", host: "Balenciaga",
+    id: 34, title: "Balenciaga — Fall 2026 Collection", host: "Balenciaga × Demna",
     date: "Wed, Sep 10 · 7:00 PM", venue: "The Park Avenue Armory", city: "nyc",
     distance: "2.8 mi", image: eventNyfw, attending: 2000, free: false,
+    price: "$500", category: "Fashion",
   },
   {
-    id: 35, title: "Yeezy — Season 10 Showcase", host: "Yeezy",
+    id: 35, title: "Yeezy — Season 10 Showcase", host: "Yeezy × Ye",
     date: "Thu, Sep 11 · 5:00 PM", venue: "Pier 17, Seaport District", city: "nyc",
     distance: "1.5 mi", image: eventNyfw, attending: 3500, free: false,
+    price: "$350", category: "Fashion",
   },
   {
     id: 36, title: "YSL — Saint Laurent Fall Show", host: "Yves Saint Laurent",
     date: "Fri, Sep 12 · 6:30 PM", venue: "The Met Cloisters", city: "nyc",
     distance: "9.1 mi", image: eventNyfw, attending: 1800, free: false,
+    price: "$450", category: "Fashion",
   },
   {
-    id: 37, title: "Louis Vuitton — Men's Fall 2026", host: "Louis Vuitton",
+    id: 37, title: "Louis Vuitton — Men's Fall 2026", host: "Louis Vuitton × Pharrell",
     date: "Sat, Sep 13 · 8:00 PM", venue: "Javits Center", city: "nyc",
     distance: "3.6 mi", image: eventNyfw, attending: 5000, free: false,
+    price: "$600", category: "Fashion",
   },
 ];
