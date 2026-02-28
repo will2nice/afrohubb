@@ -1,72 +1,64 @@
+import { useState } from "react";
 import { Search, Users } from "lucide-react";
 import profileWoman1 from "@/assets/profile-woman-1.jpg";
 import profileMan1 from "@/assets/profile-man-1.jpg";
 import profileMan2 from "@/assets/profile-man-2.jpg";
+import DMChatScreen, { type ChatContact } from "@/components/DMChatScreen";
 
-const sections = [
+interface ChatItem {
+  id: number;
+  name: string;
+  avatar: string | null;
+  lastMessage: string;
+  time: string;
+  unread: number;
+  online: boolean;
+  age?: number;
+  vibe?: string;
+}
+
+const sections: { label: string; chats: ChatItem[] }[] = [
   {
     label: "Matches",
     chats: [
-      {
-        id: 1,
-        name: "Amara",
-        avatar: profileWoman1,
-        lastMessage: "That sounds amazing! What time?",
-        time: "2m",
-        unread: 2,
-        online: true,
-      },
-      {
-        id: 2,
-        name: "Kofi",
-        avatar: profileMan1,
-        lastMessage: "See you at the event 🎉",
-        time: "1h",
-        unread: 0,
-        online: false,
-      },
+      { id: 1, name: "Amara", avatar: profileWoman1, lastMessage: "That sounds amazing! What time?", time: "2m", unread: 2, online: true, age: 24, vibe: "🎶 Vibes" },
+      { id: 2, name: "Kofi", avatar: profileMan1, lastMessage: "See you at the event 🎉", time: "1h", unread: 0, online: false, age: 27, vibe: "🏀 Sports" },
     ],
   },
   {
     label: "Event Chats",
     chats: [
-      {
-        id: 3,
-        name: "Afrobeats Night",
-        avatar: null,
-        lastMessage: "DJ set starts at 10!",
-        time: "3h",
-        unread: 5,
-        online: false,
-      },
+      { id: 3, name: "Afrobeats Night", avatar: null, lastMessage: "DJ set starts at 10!", time: "3h", unread: 5, online: false },
     ],
   },
   {
     label: "Groups",
     chats: [
-      {
-        id: 4,
-        name: "Austin Diaspora",
-        avatar: null,
-        lastMessage: "Welcome to the new members!",
-        time: "1d",
-        unread: 0,
-        online: false,
-      },
-      {
-        id: 5,
-        name: "Tech & Culture",
-        avatar: null,
-        lastMessage: "Check out this article on...",
-        time: "2d",
-        unread: 0,
-        online: false,
-      },
+      { id: 4, name: "Austin Diaspora", avatar: null, lastMessage: "Welcome to the new members!", time: "1d", unread: 0, online: false },
+      { id: 5, name: "Tech & Culture", avatar: null, lastMessage: "Check out this article on...", time: "2d", unread: 0, online: false },
     ],
   },
 ];
 
 const MessagesScreen = () => {
+  const [openChat, setOpenChat] = useState<ChatContact | null>(null);
+
+  const handleChatOpen = (chat: ChatItem) => {
+    if (!chat.avatar || !chat.age) return; // Only open DM for person chats
+    setOpenChat({
+      id: chat.id,
+      name: chat.name,
+      age: chat.age,
+      photo: chat.avatar,
+      vibe: chat.vibe || "",
+      online: chat.online,
+    });
+  };
+
+  if (openChat) {
+    return <DMChatScreen contact={openChat} onBack={() => setOpenChat(null)} />;
+  }
+
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
@@ -112,15 +104,12 @@ const MessagesScreen = () => {
             {section.chats.map((chat) => (
               <button
                 key={chat.id}
+                onClick={() => handleChatOpen(chat)}
                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors"
               >
                 <div className="relative">
                   {chat.avatar ? (
-                    <img
-                      src={chat.avatar}
-                      alt={chat.name}
-                      className="w-12 h-12 rounded-full object-cover ring-2 ring-border"
-                    />
+                    <img src={chat.avatar} alt={chat.name} className="w-12 h-12 rounded-full object-cover ring-2 ring-border" />
                   ) : (
                     <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
                       <Users size={20} className="text-muted-foreground" />
@@ -137,9 +126,7 @@ const MessagesScreen = () => {
                     </p>
                     <span className="text-xs text-muted-foreground ml-2">{chat.time}</span>
                   </div>
-                  <p className={`text-xs truncate mt-0.5 ${
-                    chat.unread ? "text-foreground font-medium" : "text-muted-foreground"
-                  }`}>
+                  <p className={`text-xs truncate mt-0.5 ${chat.unread ? "text-foreground font-medium" : "text-muted-foreground"}`}>
                     {chat.lastMessage}
                   </p>
                 </div>
