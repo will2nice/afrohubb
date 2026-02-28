@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import { useEffect, useState, useRef } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapPin, Users, Calendar, Navigation, ChevronDown, Check } from "lucide-react";
@@ -71,23 +71,9 @@ const youIcon = new L.DivIcon({
   iconAnchor: [10, 10],
 });
 
-// Texas city IDs that should show each other's data
-const texasCities = ["austin", "dallas", "houston", "sanantonio"];
-const isTexasCity = (cityId: string) => texasCities.includes(cityId);
-
-// European city IDs that should show each other's data when zoomed out
-const europeCities = [
-  "london", "paris", "brussels", "amsterdam", "rotterdam", "antwerp",
-  "barcelona", "madrid", "bordeaux", "stockholm", "rome", "positano",
-  "athens", "istanbul", "berlin", "dublin", "copenhagen", "oslo", "helsinki",
-];
-const isEuropeCity = (cityId: string) => europeCities.includes(cityId);
-
-// Generate random nearby positions for events
-const getEventPositions = (cityId: string) => {
-  const cityIds = isTexasCity(cityId) ? texasCities : isEuropeCity(cityId) ? europeCities : [cityId];
-  const filteredEvents = allEvents.filter((e) => cityIds.includes(e.city));
-  return filteredEvents.map((event) => {
+// Get ALL events across ALL cities with positions
+const getAllEventPositions = () => {
+  return allEvents.map((event) => {
     const eventCity = cityCoords[event.city] || cityCoords.austin;
     const seed = event.id * 137;
     const lat = eventCity[0] + (((seed % 100) - 50) / 500);
@@ -96,9 +82,9 @@ const getEventPositions = (cityId: string) => {
   });
 };
 
-// 12 people per city (for Texas, show all Texas people spread across cities)
-const getNearbyPeople = (cityId: string) => {
-  const people = [
+// Get ALL people across ALL cities
+const getAllPeople = () => {
+  const basePeople = [
     { name: "Amara", age: 24, status: "Looking for events", vibe: "🎶" },
     { name: "Kofi", age: 27, status: "Down to hang", vibe: "🏀" },
     { name: "Chidera", age: 22, status: "New in town!", vibe: "✈️" },
@@ -113,86 +99,55 @@ const getNearbyPeople = (cityId: string) => {
     { name: "Zara", age: 21, status: "Just moved here!", vibe: "🌟" },
   ];
 
-  if (isTexasCity(cityId)) {
-    const allPeople: typeof people extends (infer T)[] ? (T & { lat: number; lng: number })[] : never[] = [];
-    texasCities.forEach((txCity, ci) => {
-      const txCenter = cityCoords[txCity];
-      people.slice(ci * 3, ci * 3 + 3).forEach((p, i) => {
-        allPeople.push({
-          ...p,
-          name: `${p.name} (${txCity === "sanantonio" ? "SA" : txCity.charAt(0).toUpperCase() + txCity.slice(1)})`,
-          lat: txCenter[0] + (((i * 53 + 17) % 120 - 60) / 600),
-          lng: txCenter[1] + (((i * 37 + 29) % 120 - 60) / 500),
-        });
-      });
-    });
-    return allPeople;
-  }
+  const cityLabels: Record<string, string> = {
+    austin: "ATX", dallas: "DAL", houston: "HOU", sanantonio: "SA",
+    paris: "PAR", london: "LDN", nyc: "NYC",
+    brussels: "BXL", amsterdam: "AMS", rotterdam: "RTD", antwerp: "ANT",
+    barcelona: "BCN", madrid: "MAD", bordeaux: "BDX", stockholm: "STO",
+    rome: "ROM", positano: "POS", athens: "ATH", istanbul: "IST",
+    berlin: "BER", dublin: "DUB", copenhagen: "CPH", oslo: "OSL", helsinki: "HEL",
+  };
 
-  if (isEuropeCity(cityId)) {
-    const euroPeople: typeof people extends (infer T)[] ? (T & { lat: number; lng: number })[] : never[] = [];
-    const cityLabels: Record<string, string> = {
-      london: "LDN", paris: "PAR", brussels: "BXL", amsterdam: "AMS", rotterdam: "RTD",
-      antwerp: "ANT", barcelona: "BCN", madrid: "MAD", bordeaux: "BDX", stockholm: "STO",
-      rome: "ROM", positano: "POS", athens: "ATH", istanbul: "IST", berlin: "BER",
-      dublin: "DUB", copenhagen: "CPH", oslo: "OSL", helsinki: "HEL",
-    };
-    europeCities.forEach((euCity, ci) => {
-      const euCenter = cityCoords[euCity];
-      if (!euCenter) return;
-      const personIdx = ci % people.length;
-      const p = people[personIdx];
-      euroPeople.push({
+  const allPeople: { name: string; age: number; status: string; vibe: string; lat: number; lng: number }[] = [];
+  Object.keys(cityCoords).forEach((cityId, ci) => {
+    const center = cityCoords[cityId];
+    const label = cityLabels[cityId] || cityId.toUpperCase().slice(0, 3);
+    // 2-3 people per city
+    const count = 2 + (ci % 2);
+    for (let i = 0; i < count; i++) {
+      const p = basePeople[(ci * 3 + i) % basePeople.length];
+      allPeople.push({
         ...p,
-        name: `${p.name} (${cityLabels[euCity] || euCity})`,
-        lat: euCenter[0] + (((ci * 53 + 17) % 120 - 60) / 600),
-        lng: euCenter[1] + (((ci * 37 + 29) % 120 - 60) / 500),
+        name: `${p.name} (${label})`,
+        lat: center[0] + (((i * 53 + 17) % 120 - 60) / 600),
+        lng: center[1] + (((i * 37 + 29) % 120 - 60) / 500),
       });
-    });
-    return euroPeople;
-  }
-
-  const center = cityCoords[cityId] || cityCoords.austin;
-  return people.map((p, i) => ({
-    ...p,
-    lat: center[0] + (((i * 53 + 17) % 120 - 60) / 600),
-    lng: center[1] + (((i * 37 + 29) % 120 - 60) / 500),
-  }));
+    }
+  });
+  return allPeople;
 };
 
-// Groups per city
-const getGroups = (cityId: string) => {
-  const center = cityCoords[cityId] || cityCoords.austin;
+// Get ALL groups across ALL cities
+const getAllGroups = () => {
   const cityGroups: Record<string, { name: string; members: string[]; description: string }[]> = {
     austin: [
       { name: "Girls Night Out 💅", members: ["Jasmine", "Nneka", "Sophie", "Zara", "Priya"], description: "5 women looking for guys to hang out with tonight! Bar-hopping downtown." },
       { name: "Culture Crew 🎭", members: ["Amara", "Chidera", "Dayo"], description: "Exploring art galleries & live music. Everyone welcome!" },
-      { name: "Foodies United 🍕", members: ["Tunde", "Kwame", "Marcus", "Kofi"], description: "4 guys doing a food crawl. Join us!" },
-      { name: "Soccer Squad ⚽", members: ["Kofi", "Dayo", "Tunde", "Marcus"], description: "Looking for players for pickup soccer at Zilker!" },
-      { name: "Brunch Babes 🥂", members: ["Amara", "Sophie", "Zara"], description: "Sunday brunch crew looking for more people!" },
     ],
     dallas: [
-      { name: "Deep Ellum Girls 💃", members: ["Tasha", "Ayo", "Kemi", "Bria", "Fatima"], description: "5 women exploring Deep Ellum tonight! Come hang!" },
-      { name: "DFW Ballers 🏀", members: ["Kwame", "Tunde", "Deji", "Marcus"], description: "Sports & vibes crew. Looking for more!" },
-      { name: "Afro Foodies DFW 🍜", members: ["Priya", "Nneka", "Sophie"], description: "Food crawl through Bishop Arts District!" },
-      { name: "FIFA Squad 🎮", members: ["Deji", "Kofi", "Jalen", "Emeka"], description: "FIFA tournament prep. Need 2 more players!" },
-      { name: "Networking Crew 🤝", members: ["Kwame", "Tasha", "Marcus"], description: "Professionals linking up in Dallas!" },
+      { name: "Deep Ellum Girls 💃", members: ["Tasha", "Ayo", "Kemi", "Bria", "Fatima"], description: "5 women exploring Deep Ellum tonight!" },
+      { name: "DFW Ballers 🏀", members: ["Kwame", "Tunde", "Deji", "Marcus"], description: "Sports & vibes crew." },
     ],
     houston: [
       { name: "H-Town Queens 👑", members: ["Chioma", "Adaeze", "Fatou", "Nadia", "Imani"], description: "5 women looking to link up in Midtown tonight!" },
-      { name: "Third Ward Crew 🔥", members: ["Dayo", "Marcus", "Jalen", "Emeka"], description: "Exploring Third Ward culture. Pull up!" },
-      { name: "Yacht Life 🛥️", members: ["Sophie", "Zara", "Priya"], description: "Planning a yacht party. Need more people!" },
-      { name: "Soccer Sundays ⚽", members: ["Kofi", "Tunde", "Rashid", "Moussa"], description: "Weekly pickup soccer at Bear Creek!" },
-      { name: "Art & Music 🎨", members: ["Amara", "Chidera", "Nneka"], description: "Gallery hopping in the Museum District!" },
+      { name: "Third Ward Crew 🔥", members: ["Dayo", "Marcus", "Jalen", "Emeka"], description: "Exploring Third Ward culture." },
     ],
     sanantonio: [
       { name: "Riverwalk Ladies 🌊", members: ["Maya", "Jasmine", "Priya", "Zara", "Aisha"], description: "5 women on the Riverwalk looking for guys to hang!" },
-      { name: "Alamo City Squad 🤠", members: ["Kofi", "Dayo", "Tunde", "Marcus"], description: "Guys exploring SA nightlife. Join us!" },
-      { name: "Fiesta Crew 🎉", members: ["Sophie", "Nneka", "Amara"], description: "Getting ready for Fiesta season!" },
-      { name: "SA Soccer League ⚽", members: ["Kwame", "Rashid", "Moussa", "Emeka"], description: "Looking for players for our 5-a-side team!" },
-      { name: "Taco Crawl 🌮", members: ["Tunde", "Priya", "Chidera"], description: "Best tacos in SA food crawl. Everyone welcome!" },
     ],
-    // European cities
+    paris: [{ name: "Paris Afro Crew 🇫🇷", members: ["Moussa", "Aïssatou", "Sékou"], description: "West African community in Paris!" }],
+    london: [{ name: "London Afrobeats 🇬🇧", members: ["Tayo", "Ngozi", "Kwesi"], description: "Afrobeats lovers in London!" }],
+    nyc: [{ name: "NYC Diaspora 🗽", members: ["Amara", "Kofi", "Chidera"], description: "African diaspora in NYC!" }],
     brussels: [{ name: "Matonge Crew 🇨🇩", members: ["Fiston", "Nadège", "Patrick"], description: "Congolese community exploring Brussels nightlife!" }],
     amsterdam: [{ name: "Kwaku Squad 🇸🇷", members: ["Jaylen", "Shaniqua", "Devon"], description: "Surinamese crew heading to Kwaku Festival!" }],
     rotterdam: [{ name: "Carnival Crew 🎭", members: ["Denzel", "Priscilla", "Kenzo"], description: "Getting ready for Rotterdam Carnival!" }],
@@ -211,61 +166,41 @@ const getGroups = (cityId: string) => {
     oslo: [{ name: "Oslo Eritreans 🇳🇴", members: ["Yonas", "Selam", "Biniam"], description: "Eritrean community gatherings in Oslo!" }],
     helsinki: [{ name: "Helsinki Somalis 🇫🇮", members: ["Faarax", "Nimco", "Axmed"], description: "Somali community in Helsinki!" }],
   };
-  if (isTexasCity(cityId)) {
-    const allGroups: { name: string; members: string[]; description: string; lat: number; lng: number }[] = [];
-    texasCities.forEach((txCity) => {
-      const txCenter = cityCoords[txCity];
-      const txGroups = cityGroups[txCity] || [];
-      txGroups.forEach((g, i) => {
-        allGroups.push({
-          ...g,
-          lat: txCenter[0] + (((i * 43 + 11) % 80 - 40) / 500),
-          lng: txCenter[1] + (((i * 31 + 19) % 80 - 40) / 400),
-        });
+
+  const allGroupsArr: { name: string; members: string[]; description: string; lat: number; lng: number }[] = [];
+  Object.keys(cityGroups).forEach((cityId) => {
+    const center = cityCoords[cityId];
+    if (!center) return;
+    cityGroups[cityId].forEach((g, i) => {
+      allGroupsArr.push({
+        ...g,
+        lat: center[0] + (((i * 43 + 11) % 80 - 40) / 500),
+        lng: center[1] + (((i * 31 + 19) % 80 - 40) / 400),
       });
     });
-    return allGroups;
-  }
-  if (isEuropeCity(cityId)) {
-    const allGroups: { name: string; members: string[]; description: string; lat: number; lng: number }[] = [];
-    europeCities.forEach((euCity) => {
-      const euCenter = cityCoords[euCity];
-      if (!euCenter) return;
-      const euGroups = cityGroups[euCity] || [];
-      euGroups.forEach((g, i) => {
-        allGroups.push({
-          ...g,
-          lat: euCenter[0] + (((i * 43 + 11) % 80 - 40) / 500),
-          lng: euCenter[1] + (((i * 31 + 19) % 80 - 40) / 400),
-        });
-      });
-    });
-    return allGroups;
-  }
-  const groups = cityGroups[cityId] || cityGroups.austin;
-  return groups.map((g, i) => ({
-    ...g,
-    lat: center[0] + (((i * 43 + 11) % 80 - 40) / 500),
-    lng: center[1] + (((i * 31 + 19) % 80 - 40) / 400),
-  }));
+  });
+  return allGroupsArr;
 };
 
-// Region center points for zoomed-out views
-const texasCenter: [number, number] = [30.5, -97.0];
-const europeCenter: [number, number] = [48.5, 10.0];
+// Precompute all data
+const allEventPositions = getAllEventPositions();
+const allPeople = getAllPeople();
+const allGroups = getAllGroups();
 
-// Component to recenter map when city changes
-const RecenterMap = ({ coords, cityId }: { coords: [number, number]; cityId: string }) => {
+// World center
+const worldCenter: [number, number] = [30, 0];
+
+// Component to handle map view changes
+const MapController = ({ targetCity, onZoomDone }: { targetCity: string | null; onZoomDone: () => void }) => {
   const map = useMap();
+  
   useEffect(() => {
-    if (isTexasCity(cityId)) {
-      map.setView(texasCenter, 7, { animate: true });
-    } else if (isEuropeCity(cityId)) {
-      map.setView(europeCenter, 4, { animate: true });
-    } else {
-      map.setView(coords, 13, { animate: true });
+    if (targetCity && cityCoords[targetCity]) {
+      map.setView(cityCoords[targetCity], 12, { animate: true });
+      onZoomDone();
     }
-  }, [coords, cityId, map]);
+  }, [targetCity, map, onZoomDone]);
+  
   return null;
 };
 
@@ -279,10 +214,22 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [showPeople, setShowPeople] = useState(true);
   const [showGroups, setShowGroups] = useState(true);
   const [showCityPicker, setShowCityPicker] = useState(false);
+  const [zoomTarget, setZoomTarget] = useState<string | null>(selectedCity.id);
+  
   const center = cityCoords[selectedCity.id] || cityCoords.austin;
-  const eventPositions = getEventPositions(selectedCity.id);
-  const nearbyPeople = getNearbyPeople(selectedCity.id);
-  const groups = getGroups(selectedCity.id);
+
+  const handleEventClick = (cityId: string) => {
+    setZoomTarget(cityId);
+    // Also update the selected city in the picker
+    const city = cities.find(c => c.id === cityId);
+    if (city) onCityChange(city);
+  };
+
+  const handleCitySelect = (city: City) => {
+    onCityChange(city);
+    setZoomTarget(city.id);
+    setShowCityPicker(false);
+  };
 
   return (
     <div className="fixed inset-0 bg-background">
@@ -309,7 +256,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             {cities.map((city) => (
               <button
                 key={city.id}
-                onClick={() => { onCityChange(city); setShowCityPicker(false); }}
+                onClick={() => handleCitySelect(city)}
                 className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors"
               >
                 <span className="text-lg">{city.flag}</span>
@@ -333,7 +280,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             }`}
           >
             <Calendar size={14} />
-            Events ({eventPositions.length})
+            Events ({allEventPositions.length})
           </button>
           <button
             onClick={() => setShowPeople(!showPeople)}
@@ -342,7 +289,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             }`}
           >
             <Users size={14} />
-            People ({nearbyPeople.length})
+            People ({allPeople.length})
           </button>
           <button
             onClick={() => setShowGroups(!showGroups)}
@@ -351,20 +298,23 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             }`}
           >
             <Users size={14} />
-            Groups ({groups.length})
+            Groups ({allGroups.length})
           </button>
         </div>
       </div>
 
       {/* Map */}
       <MapContainer
-        center={isTexasCity(selectedCity.id) ? texasCenter : isEuropeCity(selectedCity.id) ? europeCenter : center}
-        zoom={isTexasCity(selectedCity.id) ? 7 : isEuropeCity(selectedCity.id) ? 4 : 13}
+        center={center}
+        zoom={12}
         style={{ height: "100%", width: "100%" }}
         zoomControl={false}
         attributionControl={false}
+        minZoom={2}
+        maxBoundsViscosity={0}
+        worldCopyJump={true}
       >
-        <RecenterMap coords={center} cityId={selectedCity.id} />
+        <MapController targetCity={zoomTarget} onZoomDone={() => setZoomTarget(null)} />
         <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
 
         {/* You are here */}
@@ -374,9 +324,16 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </Popup>
         </Marker>
 
-        {/* Event markers */}
-        {showEvents && eventPositions.map((event) => (
-          <Marker key={`event-${event.id}`} position={[event.lat, event.lng]} icon={eventIcon}>
+        {/* Event markers - ALL cities */}
+        {showEvents && allEventPositions.map((event) => (
+          <Marker
+            key={`event-${event.id}`}
+            position={[event.lat, event.lng]}
+            icon={eventIcon}
+            eventHandlers={{
+              click: () => handleEventClick(event.city),
+            }}
+          >
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
                 <img src={event.image} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />
@@ -399,8 +356,8 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </Marker>
         ))}
 
-        {/* People markers */}
-        {showPeople && nearbyPeople.map((person, i) => (
+        {/* People markers - ALL cities */}
+        {showPeople && allPeople.map((person, i) => (
           <Marker key={`person-${i}`} position={[person.lat, person.lng]} icon={personIcon}>
             <Popup className="afro-popup">
               <div className="p-1">
@@ -411,8 +368,8 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </Marker>
         ))}
 
-        {/* Group markers */}
-        {showGroups && groups.map((group, i) => (
+        {/* Group markers - ALL cities */}
+        {showGroups && allGroups.map((group, i) => (
           <Marker key={`group-${i}`} position={[group.lat, group.lng]} icon={groupIcon}>
             <Popup className="afro-popup" maxWidth={260}>
               <div className="p-1">
@@ -437,10 +394,10 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         <div className="bg-card/95 backdrop-blur-md rounded-2xl border border-border p-4 shadow-elevated">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-display font-bold text-foreground text-sm">Nearby This Week</h3>
-            <span className="text-xs text-primary font-semibold">{eventPositions.length} events · {nearbyPeople.length} people</span>
+            <span className="text-xs text-primary font-semibold">{allEventPositions.length} events · {allPeople.length} people</span>
           </div>
           <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-            {eventPositions.slice(0, 5).map((event) => (
+            {allEventPositions.filter(e => e.city === selectedCity.id).slice(0, 5).map((event) => (
               <div key={event.id} className="flex-shrink-0 w-36 bg-secondary rounded-xl overflow-hidden">
                 <img src={event.image} alt="" className="w-full h-16 object-cover" />
                 <div className="p-2">
