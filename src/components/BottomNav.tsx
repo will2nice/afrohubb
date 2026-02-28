@@ -1,6 +1,6 @@
-import { Newspaper, Film, Heart, CalendarDays, MessageCircle, User } from "lucide-react";
+import { Newspaper, Film, MapPinned, Heart, CalendarDays, MessageCircle, User } from "lucide-react";
 
-type Tab = "feed" | "reels" | "match" | "events" | "messages" | "profile";
+type Tab = "feed" | "reels" | "map" | "match" | "events" | "messages" | "profile";
 
 interface BottomNavProps {
   activeTab: Tab;
@@ -10,9 +10,10 @@ interface BottomNavProps {
 const tabs: { id: Tab; label: string; icon: typeof Newspaper }[] = [
   { id: "feed", label: "Feed", icon: Newspaper },
   { id: "reels", label: "Reels", icon: Film },
-  { id: "match", label: "Match", icon: Heart },
+  { id: "map", label: "Map", icon: MapPinned },
   { id: "events", label: "Events", icon: CalendarDays },
-  { id: "messages", label: "Messages", icon: MessageCircle },
+  { id: "match", label: "Match", icon: Heart },
+  { id: "messages", label: "Chat", icon: MessageCircle },
   { id: "profile", label: "Profile", icon: User },
 ];
 
@@ -27,13 +28,13 @@ const BottomNav = ({ activeTab, onTabChange }: BottomNavProps) => {
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 ${
+              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all duration-200 ${
                 isActive
                   ? "text-primary scale-105"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
-              <Icon size={22} strokeWidth={isActive ? 2.5 : 1.8} />
+              <Icon size={20} strokeWidth={isActive ? 2.5 : 1.8} />
               <span className={`text-[10px] font-medium ${isActive ? "text-primary" : ""}`}>
                 {tab.label}
               </span>
