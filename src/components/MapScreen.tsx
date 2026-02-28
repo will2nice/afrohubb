@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X } from "lucide-react";
+import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase } from "lucide-react";
 import { events as allEvents, cities, type City } from "@/data/cityData";
+import { cityResources, type CityResource } from "@/data/resourceData";
 
 // City coordinates - includes Brazil
 const cityCoords: Record<string, [number, number]> = {
@@ -113,6 +114,22 @@ const groupIcon = new L.DivIcon({
   iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40],
 });
 
+const nonprofitIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(150,70%,40%),hsl(170,60%,45%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+  </div>`,
+  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
+});
+
+const hiringIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(210,80%,50%),hsl(230,70%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+  </div>`,
+  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
+});
+
 const youIcon = new L.DivIcon({
   className: "custom-marker",
   html: `<div style="width:20px;height:20px;border-radius:50%;background:hsl(43,96%,56%);box-shadow:0 0 0 6px hsla(43,96%,56%,0.25),0 4px 12px rgba(0,0,0,0.4);border:3px solid hsl(0,0%,7%);"></div>`,
@@ -195,9 +212,20 @@ const getAllGroups = () => {
   return allGroupsArr;
 };
 
+const getResourcePositions = () => {
+  return cityResources.map((resource) => {
+    const center = cityCoords[resource.city] || cityCoords.austin;
+    const seed = resource.id * 179;
+    const lat = center[0] + (((seed % 100) - 50) / 550);
+    const lng = center[1] + ((((seed * 11) % 100) - 50) / 450);
+    return { ...resource, lat, lng };
+  });
+};
+
 const allEventPositions = getAllEventPositions();
 const allPeople = getAllPeople();
 const allGroups = getAllGroups();
+const allResources = getResourcePositions();
 
 const MapController = ({ targetCity, onZoomDone }: { targetCity: string | null; onZoomDone: () => void }) => {
   const map = useMap();
@@ -219,6 +247,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [showEvents, setShowEvents] = useState(true);
   const [showPeople, setShowPeople] = useState(true);
   const [showGroups, setShowGroups] = useState(true);
+  const [showResources, setShowResources] = useState(true);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [zoomTarget, setZoomTarget] = useState<string | null>(selectedCity.id);
   const [nearbyCollapsed, setNearbyCollapsed] = useState(false);
@@ -269,15 +298,18 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
       </header>
 
       <div className="absolute top-16 left-4 right-4 z-[1000] max-w-lg mx-auto">
-        <div className="flex gap-2">
-          <button onClick={() => setShowEvents(!showEvents)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${showEvents ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"}`}>
-            <Calendar size={14} /> Events ({allEventPositions.length})
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+          <button onClick={() => setShowEvents(!showEvents)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showEvents ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"}`}>
+            <Calendar size={14} /> Events
           </button>
-          <button onClick={() => setShowPeople(!showPeople)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${showPeople ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"}`}>
-            <Users size={14} /> People ({allPeople.length})
+          <button onClick={() => setShowPeople(!showPeople)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showPeople ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"}`}>
+            <Users size={14} /> People
           </button>
-          <button onClick={() => setShowGroups(!showGroups)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${showGroups ? "bg-[hsl(320,70%,50%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
-            <Users size={14} /> Groups ({allGroups.length})
+          <button onClick={() => setShowGroups(!showGroups)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showGroups ? "bg-[hsl(320,70%,50%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
+            <Users size={14} /> Groups
+          </button>
+          <button onClick={() => setShowResources(!showResources)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showResources ? "bg-[hsl(150,70%,40%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
+            <Heart size={14} /> Resources
           </button>
         </div>
       </div>
@@ -331,6 +363,29 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
                   ))}
                 </div>
                 <button className="w-full mt-2 py-1.5 rounded-full bg-purple-500 text-white text-xs font-semibold">Request to Join</button>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {showResources && allResources.map((resource) => (
+          <Marker key={`resource-${resource.id}`} position={[resource.lat, resource.lng]} icon={resource.type === "nonprofit" ? nonprofitIcon : hiringIcon}>
+            <Popup className="afro-popup" maxWidth={280}>
+              <div className="p-1">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${resource.type === "nonprofit" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700"}`}>
+                    {resource.type === "nonprofit" ? "Nonprofit" : "Hiring"}
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-[10px] font-medium">{resource.category}</span>
+                </div>
+                <h3 className="font-bold text-sm leading-tight">{resource.name}</h3>
+                <p className="text-xs text-gray-500 mt-1">{resource.description}</p>
+                {resource.website && (
+                  <a href={resource.website} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 mt-1 block">Visit Website →</a>
+                )}
+                <button className={`w-full mt-2 py-1.5 rounded-full text-white text-xs font-semibold ${resource.type === "nonprofit" ? "bg-emerald-500" : "bg-blue-500"}`}>
+                  {resource.type === "nonprofit" ? "Learn More" : "View Openings"}
+                </button>
               </div>
             </Popup>
           </Marker>
