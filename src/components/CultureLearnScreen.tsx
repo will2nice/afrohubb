@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { BookOpen, Music, Volume2, ChevronRight, Globe, Sparkles, Link2 } from "lucide-react";
+import { BookOpen, Music, Volume2, ChevronRight, Globe, Sparkles, Link2, MapPin } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 /* ── Language Phrases ── */
@@ -358,6 +358,170 @@ const connections: CulturalConnection[] = [
   },
 ];
 
+/* ── Diaspora Hubs ── */
+interface DiasporaHub {
+  city: string;
+  state: string;
+  flag: string;
+  communities: {
+    country: string;
+    countryFlag: string;
+    population: string;
+    neighborhoods: string[];
+    notes: string;
+  }[];
+}
+
+const diasporaHubs: DiasporaHub[] = [
+  {
+    city: "New York City", state: "NY", flag: "🗽",
+    communities: [
+      { country: "Senegal", countryFlag: "🇸🇳", population: "~30,000+", neighborhoods: ["Harlem", "Little Senegal (116th St)", "The Bronx"], notes: "Largest Senegalese community in the US. 116th Street in Harlem is known as 'Little Senegal' with Wolof spoken on every corner." },
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~25,000+", neighborhoods: ["The Bronx", "Morrisania", "Parkchester"], notes: "Strong Ghanaian presence in the Bronx with community associations, churches, and restaurants." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~40,000+", neighborhoods: ["Brooklyn", "The Bronx", "Queens"], notes: "One of the largest Nigerian populations in the US. Igbo, Yoruba, and Edo communities thrive here." },
+      { country: "Guinea", countryFlag: "🇬🇳", population: "~15,000+", neighborhoods: ["Harlem", "The Bronx"], notes: "Significant Guinean community with strong ties to the Mandinka and Fulani diasporas." },
+      { country: "Haiti", countryFlag: "🇭🇹", population: "~100,000+", neighborhoods: ["Flatbush (Brooklyn)", "Crown Heights", "East New York"], notes: "Flatbush is the cultural capital of Haitian America. Kreyòl is the second language of Brooklyn." },
+      { country: "Jamaica", countryFlag: "🇯🇲", population: "~300,000+", neighborhoods: ["Flatbush", "Crown Heights", "Southeast Queens"], notes: "NYC has the largest Jamaican population outside of Jamaica. Patois echoes through Brooklyn streets." },
+    ],
+  },
+  {
+    city: "Washington, DC", state: "DC/MD/VA", flag: "🏛️",
+    communities: [
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~50,000+", neighborhoods: ["U Street", "Adams Morgan", "Silver Spring (MD)"], notes: "The largest Ethiopian community outside of Africa. U Street is known as 'Little Ethiopia' with dozens of restaurants and cultural spaces." },
+      { country: "Eritrea", countryFlag: "🇪🇷", population: "~30,000+", neighborhoods: ["Adams Morgan", "Columbia Heights", "Alexandria (VA)"], notes: "Eritrean community deeply intertwined with Ethiopian spaces. Shared restaurants, churches, and cultural events." },
+      { country: "Sudan", countryFlag: "🇸🇩", population: "~10,000+", neighborhoods: ["Arlington (VA)", "Falls Church", "Silver Spring (MD)"], notes: "Growing Sudanese community with cultural organizations and advocacy groups." },
+      { country: "Cameroon", countryFlag: "🇨🇲", population: "~15,000+", neighborhoods: ["Silver Spring (MD)", "Takoma Park", "Laurel"], notes: "Vibrant Cameroonian community with regular cultural festivals and community gatherings." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~25,000+", neighborhoods: ["Bowie (MD)", "Woodbridge (VA)", "Upper Marlboro"], notes: "Large Nigerian professional community in the DMV suburbs. Strong Igbo and Yoruba associations." },
+    ],
+  },
+  {
+    city: "Houston", state: "TX", flag: "🤠",
+    communities: [
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~100,000+", neighborhoods: ["Alief", "Missouri City", "Sugar Land", "Richmond"], notes: "Houston has one of the largest Nigerian communities in the US. Alief is sometimes called 'Little Lagos.' Strong Igbo, Yoruba, and Edo presence." },
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~15,000+", neighborhoods: ["Southwest Houston", "Stafford"], notes: "Active Ghanaian churches, cultural associations, and food spots." },
+      { country: "Cameroon", countryFlag: "🇨🇲", population: "~10,000+", neighborhoods: ["Southwest Houston", "Fort Bend County"], notes: "Growing Cameroonian community with annual cultural festivals." },
+    ],
+  },
+  {
+    city: "Dallas–Fort Worth", state: "TX", flag: "⛪",
+    communities: [
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~30,000+", neighborhoods: ["Vickery Meadow", "East Dallas", "Garland", "Plano"], notes: "One of the largest Habesha communities in Texas. Vickery Meadow has Ethiopian markets, restaurants, and churches." },
+      { country: "Eritrea", countryFlag: "🇪🇷", population: "~15,000+", neighborhoods: ["Vickery Meadow", "Richardson", "Arlington"], notes: "Eritrean community shares cultural spaces with the Ethiopian diaspora across DFW." },
+      { country: "Sudan", countryFlag: "🇸🇩", population: "~8,000+", neighborhoods: ["Arlington", "Grand Prairie", "Garland"], notes: "Sudanese community with mosques, cultural centers, and community organizations." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~30,000+", neighborhoods: ["DeSoto", "Cedar Hill", "Duncanville", "Irving"], notes: "Large Nigerian community in southern Dallas suburbs. Active Igbo and Yoruba cultural groups." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~5,000+", neighborhoods: ["Vickery Meadow", "East Dallas"], notes: "Growing Somali refugee community in East Dallas neighborhoods." },
+    ],
+  },
+  {
+    city: "Atlanta", state: "GA", flag: "🍑",
+    communities: [
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~30,000+", neighborhoods: ["Decatur", "Stone Mountain", "Lithonia"], notes: "Rapidly growing Nigerian community. Atlanta is a top destination for Nigerian professionals." },
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~15,000+", neighborhoods: ["Clarkston", "Decatur"], notes: "Clarkston is known as the most diverse square mile in America, with a significant Habesha presence." },
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~10,000+", neighborhoods: ["Decatur", "Stone Mountain", "Lawrenceville"], notes: "Active Ghanaian community with cultural events and associations." },
+      { country: "Jamaica", countryFlag: "🇯🇲", population: "~20,000+", neighborhoods: ["East Atlanta", "Decatur", "College Park"], notes: "Strong Caribbean presence with reggae events, restaurants, and cultural festivals." },
+    ],
+  },
+  {
+    city: "Minneapolis–St. Paul", state: "MN", flag: "❄️",
+    communities: [
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~80,000+", neighborhoods: ["Cedar-Riverside", "South Minneapolis", "St. Paul"], notes: "The largest Somali community in the US. Cedar-Riverside is known as 'Little Mogadishu.' Represented by Ilhan Omar in Congress." },
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~20,000+", neighborhoods: ["South Minneapolis", "St. Paul"], notes: "Significant Oromo and Amhara communities in the Twin Cities." },
+      { country: "Liberia", countryFlag: "🇱🇷", population: "~15,000+", neighborhoods: ["Brooklyn Park", "Brooklyn Center"], notes: "Large Liberian refugee community. Brooklyn Park has one of the highest Liberian populations in the country." },
+    ],
+  },
+  {
+    city: "Columbus", state: "OH", flag: "🌰",
+    communities: [
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~45,000+", neighborhoods: ["North Columbus", "Northland", "Westerville"], notes: "Second-largest Somali community in the US after Minneapolis. Strong Somali Bantu community as well." },
+    ],
+  },
+  {
+    city: "Omaha & Lincoln", state: "NE", flag: "🌾",
+    communities: [
+      { country: "South Sudan", countryFlag: "🇸🇸", population: "~15,000+", neighborhoods: ["South Omaha", "North Omaha", "Lincoln"], notes: "One of the largest South Sudanese (Nuer and Dinka) communities in the US. Strong meatpacking industry employment." },
+      { country: "Sudan", countryFlag: "🇸🇩", population: "~5,000+", neighborhoods: ["Omaha", "Lincoln"], notes: "Sudanese community with mosques and cultural organizations alongside the South Sudanese diaspora." },
+    ],
+  },
+  {
+    city: "Portland", state: "OR", flag: "🌲",
+    communities: [
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~10,000+", neighborhoods: ["SE Portland", "Beaverton"], notes: "Significant Habesha community. Ethiopian restaurants are a staple of Portland's food scene." },
+      { country: "Eritrea", countryFlag: "🇪🇷", population: "~5,000+", neighborhoods: ["SE Portland"], notes: "Eritrean community shares cultural spaces with Ethiopian diaspora." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~8,000+", neighborhoods: ["East Portland", "Gresham"], notes: "Growing Somali community in East Portland and surrounding areas." },
+    ],
+  },
+  {
+    city: "San Diego", state: "CA", flag: "🌴",
+    communities: [
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~20,000+", neighborhoods: ["City Heights", "El Cajon"], notes: "Large Somali and Somali Bantu refugee community. City Heights is a major hub." },
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~8,000+", neighborhoods: ["City Heights", "North Park"], notes: "Ethiopian community with restaurants and churches in City Heights corridor." },
+    ],
+  },
+  {
+    city: "Boston", state: "MA", flag: "🎓",
+    communities: [
+      { country: "Cape Verde", countryFlag: "🇨🇻", population: "~35,000+", neighborhoods: ["Dorchester", "Brockton", "New Bedford"], notes: "The largest Cape Verdean community in the US. Kriolu is widely spoken. Deep roots going back to whaling industry immigration." },
+      { country: "Haiti", countryFlag: "🇭🇹", population: "~50,000+", neighborhoods: ["Mattapan", "Dorchester", "Brockton"], notes: "Mattapan is Boston's Haitian cultural center. Strong Kreyòl-speaking community." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~10,000+", neighborhoods: ["Randolph", "Milton", "South Shore"], notes: "Growing Nigerian professional community in Boston's South Shore suburbs." },
+    ],
+  },
+  {
+    city: "Miami", state: "FL", flag: "🌊",
+    communities: [
+      { country: "Haiti", countryFlag: "🇭🇹", population: "~250,000+", neighborhoods: ["Little Haiti", "North Miami", "Miami Gardens"], notes: "Little Haiti is the cultural heart of the Haitian diaspora. Kompa music fills the streets. One of the largest Haitian communities anywhere." },
+      { country: "Jamaica", countryFlag: "🇯🇲", population: "~100,000+", neighborhoods: ["Miramar", "Lauderhill", "Pembroke Pines"], notes: "South Florida has one of the densest Jamaican communities in the US. Lauderhill is sometimes called 'Little Jamaica.'" },
+      { country: "Trinidad & Tobago", countryFlag: "🇹🇹", population: "~30,000+", neighborhoods: ["Lauderhill", "Miramar", "Hollywood"], notes: "Trini community brings soca, carnival culture, and doubles to South Florida." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~15,000+", neighborhoods: ["Miramar", "Pembroke Pines"], notes: "Growing Nigerian community in Broward County suburbs." },
+    ],
+  },
+  {
+    city: "Chicago", state: "IL", flag: "🏙️",
+    communities: [
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~20,000+", neighborhoods: ["South Side", "Lawndale", "Evanston"], notes: "Nigerian community with strong Igbo and Yoruba organizations and events." },
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~10,000+", neighborhoods: ["South Side", "Harvey"], notes: "Active Ghanaian community with cultural festivals and churches." },
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~8,000+", neighborhoods: ["Uptown", "Edgewater", "Rogers Park"], notes: "Habesha restaurants and cafes dot the North Side neighborhoods." },
+    ],
+  },
+  {
+    city: "Los Angeles", state: "CA", flag: "🎬",
+    communities: [
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~60,000+", neighborhoods: ["Little Ethiopia (Fairfax)", "Koreatown", "Mid-City"], notes: "Little Ethiopia on Fairfax Ave is the official cultural district. LA has the second-largest Ethiopian community in the US after DC." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~15,000+", neighborhoods: ["Inglewood", "Carson", "Gardena"], notes: "Growing Nollywood-connected community in LA's entertainment industry." },
+      { country: "Belize", countryFlag: "🇧🇿", population: "~50,000+", neighborhoods: ["South LA", "Inglewood", "Compton"], notes: "LA has the largest Belizean (Garifuna and Kriol) community in the US. Strong cultural ties to Black LA." },
+    ],
+  },
+  {
+    city: "San Francisco Bay Area", state: "CA", flag: "🌉",
+    communities: [
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~15,000+", neighborhoods: ["Oakland", "San Jose", "Tenderloin (SF)"], notes: "Habesha community spread across the Bay Area with restaurants and cultural events." },
+      { country: "Eritrea", countryFlag: "🇪🇷", population: "~10,000+", neighborhoods: ["Oakland", "Richmond"], notes: "Eritrean community with strong presence in Oakland's East African corridor." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~10,000+", neighborhoods: ["Oakland", "Fremont", "San Jose"], notes: "Nigerian tech professionals and community in the South Bay and East Bay." },
+    ],
+  },
+  {
+    city: "Philadelphia", state: "PA", flag: "🔔",
+    communities: [
+      { country: "Liberia", countryFlag: "🇱🇷", population: "~10,000+", neighborhoods: ["Southwest Philadelphia", "Upper Darby"], notes: "Significant Liberian community with churches, restaurants, and cultural associations." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~10,000+", neighborhoods: ["Upper Darby", "Cheltenham", "Northeast Philly"], notes: "Nigerian community with active Igbo and Yoruba organizations." },
+    ],
+  },
+  {
+    city: "Seattle", state: "WA", flag: "☕",
+    communities: [
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~30,000+", neighborhoods: ["Central District", "Rainier Beach", "Columbia City"], notes: "One of the largest Ethiopian communities on the West Coast. The Central District has deep Habesha roots." },
+      { country: "Eritrea", countryFlag: "🇪🇷", population: "~15,000+", neighborhoods: ["Central District", "Rainier Valley"], notes: "Eritrean community alongside Ethiopian neighbors in south Seattle." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~20,000+", neighborhoods: ["Rainier Beach", "Tukwila", "SeaTac"], notes: "Growing Somali community in south King County with mosques and businesses." },
+    ],
+  },
+  {
+    city: "Sioux Falls & Fargo", state: "SD/ND", flag: "🌾",
+    communities: [
+      { country: "South Sudan", countryFlag: "🇸🇸", population: "~5,000+", neighborhoods: ["North Sioux Falls", "Downtown Fargo"], notes: "Nuer and Dinka communities working in meatpacking. One of the fastest-growing African communities in the region." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~3,000+", neighborhoods: ["Sioux Falls", "Fargo"], notes: "Somali community growing alongside South Sudanese diaspora in the Dakotas." },
+    ],
+  },
+];
+
 const categoryIcon: Record<string, string> = {
   language: "🗣️",
   dance: "💃",
@@ -382,6 +546,7 @@ const CultureLearnScreen = () => {
   const [expandedLang, setExpandedLang] = useState<string | null>(null);
   const [expandedDance, setExpandedDance] = useState<string | null>(null);
   const [expandedConn, setExpandedConn] = useState<string | null>(null);
+  const [expandedHub, setExpandedHub] = useState<string | null>(null);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -391,23 +556,27 @@ const CultureLearnScreen = () => {
           <Sparkles size={20} className="text-primary" />
           <h1 className="font-display text-lg font-bold text-foreground">Culture Learn</h1>
         </div>
-        <p className="text-xs text-muted-foreground mt-0.5">Language phrases · Dance origins · Diaspora culture</p>
+        <p className="text-xs text-muted-foreground mt-0.5">Phrases · Dances · Connections · Diaspora Hubs</p>
       </div>
 
       <Tabs defaultValue="languages" className="w-full">
         <div className="px-4 pt-3">
           <TabsList className="w-full bg-secondary">
-            <TabsTrigger value="languages" className="flex-1 gap-1 text-xs data-[state=active]:gradient-gold data-[state=active]:text-primary-foreground">
-              <Globe size={13} />
+            <TabsTrigger value="languages" className="flex-1 gap-1 text-[11px] data-[state=active]:gradient-gold data-[state=active]:text-primary-foreground">
+              <Globe size={12} />
               Phrases
             </TabsTrigger>
-            <TabsTrigger value="dances" className="flex-1 gap-1 text-xs data-[state=active]:gradient-gold data-[state=active]:text-primary-foreground">
-              <Music size={13} />
+            <TabsTrigger value="dances" className="flex-1 gap-1 text-[11px] data-[state=active]:gradient-gold data-[state=active]:text-primary-foreground">
+              <Music size={12} />
               Dances
             </TabsTrigger>
-            <TabsTrigger value="connections" className="flex-1 gap-1 text-xs data-[state=active]:gradient-gold data-[state=active]:text-primary-foreground">
-              <Link2 size={13} />
-              Connections
+            <TabsTrigger value="connections" className="flex-1 gap-1 text-[11px] data-[state=active]:gradient-gold data-[state=active]:text-primary-foreground">
+              <Link2 size={12} />
+              Links
+            </TabsTrigger>
+            <TabsTrigger value="hubs" className="flex-1 gap-1 text-[11px] data-[state=active]:gradient-gold data-[state=active]:text-primary-foreground">
+              <MapPin size={12} />
+              Hubs
             </TabsTrigger>
           </TabsList>
         </div>
@@ -543,6 +712,65 @@ const CultureLearnScreen = () => {
                         </div>
                       ))}
                     </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </TabsContent>
+
+        {/* ── Diaspora Hubs Tab ── */}
+        <TabsContent value="hubs" className="px-4 mt-3 space-y-3 pb-4">
+          <p className="text-xs text-muted-foreground">Discover which African & Caribbean communities call each US city home.</p>
+          {diasporaHubs.map((hub) => {
+            const isOpen = expandedHub === hub.city;
+            return (
+              <div key={hub.city} className="rounded-xl border border-border bg-card overflow-hidden shadow-card">
+                <button
+                  onClick={() => setExpandedHub(isOpen ? null : hub.city)}
+                  className="w-full flex items-center justify-between p-4 text-left"
+                >
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{hub.flag}</span>
+                    <div>
+                      <p className="font-display font-semibold text-foreground">{hub.city}</p>
+                      <div className="flex items-center gap-1 mt-0.5">
+                        <span className="text-[10px] text-muted-foreground">{hub.state}</span>
+                        <span className="text-[10px] text-muted-foreground">·</span>
+                        <div className="flex gap-0.5">
+                          {hub.communities.slice(0, 4).map((c, i) => (
+                            <span key={i} className="text-xs">{c.countryFlag}</span>
+                          ))}
+                          {hub.communities.length > 4 && <span className="text-[10px] text-muted-foreground">+{hub.communities.length - 4}</span>}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <ChevronRight
+                    size={18}
+                    className={`text-muted-foreground transition-transform duration-200 ${isOpen ? "rotate-90" : ""}`}
+                  />
+                </button>
+
+                {isOpen && (
+                  <div className="border-t border-border px-4 pb-4 space-y-3">
+                    {hub.communities.map((c, i) => (
+                      <div key={i} className="pt-3">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-lg">{c.countryFlag}</span>
+                            <p className="font-display font-semibold text-foreground text-sm">{c.country}</p>
+                          </div>
+                          <span className="text-[11px] font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-full">{c.population}</span>
+                        </div>
+                        <div className="flex flex-wrap gap-1 mb-1.5">
+                          {c.neighborhoods.map((n, ni) => (
+                            <span key={ni} className="px-2 py-0.5 rounded-full bg-secondary text-[10px] font-medium text-foreground">{n}</span>
+                          ))}
+                        </div>
+                        <p className="text-xs text-muted-foreground leading-relaxed">{c.notes}</p>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
