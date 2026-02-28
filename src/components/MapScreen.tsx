@@ -9,6 +9,12 @@ import { events as allEvents, cities, type City } from "@/data/cityData";
 const cityCoords: Record<string, [number, number]> = {
   austin: [30.2672, -97.7431],
   dallas: [32.7767, -96.7970],
+  fortworth: [32.7555, -97.3308],
+  arlington: [32.7357, -97.1081],
+  irving: [32.8140, -96.9489],
+  richardson: [32.9483, -96.7299],
+  carrollton: [32.9537, -96.8903],
+  coppell: [32.9546, -97.0150],
   houston: [29.7604, -95.3698],
   sanantonio: [29.4241, -98.4936],
   paris: [48.8566, 2.3522],

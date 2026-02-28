@@ -284,7 +284,38 @@ export const events: EventItem[] = [
   { id: 216, title: "Colors Festival Dallas 2026", host: "Colors Worldwide", date: "Sat, Mar 15 · 3:00 PM", venue: "Fair Park", city: "dallas", distance: "3.5 mi", image: eventUkAfrobeats, attending: 3200, free: false, price: "$60", category: "Festival" },
   { id: 217, title: "Afro Beats Party — Dallas", host: "AfroHub Dallas", date: "Fri, Mar 14 · 10:00 PM", venue: "House of Blues Dallas", city: "dallas", distance: "1.6 mi", image: eventParty, attending: 480, free: false, price: "$25", category: "Afrobeats" },
 
-  // Houston
+  // Fort Worth
+  { id: 220, title: "Sundance Square Block Party", host: "AfroHub Fort Worth", date: "Fri, Mar 7 · 9:00 PM", venue: "Sundance Square Plaza", city: "fortworth", distance: "0.5 mi", image: eventParty, attending: 280, free: false, price: "$20", category: "Party" },
+  { id: 221, title: "Magnolia Ave Night Market", host: "FW Culture Collective", date: "Sat, Mar 8 · 6:00 PM", venue: "Magnolia Avenue", city: "fortworth", distance: "2.0 mi", image: eventAfricanArt, attending: 190, free: true, category: "Culture" },
+  { id: 222, title: "Cowtown Afrobeats Night", host: "Vibes FW", date: "Sat, Mar 8 · 10:00 PM", venue: "Lola's Saloon", city: "fortworth", distance: "1.5 mi", image: eventParty, attending: 220, free: false, price: "$15", category: "Afrobeats" },
+  { id: 223, title: "Fort Worth Food Truck Festival", host: "FW Foodies", date: "Sun, Mar 9 · 12:00 PM", venue: "Panther Island Pavilion", city: "fortworth", distance: "1.8 mi", image: eventBrunch, attending: 450, free: true, category: "Food" },
+  { id: 224, title: "Gospel Brunch — Fort Worth", host: "Spirit & Soul FW", date: "Sun, Mar 9 · 10:00 AM", venue: "The Worthington Renaissance", city: "fortworth", distance: "0.8 mi", image: eventBrunch, attending: 120, free: false, price: "$35", category: "Party" },
+
+  // Arlington
+  { id: 230, title: "AT&T Stadium Tailgate Party", host: "DFW Diaspora Sports", date: "Sun, Mar 9 · 12:00 PM", venue: "AT&T Stadium Lot", city: "arlington", distance: "0.5 mi", image: eventFootball, attending: 800, free: true, category: "Sports" },
+  { id: 231, title: "Arlington Rooftop Day Party", host: "Elevated Events ARL", date: "Sat, Mar 8 · 2:00 PM", venue: "Texas Live!", city: "arlington", distance: "0.3 mi", image: eventParty, attending: 350, free: false, price: "$25", category: "Party" },
+  { id: 232, title: "UTA African Student Showcase", host: "UTA African Student Org", date: "Fri, Mar 7 · 7:00 PM", venue: "UTA University Center", city: "arlington", distance: "2.0 mi", image: eventAfricanArt, attending: 200, free: true, category: "Culture" },
+  { id: 233, title: "Six Flags After Dark — DFW Linkup", host: "AfroHub DFW", date: "Sat, Mar 15 · 6:00 PM", venue: "Six Flags Over Texas", city: "arlington", distance: "3.5 mi", image: eventParty, attending: 500, free: false, price: "$45", category: "Party" },
+
+  // Irving
+  { id: 240, title: "Las Colinas Jazz & Soul Night", host: "Irving Arts Collective", date: "Fri, Mar 7 · 8:00 PM", venue: "Toyota Music Factory", city: "irving", distance: "1.0 mi", image: eventConcert, attending: 320, free: false, price: "$30", category: "Concert" },
+  { id: 241, title: "Mustang Park Cookout", host: "DFW Brotherhood", date: "Sat, Mar 8 · 12:00 PM", venue: "Mustang Park", city: "irving", distance: "2.5 mi", image: eventBrunch, attending: 150, free: true, category: "Community" },
+  { id: 242, title: "Amapiano Sundays — Irving", host: "Amapiano DFW", date: "Sun, Mar 9 · 4:00 PM", venue: "The Pavilion at Irving", city: "irving", distance: "1.8 mi", image: eventParty, attending: 260, free: false, price: "$20", category: "Afrobeats" },
+
+  // Richardson
+  { id: 250, title: "UTD African Culture Night", host: "UTD African Alliance", date: "Sat, Mar 8 · 6:00 PM", venue: "UTD Student Union", city: "richardson", distance: "1.0 mi", image: eventAfricanArt, attending: 280, free: true, category: "Culture" },
+  { id: 251, title: "Richardson Pickup Basketball", host: "Hoops DFW", date: "Sun, Mar 9 · 10:00 AM", venue: "Heights Recreation Center", city: "richardson", distance: "1.5 mi", image: eventFootball, attending: 40, free: true, category: "Sports" },
+  { id: 252, title: "Tech & Tea Networking Mixer", host: "DFW Tech Diaspora", date: "Wed, Mar 12 · 6:30 PM", venue: "WeWork Richardson", city: "richardson", distance: "0.8 mi", image: eventBrunch, attending: 90, free: true, category: "Networking" },
+
+  // Carrollton
+  { id: 260, title: "Carrollton African Market", host: "DFW African Market", date: "Sat, Mar 8 · 9:00 AM", venue: "Carrollton Town Center", city: "carrollton", distance: "0.5 mi", image: eventAfricanArt, attending: 350, free: true, category: "Culture" },
+  { id: 261, title: "Naija Owambe — Carrollton", host: "Naija DFW", date: "Sat, Mar 8 · 7:00 PM", venue: "Rosewood Event Center", city: "carrollton", distance: "1.2 mi", image: eventParty, attending: 400, free: false, price: "$30", category: "Party" },
+  { id: 262, title: "Carrollton Soccer League", host: "DFW African Soccer", date: "Sun, Mar 9 · 8:00 AM", venue: "Rosemeade Park", city: "carrollton", distance: "1.8 mi", image: eventFootball, attending: 60, free: true, category: "Soccer" },
+
+  // Coppell
+  { id: 270, title: "Coppell Community Cookout", host: "Coppell African Community", date: "Sat, Mar 8 · 1:00 PM", venue: "Andrew Brown Park", city: "coppell", distance: "0.5 mi", image: eventBrunch, attending: 120, free: true, category: "Community" },
+  { id: 271, title: "Coppell Youth Soccer Clinic", host: "DFW Youth Sports", date: "Sun, Mar 9 · 9:00 AM", venue: "Wagon Wheel Park", city: "coppell", distance: "1.0 mi", image: eventFootball, attending: 45, free: true, category: "Sports" },
+
   { id: 300, title: "Midtown Block Party", host: "AfroHub Houston", date: "Fri, Mar 7 · 9:00 PM", venue: "Midtown Houston", city: "houston", distance: "1.0 mi", image: eventParty, attending: 420, free: false, price: "$20", category: "Party" },
   { id: 301, title: "H-Town Gala Night", host: "Luxe Events HTX", date: "Sat, Mar 8 · 8:00 PM", venue: "The Post Oak Hotel", city: "houston", distance: "4.5 mi", image: eventParty, attending: 300, free: false, price: "$50", category: "Party" },
   { id: 302, title: "Third Ward Day Party", host: "Culture Collective HTX", date: "Sat, Mar 8 · 2:00 PM", venue: "Emancipation Park", city: "houston", distance: "2.0 mi", image: eventBrunch, attending: 250, free: true, category: "Party" },
