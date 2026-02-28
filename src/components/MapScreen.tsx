@@ -192,6 +192,22 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
     return points;
   }, [showEvents, showPeople, showGroups]);
 
+  // City name labels for the globe
+  const labelsData = useMemo(() => {
+    return cities
+      .filter((city) => cityCoords[city.id])
+      .map((city) => {
+        const [lat, lng] = cityCoords[city.id];
+        return {
+          lat,
+          lng,
+          text: city.name.split(",")[0], // Just city name, no state/country
+          color: "rgba(255,255,255,0.85)",
+          size: 0.6,
+        };
+      });
+  }, []);
+
   const handleCitySelect = (city: City) => {
     onCityChange(city);
     setShowCityPicker(false);
@@ -313,6 +329,15 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         pointAltitude="altitude"
         pointLabel="label"
         onPointClick={handlePointClick}
+        labelsData={labelsData}
+        labelLat="lat"
+        labelLng="lng"
+        labelText="text"
+        labelSize="size"
+        labelColor="color"
+        labelResolution={2}
+        labelDotRadius={0.3}
+        labelAltitude={0.015}
         onGlobeReady={handleGlobeReady}
         animateIn={true}
       />
