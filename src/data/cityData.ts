@@ -315,4 +315,65 @@ export const events: EventItem[] = [
     distance: "3.6 mi", image: eventNyfw, attending: 5000, free: false,
     price: "$600", category: "Fashion",
   },
+  // New York City — Afrobeats & R&B
+  {
+    id: 40, title: "Wizkid — More Love, Less Ego Tour", host: "Starboy Entertainment",
+    date: "Fri, Sep 19 · 8:00 PM", venue: "Barclays Center, Brooklyn", city: "nyc",
+    distance: "4.1 mi", image: eventUkAfrobeats, attending: 19000, free: false,
+    price: "$95", category: "Afrobeats",
+  },
+  {
+    id: 41, title: "Burna Boy — Stadium Tour NYC", host: "Spaceship Entertainment",
+    date: "Sat, Sep 20 · 7:30 PM", venue: "MetLife Stadium, NJ", city: "nyc",
+    distance: "8.2 mi", image: eventRapConcert, attending: 55000, free: false,
+    price: "$125", category: "Afrobeats",
+  },
+  {
+    id: 42, title: "Davido — Timeless Tour NYC", host: "DMW / Sony Music",
+    date: "Thu, Sep 18 · 8:30 PM", venue: "Madison Square Garden", city: "nyc",
+    distance: "2.1 mi", image: eventConcert, attending: 20000, free: false,
+    price: "$110", category: "Afrobeats",
+  },
+  {
+    id: 43, title: "Rema — Rave & Roses World Tour", host: "Mavin Records",
+    date: "Wed, Sep 17 · 9:00 PM", venue: "Radio City Music Hall", city: "nyc",
+    distance: "2.4 mi", image: eventUkAfrobeats, attending: 6000, free: false,
+    price: "$85", category: "Afrobeats",
+  },
+  {
+    id: 44, title: "Falz — The Experience NYC", host: "Bahd Guys Records",
+    date: "Sun, Sep 21 · 7:00 PM", venue: "Kings Theatre, Brooklyn", city: "nyc",
+    distance: "5.8 mi", image: eventParty, attending: 3200, free: false,
+    price: "$65", category: "Afrobeats",
+  },
+  {
+    id: 45, title: "Fally Ipupa — Tokooos World Tour", host: "Wati B Productions",
+    date: "Fri, Sep 26 · 9:00 PM", venue: "Beacon Theatre", city: "nyc",
+    distance: "3.7 mi", image: eventRapConcert, attending: 2800, free: false,
+    price: "$90", category: "Afrobeats",
+  },
+  {
+    id: 46, title: "Brent Faiyaz — Larger Than Life Tour", host: "Lost Kids",
+    date: "Sat, Sep 27 · 8:00 PM", venue: "Forest Hills Stadium, Queens", city: "nyc",
+    distance: "9.3 mi", image: eventNycHiphop, attending: 14000, free: false,
+    price: "$100", category: "R&B",
+  },
+  {
+    id: 47, title: "Awilo Longomba — Coupe Bibamba Live", host: "Soukous Stars Intl",
+    date: "Fri, Oct 3 · 9:30 PM", venue: "Terminal 5, Hell's Kitchen", city: "nyc",
+    distance: "2.9 mi", image: eventParty, attending: 3000, free: false,
+    price: "$75", category: "Afrobeats",
+  },
+  {
+    id: 48, title: "Koffi Olomidé — Legend of Rumba", host: "Quartier Latin Intl",
+    date: "Sat, Oct 4 · 8:30 PM", venue: "Apollo Theater, Harlem", city: "nyc",
+    distance: "5.2 mi", image: eventConcert, attending: 1500, free: false,
+    price: "$80", category: "Afrobeats",
+  },
+  {
+    id: 49, title: "Afro Nation NYC 2026", host: "Afro Nation",
+    date: "Oct 10–12 · 12:00 PM", venue: "Randall's Island Park", city: "nyc",
+    distance: "4.5 mi", image: eventUkAfrobeats, attending: 40000, free: false,
+    price: "$199", category: "Festival",
+  },
 ];
