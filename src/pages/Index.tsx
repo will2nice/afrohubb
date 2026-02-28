@@ -12,6 +12,7 @@ import { cities, type City } from "@/data/cityData";
 const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>("feed");
   const [selectedCity, setSelectedCity] = useState<City>(cities[0]);
+  const unreadMessages = 7; // Mock unread count
 
   return (
     <div className="max-w-lg mx-auto min-h-screen bg-background relative">
@@ -19,10 +20,10 @@ const Index = () => {
       {activeTab === "reels" && <ReelsScreen />}
       {activeTab === "map" && <MapScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "match" && <MatchScreen />}
-      {activeTab === "events" && <EventsScreen selectedCity={selectedCity} />}
+      {activeTab === "events" && <EventsScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "messages" && <MessagesScreen />}
       {activeTab === "profile" && <ProfileScreen />}
-      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} />
+      <BottomNav activeTab={activeTab} onTabChange={setActiveTab} unreadMessages={unreadMessages} />
     </div>
   );
 };
