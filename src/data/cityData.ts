@@ -43,6 +43,31 @@ export const cities: City[] = [
   { id: "dc", name: "Washington, DC", flag: "🇺🇸" },
   { id: "portland", name: "Portland, OR", flag: "🇺🇸" },
   { id: "boston", name: "Boston, MA", flag: "🇺🇸" },
+  { id: "losangeles", name: "Los Angeles, CA", flag: "🇺🇸" },
+  { id: "sanfrancisco", name: "San Francisco, CA", flag: "🇺🇸" },
+  { id: "sandiego", name: "San Diego, CA", flag: "🇺🇸" },
+  { id: "lasvegas", name: "Las Vegas, NV", flag: "🇺🇸" },
+  { id: "phoenix", name: "Phoenix, AZ", flag: "🇺🇸" },
+  { id: "scottsdale", name: "Scottsdale, AZ", flag: "🇺🇸" },
+  { id: "denver", name: "Denver, CO", flag: "🇺🇸" },
+  { id: "chicago", name: "Chicago, IL", flag: "🇺🇸" },
+  { id: "detroit", name: "Detroit, MI", flag: "🇺🇸" },
+  { id: "grandrapids", name: "Grand Rapids, MI", flag: "🇺🇸" },
+  { id: "lansing", name: "Lansing, MI", flag: "🇺🇸" },
+  { id: "cleveland", name: "Cleveland, OH", flag: "🇺🇸" },
+  { id: "kansascity", name: "Kansas City, MO", flag: "🇺🇸" },
+  { id: "lincoln", name: "Lincoln, NE", flag: "🇺🇸" },
+  { id: "omaha", name: "Omaha, NE", flag: "🇺🇸" },
+  { id: "wichita", name: "Wichita, KS", flag: "🇺🇸" },
+  { id: "lubbock", name: "Lubbock, TX", flag: "🇺🇸" },
+  { id: "richmond", name: "Richmond, VA", flag: "🇺🇸" },
+  { id: "norfolk", name: "Norfolk, VA", flag: "🇺🇸" },
+  { id: "providence", name: "Providence, RI", flag: "🇺🇸" },
+  { id: "bridgeport", name: "Bridgeport, CT", flag: "🇺🇸" },
+  { id: "manchester", name: "Manchester, NH", flag: "🇺🇸" },
+  { id: "siouxfalls", name: "Sioux Falls, SD", flag: "🇺🇸" },
+  { id: "fargo", name: "Fargo, ND", flag: "🇺🇸" },
+  { id: "saltlakecity", name: "Salt Lake City, UT", flag: "🇺🇸" },
   // Canada
   { id: "toronto", name: "Toronto, Canada", flag: "🇨🇦" },
   { id: "calgary", name: "Calgary, Canada", flag: "🇨🇦" },
@@ -801,4 +826,121 @@ export const events: EventItem[] = [
   { id: 962, title: "Haitian Heritage Festival MTL", host: "Haitian Society QC", date: "Sat, Mar 15 · 11:00 AM", venue: "Little Haiti MTL", city: "montreal", distance: "4.0 km", image: eventAfricanArt, attending: 4000, free: true, category: "Festival" },
   { id: 963, title: "Congolese Rumba Night MTL", host: "Congo Society QC", date: "Fri, Mar 14 · 9:00 PM", venue: "Le National", city: "montreal", distance: "1.0 km", image: eventConcert, attending: 500, free: false, price: "CA$25", category: "Party" },
   { id: 964, title: "Brunch Diaspora Montréal", host: "Afro Brunch MTL", date: "Sun, Mar 16 · 11:00 AM", venue: "Le Jardin Nelson", city: "montreal", distance: "0.5 km", image: eventBrunch, attending: 150, free: false, price: "CA$40", category: "Party" },
+
+  // Los Angeles
+  { id: 1000, title: "LA Afrobeats Festival", host: "AfroHub LA", date: "Sat, Mar 15 · 2:00 PM", venue: "Exposition Park", city: "losangeles", distance: "3.0 mi", image: eventUkAfrobeats, attending: 10000, free: false, price: "$55", category: "Festival" },
+  { id: 1001, title: "Inglewood Block Party", host: "Culture Collective LA", date: "Sat, Mar 15 · 4:00 PM", venue: "Market Street Inglewood", city: "losangeles", distance: "5.0 mi", image: eventParty, attending: 2000, free: true, category: "Party" },
+  { id: 1002, title: "Afro-Caribbean Night LA", host: "Caribbean Vibes LA", date: "Fri, Mar 14 · 10:00 PM", venue: "Academy LA", city: "losangeles", distance: "2.0 mi", image: eventParty, attending: 1200, free: false, price: "$35", category: "Party" },
+  { id: 1003, title: "Leimert Park Jazz & Soul", host: "Leimert Park Village", date: "Sun, Mar 16 · 1:00 PM", venue: "Leimert Park", city: "losangeles", distance: "4.0 mi", image: eventConcert, attending: 800, free: true, category: "Party" },
+
+  // San Francisco
+  { id: 1010, title: "SF Afrobeats Night", host: "AfroHub SF", date: "Sat, Mar 15 · 10:00 PM", venue: "1015 Folsom", city: "sanfrancisco", distance: "1.0 mi", image: eventParty, attending: 600, free: false, price: "$30", category: "Party" },
+  { id: 1011, title: "Oakland Diaspora Festival", host: "African Community OAK", date: "Sat, Mar 15 · 12:00 PM", venue: "Lake Merritt", city: "sanfrancisco", distance: "6.0 mi", image: eventAfricanArt, attending: 3000, free: true, category: "Festival" },
+  { id: 1012, title: "Bay Area Jollof Wars", host: "Naija Bay Area", date: "Sun, Mar 16 · 12:00 PM", venue: "SoMa StrEat Food Park", city: "sanfrancisco", distance: "1.5 mi", image: eventBrunch, attending: 400, free: false, price: "$15", category: "Party" },
+
+  // San Diego
+  { id: 1020, title: "San Diego Afrobeats Night", host: "AfroHub SD", date: "Sat, Mar 15 · 10:00 PM", venue: "Music Box SD", city: "sandiego", distance: "1.0 mi", image: eventParty, attending: 400, free: false, price: "$25", category: "Party" },
+  { id: 1021, title: "Pacific Beach Day Party", host: "Vibes SD", date: "Sat, Mar 15 · 2:00 PM", venue: "Pacific Beach", city: "sandiego", distance: "4.0 mi", image: eventBrunch, attending: 500, free: false, price: "$30", category: "Party" },
+  { id: 1022, title: "African Heritage Festival SD", host: "African Society SD", date: "Sun, Mar 16 · 11:00 AM", venue: "Balboa Park", city: "sandiego", distance: "2.0 mi", image: eventAfricanArt, attending: 1500, free: true, category: "Festival" },
+
+  // Las Vegas
+  { id: 1030, title: "Vegas Afrobeats Weekend", host: "AfroHub Vegas", date: "Sat, Mar 15 · 10:00 PM", venue: "Drai's Nightclub", city: "lasvegas", distance: "0.5 mi", image: eventParty, attending: 2000, free: false, price: "$50", category: "Party" },
+  { id: 1031, title: "Pool Party — Afro Edition", host: "Daylight Vegas", date: "Sat, Mar 15 · 1:00 PM", venue: "Encore Beach Club", city: "lasvegas", distance: "1.0 mi", image: eventBrunch, attending: 1500, free: false, price: "$60", category: "Party" },
+  { id: 1032, title: "Burna Boy — Vegas Live", host: "Spaceship Ent.", date: "Fri, Mar 14 · 9:00 PM", venue: "T-Mobile Arena", city: "lasvegas", distance: "0.8 mi", image: eventRapConcert, attending: 15000, free: false, price: "$95", category: "Afrobeats" },
+
+  // Phoenix
+  { id: 1040, title: "Phoenix Afrobeats Night", host: "AfroHub Phoenix", date: "Sat, Mar 15 · 10:00 PM", venue: "Crescent Ballroom", city: "phoenix", distance: "1.0 mi", image: eventParty, attending: 500, free: false, price: "$20", category: "Party" },
+  { id: 1041, title: "African Heritage Festival AZ", host: "African Community AZ", date: "Sat, Mar 15 · 11:00 AM", venue: "Steele Indian School Park", city: "phoenix", distance: "3.0 mi", image: eventAfricanArt, attending: 2000, free: true, category: "Festival" },
+  { id: 1042, title: "Desert Cookout & Vibes", host: "Desert Diaspora AZ", date: "Sun, Mar 16 · 12:00 PM", venue: "Papago Park", city: "phoenix", distance: "5.0 mi", image: eventBrunch, attending: 400, free: true, category: "Community" },
+
+  // Scottsdale
+  { id: 1050, title: "Scottsdale Rooftop Party", host: "Luxe Vibes AZ", date: "Sat, Mar 15 · 8:00 PM", venue: "W Scottsdale Rooftop", city: "scottsdale", distance: "0.5 mi", image: eventParty, attending: 300, free: false, price: "$40", category: "Party" },
+  { id: 1051, title: "Old Town Day Party", host: "Vibes Scottsdale", date: "Sat, Mar 15 · 2:00 PM", venue: "Old Town Scottsdale", city: "scottsdale", distance: "0.3 mi", image: eventBrunch, attending: 250, free: false, price: "$30", category: "Party" },
+
+  // Denver
+  { id: 1060, title: "Denver Afrobeats Night", host: "AfroHub Denver", date: "Sat, Mar 15 · 10:00 PM", venue: "Temple Nightclub", city: "denver", distance: "1.0 mi", image: eventParty, attending: 600, free: false, price: "$25", category: "Party" },
+  { id: 1061, title: "Mile High African Festival", host: "African Society CO", date: "Sat, Mar 15 · 11:00 AM", venue: "City Park", city: "denver", distance: "2.5 mi", image: eventAfricanArt, attending: 2500, free: true, category: "Festival" },
+  { id: 1062, title: "Ethiopian Culture Night Denver", host: "Ethiopian Society CO", date: "Fri, Mar 14 · 7:00 PM", venue: "Ogden Theatre", city: "denver", distance: "1.5 mi", image: eventConcert, attending: 500, free: false, price: "$20", category: "Party" },
+
+  // Chicago
+  { id: 1070, title: "Chicago Afrobeats Festival", host: "AfroHub Chicago", date: "Sat, Mar 15 · 2:00 PM", venue: "Grant Park", city: "chicago", distance: "1.0 mi", image: eventUkAfrobeats, attending: 8000, free: false, price: "$50", category: "Festival" },
+  { id: 1071, title: "South Side Block Party", host: "Chi-Town Culture", date: "Sat, Mar 15 · 4:00 PM", venue: "Bronzeville", city: "chicago", distance: "3.0 mi", image: eventParty, attending: 2000, free: true, category: "Party" },
+  { id: 1072, title: "Afro House Night — Chicago", host: "Vibes CHI", date: "Fri, Mar 14 · 10:00 PM", venue: "Smart Bar", city: "chicago", distance: "4.0 mi", image: eventParty, attending: 500, free: false, price: "$20", category: "Party" },
+  { id: 1073, title: "Jollof Wars Chicago", host: "Naija Community CHI", date: "Sun, Mar 16 · 12:00 PM", venue: "Millennium Park", city: "chicago", distance: "0.5 mi", image: eventBrunch, attending: 600, free: false, price: "$15", category: "Party" },
+  { id: 1074, title: "Davido — Chicago Live", host: "DMW / Sony Music", date: "Fri, Mar 14 · 8:00 PM", venue: "United Center", city: "chicago", distance: "2.0 mi", image: eventConcert, attending: 18000, free: false, price: "$100", category: "Afrobeats" },
+
+  // Detroit
+  { id: 1080, title: "Detroit Afrobeats Night", host: "AfroHub Detroit", date: "Sat, Mar 15 · 10:00 PM", venue: "TV Lounge", city: "detroit", distance: "1.0 mi", image: eventParty, attending: 500, free: false, price: "$20", category: "Party" },
+  { id: 1081, title: "Motown x Afrobeats Fusion", host: "Motor City Vibes", date: "Fri, Mar 14 · 9:00 PM", venue: "El Club", city: "detroit", distance: "2.0 mi", image: eventRapConcert, attending: 400, free: false, price: "$25", category: "Party" },
+  { id: 1082, title: "African World Festival Detroit", host: "Charles H. Wright Museum", date: "Sat, Mar 15 · 11:00 AM", venue: "Charles H. Wright Museum", city: "detroit", distance: "1.5 mi", image: eventAfricanArt, attending: 5000, free: true, category: "Festival" },
+  { id: 1083, title: "Chaldean & African Brunch", host: "Detroit Diaspora", date: "Sun, Mar 16 · 11:00 AM", venue: "Dearborn Social", city: "detroit", distance: "6.0 mi", image: eventBrunch, attending: 200, free: false, price: "$35", category: "Party" },
+
+  // Grand Rapids
+  { id: 1090, title: "GR Afrobeats Night", host: "AfroHub Grand Rapids", date: "Sat, Mar 15 · 9:00 PM", venue: "The Intersection", city: "grandrapids", distance: "1.0 mi", image: eventParty, attending: 350, free: false, price: "$15", category: "Party" },
+  { id: 1091, title: "West Michigan African Festival", host: "African Community GR", date: "Sat, Mar 15 · 11:00 AM", venue: "Calder Plaza", city: "grandrapids", distance: "0.5 mi", image: eventAfricanArt, attending: 1500, free: true, category: "Festival" },
+
+  // Lansing
+  { id: 1095, title: "Lansing African Night", host: "AfroHub Lansing", date: "Sat, Mar 15 · 9:00 PM", venue: "The Loft", city: "lansing", distance: "0.8 mi", image: eventParty, attending: 250, free: false, price: "$15", category: "Party" },
+  { id: 1096, title: "MSU Diaspora Festival", host: "MSU African Student Org", date: "Sat, Mar 15 · 12:00 PM", venue: "MSU Campus", city: "lansing", distance: "3.0 mi", image: eventAfricanArt, attending: 800, free: true, category: "Festival" },
+
+  // Cleveland
+  { id: 1100, title: "Cleveland Afrobeats Night", host: "AfroHub Cleveland", date: "Sat, Mar 15 · 10:00 PM", venue: "House of Blues Cleveland", city: "cleveland", distance: "0.5 mi", image: eventParty, attending: 500, free: false, price: "$20", category: "Party" },
+  { id: 1101, title: "CLE African Festival", host: "African Community CLE", date: "Sat, Mar 15 · 11:00 AM", venue: "Mall B Downtown", city: "cleveland", distance: "0.3 mi", image: eventAfricanArt, attending: 2000, free: true, category: "Festival" },
+  { id: 1102, title: "R&B x Afrobeats Brunch CLE", host: "Vibes CLE", date: "Sun, Mar 16 · 11:00 AM", venue: "Lago East Bank", city: "cleveland", distance: "1.0 mi", image: eventBrunch, attending: 150, free: false, price: "$35", category: "Party" },
+
+  // Kansas City
+  { id: 1110, title: "KC Afrobeats Night", host: "AfroHub KC", date: "Sat, Mar 15 · 10:00 PM", venue: "The Truman", city: "kansascity", distance: "1.0 mi", image: eventParty, attending: 450, free: false, price: "$20", category: "Party" },
+  { id: 1111, title: "Kansas City African Festival", host: "African Society KC", date: "Sat, Mar 15 · 11:00 AM", venue: "Swope Park", city: "kansascity", distance: "5.0 mi", image: eventAfricanArt, attending: 2000, free: true, category: "Festival" },
+  { id: 1112, title: "BBQ & Beats — KC Style", host: "KC Diaspora", date: "Sun, Mar 16 · 12:00 PM", venue: "18th & Vine District", city: "kansascity", distance: "1.5 mi", image: eventBrunch, attending: 500, free: false, price: "$15", category: "Party" },
+
+  // Lincoln
+  { id: 1120, title: "Lincoln African Night", host: "AfroHub Lincoln", date: "Sat, Mar 15 · 9:00 PM", venue: "Bourbon Theatre", city: "lincoln", distance: "0.5 mi", image: eventParty, attending: 250, free: false, price: "$15", category: "Party" },
+  { id: 1121, title: "UNL African Student Showcase", host: "UNL African Student Org", date: "Sat, Mar 15 · 2:00 PM", venue: "UNL Student Union", city: "lincoln", distance: "1.0 mi", image: eventAfricanArt, attending: 500, free: true, category: "Culture" },
+
+  // Omaha
+  { id: 1130, title: "Omaha Afrobeats Night", host: "AfroHub Omaha", date: "Sat, Mar 15 · 10:00 PM", venue: "The Waiting Room", city: "omaha", distance: "1.0 mi", image: eventParty, attending: 350, free: false, price: "$15", category: "Party" },
+  { id: 1131, title: "North Omaha Block Party", host: "Omaha Diaspora", date: "Sat, Mar 15 · 12:00 PM", venue: "North 24th Street", city: "omaha", distance: "2.0 mi", image: eventBrunch, attending: 800, free: true, category: "Community" },
+  { id: 1132, title: "Sudanese Festival Omaha", host: "Sudanese Society NE", date: "Sun, Mar 16 · 1:00 PM", venue: "Hanscom Park", city: "omaha", distance: "3.0 mi", image: eventAfricanArt, attending: 1200, free: true, category: "Festival" },
+
+  // Wichita
+  { id: 1140, title: "Wichita African Night", host: "AfroHub Wichita", date: "Sat, Mar 15 · 9:00 PM", venue: "Wave Wichita", city: "wichita", distance: "0.8 mi", image: eventParty, attending: 250, free: false, price: "$15", category: "Party" },
+  { id: 1141, title: "ICT African Festival", host: "African Community KS", date: "Sat, Mar 15 · 11:00 AM", venue: "Naftzger Park", city: "wichita", distance: "0.5 mi", image: eventAfricanArt, attending: 1000, free: true, category: "Festival" },
+
+  // Lubbock
+  { id: 1150, title: "Lubbock Afrobeats Night", host: "AfroHub Lubbock", date: "Sat, Mar 15 · 9:00 PM", venue: "Jake's Sports Café", city: "lubbock", distance: "1.0 mi", image: eventParty, attending: 200, free: false, price: "$10", category: "Party" },
+  { id: 1151, title: "Texas Tech African Showcase", host: "TTU African Student Org", date: "Sat, Mar 15 · 2:00 PM", venue: "TTU Student Union", city: "lubbock", distance: "1.5 mi", image: eventAfricanArt, attending: 400, free: true, category: "Culture" },
+
+  // Richmond
+  { id: 1160, title: "RVA Afrobeats Night", host: "AfroHub Richmond", date: "Sat, Mar 15 · 10:00 PM", venue: "The National", city: "richmond", distance: "0.5 mi", image: eventParty, attending: 500, free: false, price: "$20", category: "Party" },
+  { id: 1161, title: "Richmond African Festival", host: "African Society VA", date: "Sat, Mar 15 · 11:00 AM", venue: "Brown's Island", city: "richmond", distance: "0.3 mi", image: eventAfricanArt, attending: 2000, free: true, category: "Festival" },
+  { id: 1162, title: "Jackson Ward Block Party", host: "RVA Culture", date: "Sat, Mar 15 · 3:00 PM", venue: "Jackson Ward", city: "richmond", distance: "0.8 mi", image: eventBrunch, attending: 600, free: true, category: "Party" },
+
+  // Norfolk
+  { id: 1170, title: "Norfolk Afrobeats Night", host: "AfroHub Norfolk", date: "Sat, Mar 15 · 10:00 PM", venue: "The NorVa", city: "norfolk", distance: "0.5 mi", image: eventParty, attending: 450, free: false, price: "$20", category: "Party" },
+  { id: 1171, title: "Hampton Roads Caribbean Fest", host: "Caribbean Society VA", date: "Sat, Mar 15 · 12:00 PM", venue: "Town Point Park", city: "norfolk", distance: "0.3 mi", image: eventUkAfrobeats, attending: 3000, free: false, price: "$25", category: "Festival" },
+
+  // Providence
+  { id: 1180, title: "Providence Afrobeats Night", host: "AfroHub Providence", date: "Sat, Mar 15 · 10:00 PM", venue: "Fête Music Hall", city: "providence", distance: "1.0 mi", image: eventParty, attending: 350, free: false, price: "$20", category: "Party" },
+  { id: 1181, title: "Cape Verdean Festival PVD", host: "Cape Verde Society RI", date: "Sat, Mar 15 · 12:00 PM", venue: "India Point Park", city: "providence", distance: "1.5 mi", image: eventAfricanArt, attending: 2000, free: true, category: "Festival" },
+
+  // Bridgeport
+  { id: 1190, title: "Bridgeport Caribbean Festival", host: "Caribbean Society CT", date: "Sat, Mar 15 · 12:00 PM", venue: "Seaside Park", city: "bridgeport", distance: "1.0 mi", image: eventUkAfrobeats, attending: 2000, free: false, price: "$15", category: "Festival" },
+  { id: 1191, title: "CT Afrobeats Night", host: "AfroHub CT", date: "Fri, Mar 14 · 10:00 PM", venue: "The Acoustic", city: "bridgeport", distance: "0.5 mi", image: eventParty, attending: 300, free: false, price: "$20", category: "Party" },
+
+  // Manchester NH
+  { id: 1200, title: "NH African Community Night", host: "African Society NH", date: "Sat, Mar 15 · 7:00 PM", venue: "The Palace Theatre", city: "manchester", distance: "0.5 mi", image: eventConcert, attending: 300, free: false, price: "$20", category: "Party" },
+  { id: 1201, title: "Congolese Gathering Manchester", host: "Congo Society NH", date: "Sun, Mar 16 · 1:00 PM", venue: "Veterans Memorial Park", city: "manchester", distance: "1.0 mi", image: eventAfricanArt, attending: 400, free: true, category: "Community" },
+
+  // Sioux Falls
+  { id: 1210, title: "Sioux Falls African Festival", host: "African Community SD", date: "Sat, Mar 15 · 11:00 AM", venue: "Falls Park", city: "siouxfalls", distance: "1.0 mi", image: eventAfricanArt, attending: 1000, free: true, category: "Festival" },
+  { id: 1211, title: "East African Night SF", host: "Horn of Africa SD", date: "Sat, Mar 15 · 8:00 PM", venue: "The District", city: "siouxfalls", distance: "0.5 mi", image: eventParty, attending: 250, free: false, price: "$15", category: "Party" },
+
+  // Fargo
+  { id: 1220, title: "Fargo African Festival", host: "African Community ND", date: "Sat, Mar 15 · 11:00 AM", venue: "Island Park", city: "fargo", distance: "0.5 mi", image: eventAfricanArt, attending: 800, free: true, category: "Festival" },
+  { id: 1221, title: "New American Night Fargo", host: "New Americans ND", date: "Fri, Mar 14 · 8:00 PM", venue: "The Aquarium", city: "fargo", distance: "0.8 mi", image: eventParty, attending: 200, free: false, price: "$10", category: "Party" },
+
+  // Salt Lake City
+  { id: 1230, title: "SLC Afrobeats Night", host: "AfroHub SLC", date: "Sat, Mar 15 · 10:00 PM", venue: "The Urban Lounge", city: "saltlakecity", distance: "1.0 mi", image: eventParty, attending: 350, free: false, price: "$20", category: "Party" },
+  { id: 1231, title: "Utah African Festival", host: "African Society UT", date: "Sat, Mar 15 · 11:00 AM", venue: "Liberty Park", city: "saltlakecity", distance: "1.5 mi", image: eventAfricanArt, attending: 1500, free: true, category: "Festival" },
+  { id: 1232, title: "Congolese Community Day SLC", host: "Congo Society UT", date: "Sun, Mar 16 · 1:00 PM", venue: "Pioneer Park", city: "saltlakecity", distance: "0.5 mi", image: eventBrunch, attending: 400, free: true, category: "Community" },
 ];
