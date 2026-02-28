@@ -1,38 +1,168 @@
-import { useEffect, useRef, useState, useCallback } from "react";
-import maplibregl from "maplibre-gl";
-import "maplibre-gl/dist/maplibre-gl.css";
+import { useEffect, useState } from "react";
+import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X } from "lucide-react";
 import { events as allEvents, cities, type City } from "@/data/cityData";
-import { cityCoords } from "@/data/globeCoords";
 
-// People data generator
-const basePeople = [
-  { name: "Amara", age: 24, status: "Looking for events", vibe: "🎶" },
-  { name: "Kofi", age: 27, status: "Down to hang", vibe: "🏀" },
-  { name: "Chidera", age: 22, status: "New in town!", vibe: "✈️" },
-  { name: "Sophie", age: 25, status: "Looking for brunch crew", vibe: "🥂" },
-  { name: "Dayo", age: 29, status: "Down to hang", vibe: "🎧" },
-  { name: "Nneka", age: 23, status: "Want to explore the city", vibe: "🌆" },
-  { name: "Marcus", age: 26, status: "Looking for events", vibe: "🔥" },
-  { name: "Jasmine", age: 24, status: "Down for anything", vibe: "💃" },
-  { name: "Tunde", age: 28, status: "Looking for gym buddy", vibe: "💪" },
-  { name: "Priya", age: 25, status: "Foodie exploring", vibe: "🍜" },
-  { name: "Kwame", age: 30, status: "Networking & vibes", vibe: "🤝" },
-  { name: "Zara", age: 21, status: "Just moved here!", vibe: "🌟" },
-];
+// City coordinates - includes Brazil
+const cityCoords: Record<string, [number, number]> = {
+  austin: [30.2672, -97.7431],
+  dallas: [32.7767, -96.7970],
+  fortworth: [32.7555, -97.3308],
+  arlington: [32.7357, -97.1081],
+  irving: [32.8140, -96.9489],
+  richardson: [32.9483, -96.7299],
+  carrollton: [32.9537, -96.8903],
+  coppell: [32.9546, -97.0150],
+  houston: [29.7604, -95.3698],
+  sanantonio: [29.4241, -98.4936],
+  // US Major Cities
+  nyc: [40.7128, -74.006],
+  atlanta: [33.7490, -84.3880],
+  miami: [25.7617, -80.1918],
+  orlando: [28.5383, -81.3792],
+  philadelphia: [39.9526, -75.1652],
+  raleigh: [35.7796, -78.6382],
+  nashville: [36.1627, -86.7816],
+  memphis: [35.1495, -90.0490],
+  desmoines: [41.5868, -93.6250],
+  minneapolis: [44.9778, -93.2650],
+  milwaukee: [43.0389, -87.9065],
+  seattle: [47.6062, -122.3321],
+  dc: [38.9072, -77.0369],
+  portland: [45.5152, -122.6784],
+  boston: [42.3601, -71.0589],
+  losangeles: [34.0522, -118.2437],
+  sanfrancisco: [37.7749, -122.4194],
+  sandiego: [32.7157, -117.1611],
+  lasvegas: [36.1699, -115.1398],
+  phoenix: [33.4484, -112.0740],
+  scottsdale: [33.4942, -111.9261],
+  denver: [39.7392, -104.9903],
+  chicago: [41.8781, -87.6298],
+  detroit: [42.3314, -83.0458],
+  grandrapids: [42.9634, -85.6681],
+  lansing: [42.7325, -84.5555],
+  cleveland: [41.4993, -81.6944],
+  kansascity: [39.0997, -94.5786],
+  lincoln: [40.8136, -96.7026],
+  omaha: [41.2565, -95.9345],
+  wichita: [37.6872, -97.3301],
+  lubbock: [33.5779, -101.8552],
+  richmond: [37.5407, -77.4360],
+  norfolk: [36.8508, -76.2859],
+  providence: [41.8240, -71.4128],
+  bridgeport: [41.1865, -73.1952],
+  manchester: [42.9956, -71.4548],
+  siouxfalls: [43.5446, -96.7311],
+  fargo: [46.8772, -96.7898],
+  saltlakecity: [40.7608, -111.8910],
+  // Canada
+  toronto: [43.6532, -79.3832],
+  calgary: [51.0447, -114.0719],
+  montreal: [45.5017, -73.5673],
+  // Europe
+  paris: [48.8566, 2.3522],
+  london: [51.5074, -0.1278],
+  brussels: [50.8503, 4.3517],
+  amsterdam: [52.3676, 4.9041],
+  rotterdam: [51.9244, 4.4777],
+  antwerp: [51.2194, 4.4025],
+  barcelona: [41.3874, 2.1686],
+  madrid: [40.4168, -3.7038],
+  bordeaux: [44.8378, -0.5792],
+  stockholm: [59.3293, 18.0686],
+  rome: [41.9028, 12.4964],
+  positano: [40.6281, 14.4850],
+  athens: [37.9838, 23.7275],
+  istanbul: [41.0082, 28.9784],
+  berlin: [52.5200, 13.4050],
+  dublin: [53.3498, -6.2603],
+  copenhagen: [55.6761, 12.5683],
+  oslo: [59.9139, 10.7522],
+  helsinki: [60.1699, 24.9384],
+  // Brazil
+  rio: [-22.9068, -43.1729],
+  saopaulo: [-23.5505, -46.6333],
+  salvador: [-12.9714, -38.5124],
+};
+
+// Custom marker icons
+const eventIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(25,95%,55%),hsl(43,96%,56%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(0,0%,5%)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3v4M8 3v4M2 11h20"/></svg>
+  </div>`,
+  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
+});
+
+const personIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:32px;height:32px;border-radius:50%;background:hsl(0,0%,16%);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(43,96%,56%);">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="hsl(43,96%,56%)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+  </div>`,
+  iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32],
+});
+
+const groupIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,hsl(320,70%,50%),hsl(280,70%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+  </div>`,
+  iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40],
+});
+
+const youIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:20px;height:20px;border-radius:50%;background:hsl(43,96%,56%);box-shadow:0 0 0 6px hsla(43,96%,56%,0.25),0 4px 12px rgba(0,0,0,0.4);border:3px solid hsl(0,0%,7%);"></div>`,
+  iconSize: [20, 20], iconAnchor: [10, 10],
+});
+
+const getAllEventPositions = () => {
+  return allEvents.map((event) => {
+    const eventCity = cityCoords[event.city] || cityCoords.austin;
+    const seed = event.id * 137;
+    const lat = eventCity[0] + (((seed % 100) - 50) / 500);
+    const lng = eventCity[1] + ((((seed * 7) % 100) - 50) / 400);
+    return { ...event, lat, lng };
+  });
+};
 
 const getAllPeople = () => {
-  const allPeople: any[] = [];
+  const basePeople = [
+    { name: "Amara", age: 24, status: "Looking for events", vibe: "🎶" },
+    { name: "Kofi", age: 27, status: "Down to hang", vibe: "🏀" },
+    { name: "Chidera", age: 22, status: "New in town!", vibe: "✈️" },
+    { name: "Sophie", age: 25, status: "Looking for brunch crew", vibe: "🥂" },
+    { name: "Dayo", age: 29, status: "Down to hang", vibe: "🎧" },
+    { name: "Nneka", age: 23, status: "Want to explore the city", vibe: "🌆" },
+    { name: "Marcus", age: 26, status: "Looking for events", vibe: "🔥" },
+    { name: "Jasmine", age: 24, status: "Down for anything", vibe: "💃" },
+    { name: "Tunde", age: 28, status: "Looking for gym buddy", vibe: "💪" },
+    { name: "Priya", age: 25, status: "Foodie exploring", vibe: "🍜" },
+    { name: "Kwame", age: 30, status: "Networking & vibes", vibe: "🤝" },
+    { name: "Zara", age: 21, status: "Just moved here!", vibe: "🌟" },
+  ];
+
+  const cityLabels: Record<string, string> = {
+    austin: "ATX", dallas: "DAL", houston: "HOU", sanantonio: "SA",
+    paris: "PAR", london: "LDN", nyc: "NYC",
+    brussels: "BXL", amsterdam: "AMS", rotterdam: "RTD", antwerp: "ANT",
+    barcelona: "BCN", madrid: "MAD", bordeaux: "BDX", stockholm: "STO",
+    rome: "ROM", positano: "POS", athens: "ATH", istanbul: "IST",
+    berlin: "BER", dublin: "DUB", copenhagen: "CPH", oslo: "OSL", helsinki: "HEL",
+    rio: "RIO", saopaulo: "SP", salvador: "SSA",
+  };
+
+  const allPeople: { name: string; age: number; status: string; vibe: string; lat: number; lng: number }[] = [];
   Object.keys(cityCoords).forEach((cityId, ci) => {
     const center = cityCoords[cityId];
+    const label = cityLabels[cityId] || cityId.toUpperCase().slice(0, 3);
     const count = 2 + (ci % 2);
     for (let i = 0; i < count; i++) {
       const p = basePeople[(ci * 3 + i) % basePeople.length];
-      allPeople.push({
-        ...p, city: cityId,
-        lat: center[0] + (((i * 53 + 17) % 120 - 60) / 600),
-        lng: center[1] + (((i * 37 + 29) % 120 - 60) / 500),
-      });
+      allPeople.push({ ...p, name: `${p.name} (${label})`, lat: center[0] + (((i * 53 + 17) % 120 - 60) / 600), lng: center[1] + (((i * 37 + 29) % 120 - 60) / 500) });
     }
   });
   return allPeople;
@@ -40,83 +170,45 @@ const getAllPeople = () => {
 
 const getAllGroups = () => {
   const cityGroups: Record<string, { name: string; members: string[]; description: string }[]> = {
-    austin: [{ name: "Girls Night Out 💅", members: ["Jasmine", "Nneka", "Sophie", "Zara", "Priya"], description: "5 women looking for guys to hang out with tonight!" }],
+    austin: [{ name: "Girls Night Out 💅", members: ["Jasmine", "Nneka", "Sophie", "Zara", "Priya"], description: "5 women looking for guys to hang out with tonight!" }, { name: "Culture Crew 🎭", members: ["Amara", "Chidera", "Dayo"], description: "Exploring art galleries & live music." }],
     dallas: [{ name: "Deep Ellum Girls 💃", members: ["Tasha", "Ayo", "Kemi", "Bria"], description: "Exploring Deep Ellum tonight!" }],
     houston: [{ name: "H-Town Queens 👑", members: ["Chioma", "Adaeze", "Fatou", "Nadia"], description: "Linking up in Midtown tonight!" }],
     nyc: [{ name: "NYC Diaspora 🗽", members: ["Amara", "Kofi", "Chidera"], description: "African diaspora in NYC!" }],
     london: [{ name: "London Afrobeats 🇬🇧", members: ["Tayo", "Ngozi", "Kwesi"], description: "Afrobeats lovers in London!" }],
     paris: [{ name: "Paris Afro Crew 🇫🇷", members: ["Moussa", "Aïssatou", "Sékou"], description: "West African community in Paris!" }],
-    lagos: [{ name: "Lagos Island Gang 🇳🇬", members: ["Tolu", "Chidi", "Amina", "Bayo"], description: "Detty December crew!" }],
-    nairobi: [{ name: "Nairobi Creatives 🇰🇪", members: ["Wanjiku", "Otieno", "Achieng"], description: "Art & music in Nairobi!" }],
-    accra: [{ name: "Accra Year of Return 🇬🇭", members: ["Kwesi", "Abena", "Kofi"], description: "Diaspora returnees in Accra!" }],
-    johannesburg: [{ name: "Jozi Amapiano Crew 🇿🇦", members: ["Thando", "Sipho", "Nomsa", "Buhle"], description: "Amapiano lovers in Joburg!" }],
-    kigali: [{ name: "Kigali Tech Hub 🇷🇼", members: ["Jean", "Claudine", "Patrick"], description: "Tech community in Kigali!" }],
-    addisababa: [{ name: "Addis Vibes 🇪🇹", members: ["Hana", "Dawit", "Meron"], description: "Ethiopian cultural events!" }],
-    kinshasa: [{ name: "Kin la Belle 🇨🇩", members: ["Fiston", "Nadège", "Patrick", "Merveille"], description: "Rumba & sapeur culture!" }],
-    dakar: [{ name: "Dakar Creatives 🇸🇳", members: ["Ousmane", "Fatou", "Aminata"], description: "Art & music in Dakar!" }],
-    cairo: [{ name: "Cairo Nights 🇪🇬", members: ["Ahmed", "Nour", "Yara"], description: "Nightlife in Cairo!" }],
-    capetown: [{ name: "Cape Town Vibes 🇿🇦", members: ["Lebo", "Mandla", "Zinhle", "Tumi"], description: "Jazz & culture in Cape Town!" }],
+    rio: [{ name: "Rio Afro Brasileiro 🇧🇷", members: ["Carlos", "Mariana", "João", "Aline"], description: "Celebrating Afro-Brazilian culture in Rio!" }],
+    saopaulo: [{ name: "SP Black Movement 🇧🇷", members: ["Rafael", "Camila", "Lucas"], description: "Black culture & events in São Paulo!" }],
+    salvador: [{ name: "Salvador Axé 🇧🇷", members: ["Ana", "Pedro", "Luísa", "Diego"], description: "The heart of Afro-Brazilian culture!" }],
+    brussels: [{ name: "Matonge Crew 🇨🇩", members: ["Fiston", "Nadège", "Patrick"], description: "Congolese community in Brussels!" }],
+    amsterdam: [{ name: "Kwaku Squad 🇸🇷", members: ["Jaylen", "Shaniqua", "Devon"], description: "Surinamese crew!" }],
+    berlin: [{ name: "Berlin Afro Collective 🇩🇪", members: ["Ama", "Yaw", "Efua"], description: "Afro-German community events!" }],
   };
-  const allGroupsArr: any[] = [];
+
+  const allGroupsArr: { name: string; members: string[]; description: string; lat: number; lng: number }[] = [];
   Object.keys(cityGroups).forEach((cityId) => {
     const center = cityCoords[cityId];
     if (!center) return;
     cityGroups[cityId].forEach((g, i) => {
-      allGroupsArr.push({
-        ...g, city: cityId,
-        lat: center[0] + (((i * 43 + 11) % 80 - 40) / 500),
-        lng: center[1] + (((i * 31 + 19) % 80 - 40) / 400),
-      });
+      allGroupsArr.push({ ...g, lat: center[0] + (((i * 43 + 11) % 80 - 40) / 500), lng: center[1] + (((i * 31 + 19) % 80 - 40) / 400) });
     });
   });
   return allGroupsArr;
 };
 
+const allEventPositions = getAllEventPositions();
 const allPeople = getAllPeople();
 const allGroups = getAllGroups();
 
-// Build GeoJSON feature collections
-const buildEventsGeoJSON = (): GeoJSON.FeatureCollection => ({
-  type: "FeatureCollection",
-  features: allEvents.map((event) => {
-    const coords = cityCoords[event.city];
-    if (!coords) return null;
-    const seed = event.id * 137;
-    return {
-      type: "Feature" as const,
-      geometry: {
-        type: "Point" as const,
-        coordinates: [
-          coords[1] + ((((seed * 7) % 100) - 50) / 600),
-          coords[0] + (((seed % 100) - 50) / 800),
-        ],
-      },
-      properties: {
-        id: event.id, title: event.title, host: event.host, date: event.date,
-        venue: event.venue, attending: event.attending, price: event.price || "",
-        image: event.image, city: event.city, category: event.category || "",
-      },
-    };
-  }).filter(Boolean) as any[],
-});
-
-const buildPeopleGeoJSON = (): GeoJSON.FeatureCollection => ({
-  type: "FeatureCollection",
-  features: allPeople.map((p, i) => ({
-    type: "Feature" as const,
-    geometry: { type: "Point" as const, coordinates: [p.lng, p.lat] },
-    properties: { id: i, name: p.name, age: p.age, status: p.status, vibe: p.vibe },
-  })),
-});
-
-const buildGroupsGeoJSON = (): GeoJSON.FeatureCollection => ({
-  type: "FeatureCollection",
-  features: allGroups.map((g, i) => ({
-    type: "Feature" as const,
-    geometry: { type: "Point" as const, coordinates: [g.lng, g.lat] },
-    properties: { id: i, name: g.name, description: g.description, members: g.members.length },
-  })),
-});
+const MapController = ({ targetCity, onZoomDone }: { targetCity: string | null; onZoomDone: () => void }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (targetCity && cityCoords[targetCity]) {
+      map.setView(cityCoords[targetCity], 12, { animate: true });
+      onZoomDone();
+    }
+  }, [targetCity, map, onZoomDone]);
+  return null;
+};
 
 interface MapScreenProps {
   selectedCity: City;
@@ -124,200 +216,41 @@ interface MapScreenProps {
 }
 
 const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<maplibregl.Map | null>(null);
   const [showEvents, setShowEvents] = useState(true);
   const [showPeople, setShowPeople] = useState(true);
   const [showGroups, setShowGroups] = useState(true);
   const [showCityPicker, setShowCityPicker] = useState(false);
+  const [zoomTarget, setZoomTarget] = useState<string | null>(selectedCity.id);
   const [nearbyCollapsed, setNearbyCollapsed] = useState(false);
-  const [selectedNearbyEvent, setSelectedNearbyEvent] = useState<any>(null);
-  const [mapLoaded, setMapLoaded] = useState(false);
+  const [selectedNearbyEvent, setSelectedNearbyEvent] = useState<typeof allEventPositions[0] | null>(null);
 
-  // Initialize map
-  useEffect(() => {
-    if (!mapContainerRef.current || mapRef.current) return;
+  const center = cityCoords[selectedCity.id] || cityCoords.austin;
 
-    const [lat, lng] = cityCoords[selectedCity.id] || [0, 20];
-
-    const map = new maplibregl.Map({
-      container: mapContainerRef.current,
-      style: "https://tiles.openfreemap.org/styles/liberty",
-      center: [lng, lat],
-      zoom: 2,
-      attributionControl: false,
-    } as any);
-
-    // Enable globe projection if supported
-    try { (map as any).setProjection({ type: "globe" }); } catch {}
-
-
-    map.on("load", () => {
-      setMapLoaded(true);
-
-      // Add event markers source + layer
-      map.addSource("events", { type: "geojson", data: buildEventsGeoJSON() });
-      map.addLayer({
-        id: "events-layer",
-        type: "circle",
-        source: "events",
-        paint: {
-          "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 4, 6, 6, 12, 10],
-          "circle-color": "#f59e0b",
-          "circle-stroke-color": "#92400e",
-          "circle-stroke-width": 1.5,
-          "circle-opacity": 0.9,
-        },
-      });
-
-      // Add people markers source + layer
-      map.addSource("people", { type: "geojson", data: buildPeopleGeoJSON() });
-      map.addLayer({
-        id: "people-layer",
-        type: "circle",
-        source: "people",
-        paint: {
-          "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 3, 6, 5, 12, 8],
-          "circle-color": "#60a5fa",
-          "circle-stroke-color": "#1e40af",
-          "circle-stroke-width": 1,
-          "circle-opacity": 0.85,
-        },
-      });
-
-      // Add groups markers source + layer
-      map.addSource("groups", { type: "geojson", data: buildGroupsGeoJSON() });
-      map.addLayer({
-        id: "groups-layer",
-        type: "circle",
-        source: "groups",
-        paint: {
-          "circle-radius": ["interpolate", ["linear"], ["zoom"], 1, 5, 6, 8, 12, 12],
-          "circle-color": "#c084fc",
-          "circle-stroke-color": "#7c3aed",
-          "circle-stroke-width": 1.5,
-          "circle-opacity": 0.9,
-        },
-      });
-
-      // Click handlers for events
-      map.on("click", "events-layer", (e) => {
-        if (e.features && e.features[0]) {
-          const props = e.features[0].properties;
-          setSelectedNearbyEvent({
-            id: props.id,
-            title: props.title,
-            host: props.host,
-            date: props.date,
-            venue: props.venue,
-            attending: props.attending,
-            price: props.price || undefined,
-            image: props.image,
-            city: props.city,
-          });
-        }
-      });
-
-      // Popup on hover for events
-      map.on("mouseenter", "events-layer", () => {
-        map.getCanvas().style.cursor = "pointer";
-      });
-      map.on("mouseleave", "events-layer", () => {
-        map.getCanvas().style.cursor = "";
-      });
-
-      // Popup on hover for people
-      const popup = new maplibregl.Popup({ closeButton: false, closeOnClick: false, className: "afro-map-popup" });
-
-      map.on("mouseenter", "people-layer", (e) => {
-        map.getCanvas().style.cursor = "pointer";
-        if (e.features && e.features[0]) {
-          const p = e.features[0].properties;
-          const coords = (e.features[0].geometry as any).coordinates.slice();
-          popup.setLngLat(coords).setHTML(
-            `<div class="p-2"><p class="font-bold text-sm">${p.vibe} ${p.name}, ${p.age}</p><p class="text-xs text-gray-500">${p.status}</p></div>`
-          ).addTo(map);
-        }
-      });
-      map.on("mouseleave", "people-layer", () => {
-        map.getCanvas().style.cursor = "";
-        popup.remove();
-      });
-
-      map.on("mouseenter", "groups-layer", (e) => {
-        map.getCanvas().style.cursor = "pointer";
-        if (e.features && e.features[0]) {
-          const g = e.features[0].properties;
-          const coords = (e.features[0].geometry as any).coordinates.slice();
-          popup.setLngLat(coords).setHTML(
-            `<div class="p-2"><p class="font-bold text-sm">${g.name}</p><p class="text-xs text-gray-500">${g.description}</p><p class="text-xs mt-1">👥 ${g.members} members</p></div>`
-          ).addTo(map);
-        }
-      });
-      map.on("mouseleave", "groups-layer", () => {
-        map.getCanvas().style.cursor = "";
-        popup.remove();
-      });
-
-      // Fly to initial city
-      map.flyTo({ center: [lng, lat], zoom: 10, duration: 2000 });
-    });
-
-    mapRef.current = map;
-    return () => { map.remove(); mapRef.current = null; };
-  }, []);
-
-  // Toggle layer visibility
-  useEffect(() => {
-    if (!mapRef.current || !mapLoaded) return;
-    mapRef.current.setLayoutProperty("events-layer", "visibility", showEvents ? "visible" : "none");
-  }, [showEvents, mapLoaded]);
-
-  useEffect(() => {
-    if (!mapRef.current || !mapLoaded) return;
-    mapRef.current.setLayoutProperty("people-layer", "visibility", showPeople ? "visible" : "none");
-  }, [showPeople, mapLoaded]);
-
-  useEffect(() => {
-    if (!mapRef.current || !mapLoaded) return;
-    mapRef.current.setLayoutProperty("groups-layer", "visibility", showGroups ? "visible" : "none");
-  }, [showGroups, mapLoaded]);
-
-  // Fly to selected city
-  useEffect(() => {
-    if (mapRef.current && cityCoords[selectedCity.id] && mapLoaded) {
-      const [lat, lng] = cityCoords[selectedCity.id];
-      mapRef.current.flyTo({ center: [lng, lat], zoom: 10, duration: 1500 });
-    }
-  }, [selectedCity, mapLoaded]);
+  const handleEventClick = (cityId: string) => {
+    setZoomTarget(cityId);
+    const city = cities.find(c => c.id === cityId);
+    if (city) onCityChange(city);
+  };
 
   const handleCitySelect = (city: City) => {
     onCityChange(city);
+    setZoomTarget(city.id);
     setShowCityPicker(false);
   };
 
-  const nearbyEvents = allEvents.filter((e) => e.city === selectedCity.id).slice(0, 5);
+  const nearbyEvents = allEventPositions.filter(e => e.city === selectedCity.id).slice(0, 5);
 
   return (
-    <div className="fixed inset-0 bg-[hsl(var(--background))]">
-      {/* Map container */}
-      <div ref={mapContainerRef} className="absolute inset-0" />
-
-      {/* Header */}
+    <div className="fixed inset-0 bg-background">
       <header className="absolute top-0 left-0 right-0 z-[1000] glass border-b border-border px-4 py-3">
         <div className="flex items-center justify-between max-w-lg mx-auto">
           <div className="flex items-center gap-2">
             <Navigation size={18} className="text-primary" />
             <h1 className="font-display text-lg font-bold text-gradient-gold">Explore</h1>
           </div>
-          <button
-            onClick={() => setShowCityPicker(!showCityPicker)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-border"
-          >
+          <button onClick={() => setShowCityPicker(!showCityPicker)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-border">
             <MapPin size={14} className="text-primary" />
-            <span className="text-sm font-medium text-foreground">
-              {selectedCity.flag} {selectedCity.name}
-            </span>
+            <span className="text-sm font-medium text-foreground">{selectedCity.flag} {selectedCity.name}</span>
             <ChevronDown size={14} className={`text-muted-foreground transition-transform ${showCityPicker ? "rotate-180" : ""}`} />
           </button>
         </div>
@@ -325,11 +258,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         {showCityPicker && (
           <div className="absolute left-4 right-4 top-full mt-1 bg-card border border-border rounded-xl shadow-elevated z-50 overflow-y-auto max-h-[60vh] animate-slide-up max-w-lg mx-auto">
             {cities.map((city) => (
-              <button
-                key={city.id}
-                onClick={() => handleCitySelect(city)}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors"
-              >
+              <button key={city.id} onClick={() => handleCitySelect(city)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors">
                 <span className="text-lg">{city.flag}</span>
                 <span className="text-sm font-medium text-foreground flex-1 text-left">{city.name}</span>
                 {city.id === selectedCity.id && <Check size={16} className="text-primary" />}
@@ -339,35 +268,74 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         )}
       </header>
 
-      {/* Filter toggles */}
       <div className="absolute top-16 left-4 right-4 z-[1000] max-w-lg mx-auto">
         <div className="flex gap-2">
-          <button
-            onClick={() => setShowEvents(!showEvents)}
-            className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${
-              showEvents ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"
-            }`}
-          >
-            <Calendar size={14} /> Events ({allEvents.length})
+          <button onClick={() => setShowEvents(!showEvents)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${showEvents ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"}`}>
+            <Calendar size={14} /> Events ({allEventPositions.length})
           </button>
-          <button
-            onClick={() => setShowPeople(!showPeople)}
-            className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${
-              showPeople ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"
-            }`}
-          >
+          <button onClick={() => setShowPeople(!showPeople)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${showPeople ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"}`}>
             <Users size={14} /> People ({allPeople.length})
           </button>
-          <button
-            onClick={() => setShowGroups(!showGroups)}
-            className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${
-              showGroups ? "bg-[hsl(280,70%,55%)] text-white" : "bg-card text-muted-foreground border border-border"
-            }`}
-          >
+          <button onClick={() => setShowGroups(!showGroups)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card ${showGroups ? "bg-[hsl(320,70%,50%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
             <Users size={14} /> Groups ({allGroups.length})
           </button>
         </div>
       </div>
+
+      <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }} zoomControl={false} attributionControl={false} minZoom={2} maxBoundsViscosity={0} worldCopyJump={true}>
+        <MapController targetCity={zoomTarget} onZoomDone={() => setZoomTarget(null)} />
+        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+
+        <Marker position={center} icon={youIcon}>
+          <Popup className="afro-popup"><div className="text-sm font-semibold">📍 You are here</div></Popup>
+        </Marker>
+
+        {showEvents && allEventPositions.map((event) => (
+          <Marker key={`event-${event.id}`} position={[event.lat, event.lng]} icon={eventIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
+            <Popup className="afro-popup" maxWidth={280}>
+              <div className="p-1">
+                <img src={event.image} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />
+                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
+                <p className="text-xs text-gray-500 mt-1">{event.host}</p>
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500"><span>{event.date}</span></div>
+                <div className="flex items-center gap-2 mt-1 text-xs text-gray-500"><span>{event.venue}</span></div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs text-gray-500">{event.attending >= 1000 ? `${(event.attending / 1000).toFixed(1)}K` : event.attending} attending</span>
+                  {event.price && <span className="text-xs font-bold text-amber-600">{event.price}</span>}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {showPeople && allPeople.map((person, i) => (
+          <Marker key={`person-${i}`} position={[person.lat, person.lng]} icon={personIcon}>
+            <Popup className="afro-popup">
+              <div className="p-1">
+                <p className="font-bold text-sm">{person.vibe} {person.name}, {person.age}</p>
+                <p className="text-xs text-gray-500">{person.status}</p>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {showGroups && allGroups.map((group, i) => (
+          <Marker key={`group-${i}`} position={[group.lat, group.lng]} icon={groupIcon}>
+            <Popup className="afro-popup" maxWidth={260}>
+              <div className="p-1">
+                <p className="font-bold text-sm">{group.name}</p>
+                <p className="text-xs text-gray-500 mt-1">{group.description}</p>
+                <div className="flex flex-wrap gap-1 mt-2">
+                  {group.members.map((m) => (
+                    <span key={m} className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[10px] font-medium">{m}</span>
+                  ))}
+                </div>
+                <button className="w-full mt-2 py-1.5 rounded-full bg-purple-500 text-white text-xs font-semibold">Request to Join</button>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
 
       {/* Selected event detail overlay */}
       {selectedNearbyEvent && (
@@ -377,41 +345,23 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-elevated">
               <div className="relative">
                 <img src={selectedNearbyEvent.image} alt="" className="w-full h-40 object-cover" />
-                <button
-                  onClick={() => setSelectedNearbyEvent(null)}
-                  className="absolute top-2 right-2 w-8 h-8 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center"
-                >
+                <button onClick={() => setSelectedNearbyEvent(null)} className="absolute top-2 right-2 w-8 h-8 rounded-full bg-card/80 backdrop-blur-sm flex items-center justify-center">
                   <X size={16} className="text-foreground" />
                 </button>
                 {selectedNearbyEvent.price && (
-                  <span className="absolute top-2 left-2 px-3 py-1 rounded-full gradient-gold text-primary-foreground text-xs font-semibold">
-                    {selectedNearbyEvent.price}
-                  </span>
+                  <span className="absolute top-2 left-2 px-3 py-1 rounded-full gradient-gold text-primary-foreground text-xs font-semibold">{selectedNearbyEvent.price}</span>
                 )}
               </div>
               <div className="p-4">
                 <h3 className="font-display font-bold text-foreground text-lg">{selectedNearbyEvent.title}</h3>
                 <p className="text-xs text-muted-foreground mt-1">{selectedNearbyEvent.host}</p>
                 <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Calendar size={14} className="text-primary" />
-                    <span>{selectedNearbyEvent.date}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <MapPin size={14} className="text-primary" />
-                    <span>{selectedNearbyEvent.venue}</span>
-                  </div>
+                  <div className="flex items-center gap-1"><Calendar size={14} className="text-primary" /><span>{selectedNearbyEvent.date}</span></div>
+                  <div className="flex items-center gap-1"><MapPin size={14} className="text-primary" /><span>{selectedNearbyEvent.venue}</span></div>
                 </div>
                 <div className="flex items-center justify-between mt-4">
-                  <span className="text-xs text-muted-foreground">
-                    {selectedNearbyEvent.attending >= 1000
-                      ? `${(selectedNearbyEvent.attending / 1000).toFixed(1)}K`
-                      : selectedNearbyEvent.attending}{" "}
-                    attending
-                  </span>
-                  <button className="px-5 py-2 rounded-full gradient-gold text-primary-foreground text-sm font-semibold shadow-gold">
-                    RSVP
-                  </button>
+                  <span className="text-xs text-muted-foreground">{selectedNearbyEvent.attending} attending</span>
+                  <button className="px-5 py-2 rounded-full gradient-gold text-primary-foreground text-sm font-semibold shadow-gold">RSVP</button>
                 </div>
               </div>
             </div>
@@ -429,11 +379,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             <h3 className="font-display font-bold text-foreground text-sm">Nearby This Week</h3>
             <div className="flex items-center gap-2">
               <span className="text-xs text-primary font-semibold">{nearbyEvents.length} events</span>
-              {nearbyCollapsed ? (
-                <ChevronUp size={16} className="text-muted-foreground" />
-              ) : (
-                <ChevronDown size={16} className="text-muted-foreground" />
-              )}
+              {nearbyCollapsed ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />}
             </div>
           </button>
           {!nearbyCollapsed && (
@@ -447,13 +393,9 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
                   >
                     <img src={event.image} alt="" className="w-full h-16 object-cover" />
                     <div className="p-2">
-                      <p className="text-[11px] font-semibold text-foreground leading-tight line-clamp-2">
-                        {event.title}
-                      </p>
+                      <p className="text-[11px] font-semibold text-foreground leading-tight line-clamp-2">{event.title}</p>
                       <p className="text-[10px] text-muted-foreground mt-0.5">{event.date.split("·")[0]}</p>
-                      {event.price && (
-                        <p className="text-[10px] font-bold text-primary mt-0.5">{event.price}</p>
-                      )}
+                      {event.price && <p className="text-[10px] font-bold text-primary mt-0.5">{event.price}</p>}
                     </div>
                   </button>
                 ))}
