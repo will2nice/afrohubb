@@ -1,15 +1,27 @@
 import { useState } from "react";
 import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase } from "lucide-react";
 import profileMan1 from "@/assets/profile-man-1.jpg";
-import eventConcert from "@/assets/event-concert.jpg";
-import eventBrunch from "@/assets/event-brunch.jpg";
-import eventParty from "@/assets/event-party.jpg";
-import eventAfricanArt from "@/assets/event-african-art.jpg";
-import eventFootball from "@/assets/event-football.jpg";
-import eventGrime from "@/assets/event-grime.jpg";
-import reel1 from "@/assets/reel-1.jpg";
-import reel2 from "@/assets/reel-2.jpg";
-import reel3 from "@/assets/reel-3.jpg";
+
+// Dating mode photos - best portraits & attractive pics
+import datingPortrait1 from "@/assets/dating-portrait-1.jpg";
+import datingPortrait2 from "@/assets/dating-portrait-2.jpg";
+import datingPortrait3 from "@/assets/dating-portrait-3.jpg";
+import datingPortrait4 from "@/assets/dating-portrait-4.jpg";
+import datingPortrait5 from "@/assets/dating-portrait-5.jpg";
+
+// Community mode photos - activities, sports, hangouts
+import communityBasketball from "@/assets/community-basketball.jpg";
+import communityGamenight from "@/assets/community-gamenight.jpg";
+import communityNightout from "@/assets/community-nightout.jpg";
+import communitySoccer from "@/assets/community-soccer.jpg";
+import communityFifa from "@/assets/community-fifa.jpg";
+
+// Networking mode photos - professional, headshots, conferences
+import networkingHeadshot from "@/assets/networking-headshot.jpg";
+import networkingCollege from "@/assets/networking-college.jpg";
+import networkingConference from "@/assets/networking-conference.jpg";
+import networkingPanel from "@/assets/networking-panel.jpg";
+import networkingTeam from "@/assets/networking-team.jpg";
 
 const stats = [
   { label: "Posts", value: "24" },
@@ -40,31 +52,25 @@ interface FeedPost {
 
 const modeFeedPosts: Record<string, FeedPost[]> = {
   dating: [
-    { id: 1, photo: eventConcert, caption: "Burna Boy went crazy last night 🔥🎤 Best concert I've been to this year no cap", location: "Houston, TX", likes: 247, comments: 34, timeAgo: "2h" },
-    { id: 2, photo: eventBrunch, caption: "Sunday brunch with the crew. Jollof rice pancakes hit different 🥞🇳🇬", location: "Austin, TX", likes: 189, comments: 22, timeAgo: "8h" },
-    { id: 3, photo: reel1, caption: "Morning runs in the city. Grateful for this life fr 🏃‍♂️✨", location: "Dallas, TX", likes: 312, comments: 18, timeAgo: "1d" },
-    { id: 4, photo: eventAfricanArt, caption: "Hit up the African Art Museum today. The diaspora is so rich with culture 🎨🌍", location: "Houston, TX", likes: 421, comments: 56, timeAgo: "2d" },
-    { id: 5, photo: eventParty, caption: "Saturday night vibes. This DJ had the whole room moving 💃🕺", location: "Austin, TX", likes: 156, comments: 12, timeAgo: "3d" },
-    { id: 6, photo: reel2, caption: "Made my grandma's egusi soup recipe today. Took me right back home 🍲❤️", location: "Houston, TX", likes: 534, comments: 89, timeAgo: "5d" },
-    { id: 7, photo: reel3, caption: "New fits just dropped. Ankara meets streetwear 🪡🔥", location: "NYC", likes: 445, comments: 67, timeAgo: "1w" },
+    { id: 1, photo: datingPortrait1, caption: "Golden hour hits different when you're feeling yourself ✨😏", location: "Houston, TX", likes: 347, comments: 42, timeAgo: "2h" },
+    { id: 2, photo: datingPortrait2, caption: "Rooftop dinner vibes. The city looks beautiful from up here 🌆🍷", location: "Austin, TX", likes: 289, comments: 31, timeAgo: "8h" },
+    { id: 3, photo: datingPortrait3, caption: "Beach day. Salt water and good energy only 🌊☀️", location: "Galveston, TX", likes: 412, comments: 54, timeAgo: "1d" },
+    { id: 4, photo: datingPortrait4, caption: "Cultural vibes at the art showcase tonight. Ankara never misses 🎨🇬🇭", location: "Houston, TX", likes: 521, comments: 67, timeAgo: "2d" },
+    { id: 5, photo: datingPortrait5, caption: "Cozy Sunday. Good music, good coffee, good vibes ☕🎶", location: "Dallas, TX", likes: 256, comments: 22, timeAgo: "3d" },
   ],
   community: [
-    { id: 1, photo: eventFootball, caption: "Pickup soccer with the boys. We don't lose 😤⚽ Who's pulling up next weekend?", location: "San Antonio, TX", likes: 278, comments: 41, timeAgo: "3h" },
-    { id: 2, photo: reel1, caption: "5AM gym crew. Iron sharpens iron 💪🏾 Brotherhood over everything", location: "Dallas, TX", likes: 198, comments: 27, timeAgo: "6h" },
-    { id: 3, photo: eventGrime, caption: "Game night got intense 🎮😂 Smash Bros tournament at the crib — I went undefeated", location: "Houston, TX", likes: 342, comments: 53, timeAgo: "1d" },
-    { id: 4, photo: eventBrunch, caption: "Sunday cookout with the squad. Suya on the grill, football on the screen 🥩🏈", location: "Austin, TX", likes: 467, comments: 72, timeAgo: "2d" },
-    { id: 5, photo: reel2, caption: "Hiking with the crew. Views from the top hit different when you earn it 🏔️🤝", location: "Colorado Springs, CO", likes: 389, comments: 38, timeAgo: "4d" },
-    { id: 6, photo: eventParty, caption: "Basketball league finals tonight. We brought the trophy home 🏆🔥", location: "Houston, TX", likes: 521, comments: 64, timeAgo: "5d" },
-    { id: 7, photo: reel3, caption: "Volunteer day at the community center. Giving back is the move 🙏🏾💯", location: "Dallas, TX", likes: 612, comments: 91, timeAgo: "1w" },
+    { id: 1, photo: communityBasketball, caption: "Pickup game with the boys. We don't lose 😤🏀 Who's pulling up next weekend?", location: "San Antonio, TX", likes: 378, comments: 48, timeAgo: "3h" },
+    { id: 2, photo: communityGamenight, caption: "Game night got intense! Football on the screen, wings on the table 🏈🍗", location: "Houston, TX", likes: 298, comments: 37, timeAgo: "6h" },
+    { id: 3, photo: communityNightout, caption: "Boys night out. Good vibes, good drinks, good company 🍻🤝", location: "Dallas, TX", likes: 442, comments: 53, timeAgo: "1d" },
+    { id: 4, photo: communitySoccer, caption: "Sunday league action. Left the defender in the dust ⚽💨", location: "Austin, TX", likes: 367, comments: 42, timeAgo: "2d" },
+    { id: 5, photo: communityFifa, caption: "FIFA tournament at the crib. I went undefeated 🎮😂 No cap", location: "Houston, TX", likes: 289, comments: 64, timeAgo: "4d" },
   ],
   networking: [
-    { id: 1, photo: eventAfricanArt, caption: "Spoke on a panel about Black tech founders today. Representation matters in every room 🎤💼", location: "Houston, TX", likes: 534, comments: 78, timeAgo: "4h" },
-    { id: 2, photo: reel1, caption: "Coffee meeting with my mentor. The game changes when you have guidance 🏾☕📈", location: "Dallas, TX", likes: 287, comments: 45, timeAgo: "1d" },
-    { id: 3, photo: eventConcert, caption: "AfroTech conference was insane. Made connections that'll change the trajectory 🚀🌍", location: "Austin, TX", likes: 678, comments: 112, timeAgo: "2d" },
-    { id: 4, photo: eventBrunch, caption: "Investor lunch downtown. Pitched my startup and got follow-up meetings 🤝💰", location: "Houston, TX", likes: 423, comments: 56, timeAgo: "3d" },
-    { id: 5, photo: reel2, caption: "Late nights building. The grind doesn't stop. New product launch coming soon 🖥️🔥", location: "NYC", likes: 356, comments: 34, timeAgo: "4d" },
-    { id: 6, photo: eventGrime, caption: "Workshop on financial literacy for the diaspora. Knowledge is the real currency 📚💡", location: "Atlanta, GA", likes: 489, comments: 67, timeAgo: "5d" },
-    { id: 7, photo: reel3, caption: "LinkedIn said 500+ connections but these real ones started right here 🤞🏾🔗", location: "Houston, TX", likes: 567, comments: 83, timeAgo: "1w" },
+    { id: 1, photo: networkingHeadshot, caption: "New headshot just dropped. Ready for what's next 💼📸", location: "Houston, TX", likes: 534, comments: 78, timeAgo: "4h" },
+    { id: 2, photo: networkingCollege, caption: "Campus days shaped the vision. Forever grateful for the foundation 🎓📚", location: "Dallas, TX", likes: 287, comments: 45, timeAgo: "1d" },
+    { id: 3, photo: networkingConference, caption: "AfroTech conference was insane. Made connections that'll change the trajectory 🚀🤝", location: "Austin, TX", likes: 678, comments: 112, timeAgo: "2d" },
+    { id: 4, photo: networkingPanel, caption: "Spoke on a panel about Black tech founders today. Representation matters in every room 🎤💡", location: "Houston, TX", likes: 723, comments: 96, timeAgo: "3d" },
+    { id: 5, photo: networkingTeam, caption: "Team meeting energy. Building something special with these brilliant minds 🖥️🔥", location: "Atlanta, GA", likes: 456, comments: 67, timeAgo: "5d" },
   ],
 };
 
