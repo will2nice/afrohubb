@@ -13,7 +13,7 @@ export interface ChatContact {
 
 interface DMChatScreenProps {
   contact: ChatContact;
-  eventContext?: string; // e.g. "Burna Boy Tribute Night"
+  eventContext?: string;
   onBack: () => void;
 }
 
@@ -40,20 +40,40 @@ const quickReplies = [
   "Have you been to this venue before?",
 ];
 
+const TypingIndicator = ({ photo }: { photo: string }) => (
+  <div className="flex justify-start">
+    <div className="max-w-[80%]">
+      <img src={photo} alt="" className="w-6 h-6 rounded-full object-cover mb-1" />
+      <div className="px-4 py-3 rounded-2xl rounded-bl-md bg-secondary inline-flex items-center gap-1">
+        <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "0ms" }} />
+        <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "150ms" }} />
+        <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "300ms" }} />
+      </div>
+    </div>
+  </div>
+);
+
 const DMChatScreen = ({ contact, eventContext, onBack }: DMChatScreenProps) => {
   const [messages, setMessages] = useState<Message[]>(() => getInitialMessages(contact, eventContext));
   const [input, setInput] = useState("");
   const [showQuickReplies, setShowQuickReplies] = useState(messages.length <= 1);
+  const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages]);
+  }, [messages, isTyping]);
 
-  // Simulate a reply after sending
+  // Simulate typing then reply after sending
   useEffect(() => {
     if (messages.length > 0 && messages[messages.length - 1].fromMe) {
-      const timer = setTimeout(() => {
+      // Show typing after a short pause
+      const typingTimer = setTimeout(() => {
+        setIsTyping(true);
+      }, 800);
+
+      const replyTimer = setTimeout(() => {
+        setIsTyping(false);
         const replies = [
           `Yesss! Can't wait! 🔥`,
           `Omg let's definitely link up! What section are you in?`,
@@ -66,8 +86,12 @@ const DMChatScreen = ({ contact, eventContext, onBack }: DMChatScreenProps) => {
           ...prev,
           { id: prev.length + 1, text: reply, fromMe: false, time: "Just now" },
         ]);
-      }, 1500 + Math.random() * 2000);
-      return () => clearTimeout(timer);
+      }, 2500 + Math.random() * 1500);
+
+      return () => {
+        clearTimeout(typingTimer);
+        clearTimeout(replyTimer);
+      };
     }
   }, [messages]);
 
@@ -88,17 +112,19 @@ const DMChatScreen = ({ contact, eventContext, onBack }: DMChatScreenProps) => {
         <button onClick={onBack} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
           <ArrowLeft size={22} className="text-foreground" />
         </button>
-        <img
-          src={contact.photo}
-          alt={contact.name}
-          className="w-10 h-10 rounded-full object-cover ring-2 ring-border"
-        />
+        <div className="relative">
+          <img src={contact.photo} alt={contact.name} className="w-10 h-10 rounded-full object-cover ring-2 ring-border" />
+          <div className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-green-500 ring-2 ring-card" />
+        </div>
         <div className="flex-1 min-w-0">
           <h2 className="font-semibold text-foreground text-sm">{contact.name}, {contact.age}</h2>
-          <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-green-500" />
-            <span className="text-[11px] text-muted-foreground">Online · {contact.vibe}</span>
-          </div>
+          <span className="text-[11px] text-muted-foreground">
+            {isTyping ? (
+              <span className="text-primary font-medium">typing...</span>
+            ) : (
+              <>Online · {contact.vibe}</>
+            )}
+          </span>
         </div>
         <button className="p-2 rounded-full hover:bg-secondary transition-colors">
           <MoreVertical size={18} className="text-muted-foreground" />
@@ -127,17 +153,10 @@ const DMChatScreen = ({ contact, eventContext, onBack }: DMChatScreenProps) => {
         )}
 
         {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex ${msg.fromMe ? "justify-end" : "justify-start"}`}
-          >
+          <div key={msg.id} className={`flex ${msg.fromMe ? "justify-end" : "justify-start"}`}>
             <div className={`max-w-[80%] ${msg.fromMe ? "order-2" : "order-1"}`}>
               {!msg.fromMe && (
-                <img
-                  src={contact.photo}
-                  alt=""
-                  className="w-6 h-6 rounded-full object-cover mb-1"
-                />
+                <img src={contact.photo} alt="" className="w-6 h-6 rounded-full object-cover mb-1" />
               )}
               <div
                 className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
@@ -148,12 +167,18 @@ const DMChatScreen = ({ contact, eventContext, onBack }: DMChatScreenProps) => {
               >
                 {msg.text}
               </div>
-              <p className={`text-[10px] text-muted-foreground mt-1 ${msg.fromMe ? "text-right" : "text-left"}`}>
-                {msg.time}
-              </p>
+              <div className={`flex items-center gap-1 mt-1 ${msg.fromMe ? "justify-end" : "justify-start"}`}>
+                <p className="text-[10px] text-muted-foreground">{msg.time}</p>
+                {msg.fromMe && (
+                  <span className="text-[10px] text-primary">✓✓</span>
+                )}
+              </div>
             </div>
           </div>
         ))}
+
+        {/* Typing indicator */}
+        {isTyping && <TypingIndicator photo={contact.photo} />}
       </div>
 
       {/* Quick replies */}
@@ -197,9 +222,7 @@ const DMChatScreen = ({ contact, eventContext, onBack }: DMChatScreenProps) => {
             onClick={() => sendMessage(input)}
             disabled={!input.trim()}
             className={`p-2.5 rounded-full transition-all ${
-              input.trim()
-                ? "gradient-gold shadow-gold"
-                : "bg-secondary"
+              input.trim() ? "gradient-gold shadow-gold" : "bg-secondary"
             }`}
           >
             <Send size={18} className={input.trim() ? "text-primary-foreground" : "text-muted-foreground"} />
