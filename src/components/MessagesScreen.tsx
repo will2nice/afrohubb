@@ -43,6 +43,11 @@ const allChats: ChatItem[] = [
   { id: 6, name: "Burna Boy Concert", avatar: null, lastMessage: "Section B squad, where you at? 🔥", time: "2h", unread: 12, online: false, tab: "events" },
   { id: 7, name: "Diaspora Brunch", avatar: null, lastMessage: "Table for 8 reserved ✅", time: "6h", unread: 3, online: false, tab: "events" },
   { id: 11, name: "Colors Festival", avatar: null, lastMessage: "VIP wristbands are ready!", time: "1d", unread: 0, online: false, tab: "events" },
+  { id: 14, name: "AfroTech Austin", avatar: null, lastMessage: "Panel on AI & Black founders starts at 2! 🚀", time: "30m", unread: 8, online: false, tab: "events" },
+  { id: 15, name: "AfroTech Dallas", avatar: null, lastMessage: "Networking mixer tonight at 7 🤝", time: "1h", unread: 4, online: false, tab: "events" },
+  { id: 16, name: "AfroTech Houston", avatar: null, lastMessage: "Resume review booth is open!", time: "2h", unread: 3, online: false, tab: "events" },
+  { id: 17, name: "AfroTech SF", avatar: null, lastMessage: "Startup pitch competition lineup just dropped 🔥", time: "3h", unread: 6, online: false, tab: "events" },
+  { id: 18, name: "AfroTech DC", avatar: null, lastMessage: "Black in Tech happy hour at 6! 🥂", time: "4h", unread: 2, online: false, tab: "events" },
   // Groups
   { id: 4, name: "Austin Diaspora", avatar: null, lastMessage: "Welcome to the new members!", time: "1d", unread: 0, online: false, tab: "events" },
   { id: 5, name: "Tech & Culture", avatar: null, lastMessage: "Check out this article on...", time: "2d", unread: 0, online: false, tab: "events" },
