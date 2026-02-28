@@ -1,6 +1,6 @@
-import { Newspaper, Heart, CalendarDays, MessageCircle, User } from "lucide-react";
+import { Newspaper, Film, Heart, CalendarDays, MessageCircle, User } from "lucide-react";
 
-type Tab = "feed" | "match" | "events" | "messages" | "profile";
+type Tab = "feed" | "reels" | "match" | "events" | "messages" | "profile";
 
 interface BottomNavProps {
   activeTab: Tab;
@@ -9,6 +9,7 @@ interface BottomNavProps {
 
 const tabs: { id: Tab; label: string; icon: typeof Newspaper }[] = [
   { id: "feed", label: "Feed", icon: Newspaper },
+  { id: "reels", label: "Reels", icon: Film },
   { id: "match", label: "Match", icon: Heart },
   { id: "events", label: "Events", icon: CalendarDays },
   { id: "messages", label: "Messages", icon: MessageCircle },
