@@ -1,56 +1,24 @@
 import { Search, MapPin, Calendar, Users, Share2 } from "lucide-react";
-import eventParty from "@/assets/event-party.jpg";
-import eventBrunch from "@/assets/event-brunch.jpg";
-import eventConcert from "@/assets/event-concert.jpg";
+import { events as allEvents, type City } from "@/data/cityData";
 
-const filters = ["All", "Today", "This Weekend", "Afrobeats", "Networking", "Sports", "Faith", "Family"];
+const filters = ["All", "Today", "This Weekend", "Concerts", "Festivals", "Sports", "Art", "Networking"];
 
-const events = [
-  {
-    id: 1,
-    title: "Afrobeats Night — Friday Vibes",
-    host: "AfroHub Community",
-    date: "Fri, Mar 7 · 9:00 PM",
-    venue: "Cedar Street Courtyard",
-    city: "Austin, TX",
-    distance: "2.3 mi",
-    image: eventParty,
-    attending: 186,
-    free: false,
-  },
-  {
-    id: 2,
-    title: "Diaspora Brunch — Sunday Edition",
-    host: "Diaspora Brunch Club",
-    date: "Sun, Mar 9 · 11:00 AM",
-    venue: "The Grove Houston",
-    city: "Houston, TX",
-    distance: "165 mi",
-    image: eventBrunch,
-    attending: 86,
-    free: true,
-  },
-  {
-    id: 3,
-    title: "Burna Boy Tribute Night",
-    host: "Empire Control Room",
-    date: "Sat, Mar 8 · 9:00 PM",
-    venue: "Empire Control Room",
-    city: "Austin, TX",
-    distance: "1.8 mi",
-    image: eventConcert,
-    attending: 342,
-    free: false,
-  },
-];
+interface EventsScreenProps {
+  selectedCity: City;
+}
 
-const EventsScreen = () => {
+const EventsScreen = ({ selectedCity }: EventsScreenProps) => {
+  const cityEvents = allEvents.filter((e) => e.city === selectedCity.id);
+
   return (
     <div className="min-h-screen pb-24">
       {/* Header */}
       <header className="sticky top-0 z-40 glass border-b border-border px-4 py-3">
         <div className="max-w-lg mx-auto">
-          <h1 className="font-display text-xl font-bold text-gradient-gold mb-3">Events</h1>
+          <div className="flex items-center justify-between mb-3">
+            <h1 className="font-display text-xl font-bold text-gradient-gold">Events</h1>
+            <span className="text-sm text-muted-foreground">{selectedCity.flag} {selectedCity.name}</span>
+          </div>
           <div className="relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -82,18 +50,13 @@ const EventsScreen = () => {
 
       {/* Events list */}
       <div className="px-4 space-y-4 max-w-lg mx-auto">
-        {events.map((event) => (
+        {cityEvents.map((event) => (
           <article
             key={event.id}
             className="bg-card rounded-2xl border border-border overflow-hidden shadow-card animate-slide-up"
           >
             <div className="relative">
-              <img
-                src={event.image}
-                alt={event.title}
-                className="w-full aspect-[16/9] object-cover"
-                loading="lazy"
-              />
+              <img src={event.image} alt={event.title} className="w-full aspect-[16/9] object-cover" loading="lazy" />
               <div className="absolute top-3 right-3">
                 <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                   event.free
@@ -106,9 +69,7 @@ const EventsScreen = () => {
             </div>
 
             <div className="p-4">
-              <h3 className="font-display font-bold text-foreground text-lg leading-tight">
-                {event.title}
-              </h3>
+              <h3 className="font-display font-bold text-foreground text-lg leading-tight">{event.title}</h3>
               <p className="text-xs text-muted-foreground mt-1">{event.host}</p>
 
               <div className="flex items-center gap-4 mt-3 text-xs text-muted-foreground">
@@ -125,7 +86,9 @@ const EventsScreen = () => {
               <div className="flex items-center justify-between mt-4">
                 <div className="flex items-center gap-1.5">
                   <Users size={14} className="text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground">{event.attending} attending</span>
+                  <span className="text-xs text-muted-foreground">
+                    {event.attending >= 1000 ? `${(event.attending / 1000).toFixed(1)}K` : event.attending} attending
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button className="p-2 rounded-full hover:bg-secondary transition-colors">
