@@ -1,32 +1,45 @@
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const useEventbriteImport = () => {
   const [importing, setImporting] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
-  const importEvents = async (cities?: string[]) => {
+  const importEvents = async (cities: string[], keyword = "afrobeats") => {
     setImporting(true);
+    let totalImported = 0;
+    let totalErrors = 0;
+
     try {
-      const { data, error } = await supabase.functions.invoke("import-eventbrite", {
-        body: cities ? { cities, max_keywords: 3 } : { max_keywords: 3 },
-      });
-      if (error) throw error;
+      // Import one city at a time to avoid timeouts
+      for (const city of cities) {
+        toast({ title: `Importing ${city}...`, description: `Searching Eventbrite for ${keyword} events` });
+
+        const { data, error } = await supabase.functions.invoke("import-eventbrite", {
+          body: { city, keyword },
+        });
+
+        if (error) {
+          totalErrors++;
+          console.error(`Import error for ${city}:`, error);
+          continue;
+        }
+
+        totalImported += data?.imported || 0;
+      }
+
+      // Refresh events list
+      queryClient.invalidateQueries({ queryKey: ["events"] });
 
       toast({
-        title: `Imported ${data.imported} events 🎉`,
-        description: data.skipped
-          ? `${data.skipped} already existed. ${data.errors?.length ? data.errors.length + " errors." : ""}`
-          : "Fresh events added to your feed!",
+        title: `Done! ${totalImported} events imported 🎉`,
+        description: totalErrors ? `${totalErrors} cities had errors` : "Check the events list!",
       });
-      return data;
     } catch (err: any) {
-      toast({
-        title: "Import failed",
-        description: err.message || "Could not reach Eventbrite",
-        variant: "destructive",
-      });
+      toast({ title: "Import failed", description: err.message, variant: "destructive" });
     } finally {
       setImporting(false);
     }
