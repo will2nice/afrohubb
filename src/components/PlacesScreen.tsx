@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Search, ChevronDown, Check, UtensilsCrossed, Dumbbell, Moon, X, ExternalLink } from "lucide-react";
+import { MapPin, Search, ChevronDown, Check, UtensilsCrossed, Dumbbell, Moon, X, ExternalLink, Church } from "lucide-react";
 import { cities, type City } from "@/data/cityData";
 import { usePlaces, type Place } from "@/hooks/usePlaces";
 
@@ -7,10 +7,10 @@ const categories = [
   { id: "all", label: "All", icon: MapPin },
   { id: "restaurant", label: "Food", icon: UtensilsCrossed },
   { id: "fitness", label: "Fitness", icon: Dumbbell },
-  { id: "prayer", label: "Prayer", icon: Moon },
+  { id: "prayer", label: "Prayer", icon: Church },
 ];
 
-const subcategoryFilters = ["All", "African", "Caribbean", "Soul Food", "Run Club", "Gym", "Mosque"];
+const subcategoryFilters = ["All", "African", "Caribbean", "Soul Food", "Run Club", "Gym", "Mosque", "Church", "Synagogue"];
 
 const categoryColors: Record<string, string> = {
   African: "bg-amber-100 text-amber-700",
@@ -19,6 +19,8 @@ const categoryColors: Record<string, string> = {
   "Run Club": "bg-blue-100 text-blue-700",
   Gym: "bg-purple-100 text-purple-700",
   Mosque: "bg-teal-100 text-teal-700",
+  Church: "bg-rose-100 text-rose-700",
+  Synagogue: "bg-indigo-100 text-indigo-700",
 };
 
 interface PlacesScreenProps {
@@ -164,7 +166,7 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
                     <div className="w-14 h-14 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
                       {place.category === "restaurant" && <UtensilsCrossed size={20} className="text-primary" />}
                       {place.category === "fitness" && <Dumbbell size={20} className="text-blue-400" />}
-                      {place.category === "prayer" && <Moon size={20} className="text-teal-400" />}
+                      {place.category === "prayer" && <Church size={20} className="text-teal-400" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
