@@ -10,11 +10,13 @@ import CultureLearnScreen from "@/components/CultureLearnScreen";
 import CampusScreen from "@/components/CampusScreen";
 import ProfileScreen from "@/components/ProfileScreen";
 import { cities, type City } from "@/data/cityData";
+import { useMessages } from "@/hooks/useMessages";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>("feed");
   const [selectedCity, setSelectedCity] = useState<City>(cities[0]);
-  const unreadMessages = 7; // Mock unread count
+  const { conversations } = useMessages();
+  const unreadMessages = conversations.reduce((sum, c) => sum + c.unread_count, 0);
 
   return (
     <div className="max-w-lg mx-auto min-h-screen bg-background relative">
