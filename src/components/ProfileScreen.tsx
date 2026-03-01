@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
+import { useToast } from "@/hooks/use-toast";
 import profileMan1 from "@/assets/profile-man-1.jpg";
 
 // Dating mode photos - best portraits & attractive pics
@@ -35,7 +38,7 @@ const menuItems = [
   { icon: Shield, label: "Safety & Privacy", desc: "Blocking, visibility" },
   { icon: Crown, label: "AfroHub Plus", desc: "Premium features", gold: true },
   { icon: Settings, label: "Settings", desc: "Account, notifications" },
-  { icon: LogOut, label: "Log Out", desc: "", danger: true },
+  { icon: LogOut, label: "Log Out", desc: "", danger: true, action: "logout" },
 ];
 
 const interests = ["Afrobeats", "Tech", "Soccer", "Travel", "Fashion", "Cooking", "Entrepreneurship"];
@@ -74,12 +77,82 @@ const modeFeedPosts: Record<string, FeedPost[]> = {
   ],
 };
 
+type ProfileMode = "dating" | "community" | "networking";
+
+const modeBios: Record<ProfileMode, string> = {
+  dating: "Building startups & community. Living my best diaspora life ✨🌍",
+  community: "Looking for pickup basketball, soccer, and guys to hang with. Brotherhood first 🏀⚽🤝",
+  networking: "Entrepreneur & startup founder. Looking to connect with mentors, investors & ambitious minds 💼🚀",
+};
+
+const modeInterests: Record<ProfileMode, string[]> = {
+  dating: ["Afrobeats", "Tech", "Soccer", "Travel", "Fashion", "Cooking", "Entrepreneurship"],
+  community: ["Basketball", "Soccer", "Gym", "Hiking", "Game Nights", "Pickup Sports", "Brotherhood"],
+  networking: ["Startups", "Tech", "Investing", "Mentorship", "Real Estate", "Marketing", "Leadership"],
+};
+
 const ProfileScreen = () => {
-  type ProfileMode = "dating" | "community" | "networking";
+  // ProfileMode type is defined above the component
   const [showSettings, setShowSettings] = useState(false);
   const [profileMode, setProfileMode] = useState<ProfileMode>("dating");
   const [viewMode, setViewMode] = useState<"feed" | "grid">("feed");
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
+  const [showEditProfile, setShowEditProfile] = useState(false);
+  const { signOut } = useAuth();
+  const { profile, updateProfile, uploadAvatar } = useProfile();
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [editName, setEditName] = useState("");
+  const [editBio, setEditBio] = useState("");
+  const [editCity, setEditCity] = useState("");
+  const [editAge, setEditAge] = useState("");
+
+  const openEditProfile = () => {
+    setEditName(profile?.display_name || "");
+    setEditBio(profile?.bio || "");
+    setEditCity(profile?.city || "");
+    setEditAge(profile?.age?.toString() || "");
+    setShowEditProfile(true);
+  };
+
+  const saveProfile = async () => {
+    try {
+      await updateProfile.mutateAsync({
+        display_name: editName,
+        bio: editBio,
+        city: editCity,
+        age: editAge ? parseInt(editAge) : null,
+        profile_mode: profileMode,
+      });
+      setShowEditProfile(false);
+      toast({ title: "Profile updated! ✨" });
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      await uploadAvatar(file);
+      toast({ title: "Photo updated! 📸" });
+    } catch (err: any) {
+      toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const handleMenuAction = async (action?: string) => {
+    if (action === "logout") {
+      await signOut();
+    }
+  };
+
+  const displayName = profile?.display_name || "Your Name";
+  const displayCity = profile?.city || "Set your city";
+  const displayBio = profile?.bio || modeBios[profileMode];
+  const avatarUrl = profile?.avatar_url || profileMan1;
 
   const profileModes: { key: ProfileMode; icon: React.ReactNode; label: string; desc: string; color: string }[] = [
     { key: "dating", icon: <Heart size={18} />, label: "Dating", desc: "Looking for relationships", color: "from-red-500 to-pink-500" },
@@ -89,17 +162,7 @@ const ProfileScreen = () => {
 
   const activeMode = profileModes.find(m => m.key === profileMode)!;
 
-  const modeBios: Record<ProfileMode, string> = {
-    dating: "Building startups & community. Living my best diaspora life ✨🌍",
-    community: "Looking for pickup basketball, soccer, and guys to hang with. Brotherhood first 🏀⚽🤝",
-    networking: "Entrepreneur & startup founder. Looking to connect with mentors, investors & ambitious minds 💼🚀",
-  };
-
-  const modeInterests: Record<ProfileMode, string[]> = {
-    dating: ["Afrobeats", "Tech", "Soccer", "Travel", "Fashion", "Cooking", "Entrepreneurship"],
-    community: ["Basketball", "Soccer", "Gym", "Hiking", "Game Nights", "Pickup Sports", "Brotherhood"],
-    networking: ["Startups", "Tech", "Investing", "Mentorship", "Real Estate", "Marketing", "Leadership"],
-  };
+  // modeBios and modeInterests are defined above the component
 
   const toggleLike = (postId: number) => {
     setLikedPosts(prev => {
@@ -143,6 +206,7 @@ const ProfileScreen = () => {
                   return (
                     <button
                       key={item.label}
+                      onClick={() => { handleMenuAction((item as any).action); setShowSettings(false); }}
                       className={`w-full flex items-center gap-3 px-4 py-3.5 hover:bg-secondary/50 transition-colors ${
                         i > 0 ? "border-t border-border/50" : ""
                       }`}
@@ -176,19 +240,21 @@ const ProfileScreen = () => {
           <div className="flex flex-col items-center">
             <div className="relative">
               <img
-                src={profileMan1}
+                src={avatarUrl}
                 alt="Your profile"
                 className="w-24 h-24 rounded-full object-cover ring-4 ring-primary shadow-gold"
               />
-              <div className="absolute bottom-0 right-0 w-7 h-7 rounded-full gradient-gold flex items-center justify-center ring-2 ring-card">
-                <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-                  <path d="M1 4L3.5 6.5L9 1" stroke="hsl(0,0%,5%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute bottom-0 right-0 w-7 h-7 rounded-full gradient-gold flex items-center justify-center ring-2 ring-card"
+              >
+                <Camera size={12} className="text-primary-foreground" />
+              </button>
+              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
             </div>
-            <h2 className="font-display text-xl font-bold text-foreground mt-3">Kofi Asante</h2>
-            <p className="text-sm text-muted-foreground mt-0.5">Houston, TX · 🇬🇭 Ghana</p>
-            <p className="text-sm text-foreground/70 mt-2 text-center max-w-[280px]">{modeBios[profileMode]}</p>
+            <h2 className="font-display text-xl font-bold text-foreground mt-3">{displayName}</h2>
+            <p className="text-sm text-muted-foreground mt-0.5">{displayCity}</p>
+            <p className="text-sm text-foreground/70 mt-2 text-center max-w-[280px]">{displayBio}</p>
 
             {/* Stats */}
             <div className="flex items-center gap-8 mt-5">
@@ -201,7 +267,7 @@ const ProfileScreen = () => {
             </div>
 
             {/* Edit profile button */}
-            <button className="mt-4 px-8 py-2 rounded-full border border-border bg-secondary text-sm font-semibold text-foreground hover:bg-secondary/80 transition-colors">
+            <button onClick={openEditProfile} className="mt-4 px-8 py-2 rounded-full border border-border bg-secondary text-sm font-semibold text-foreground hover:bg-secondary/80 transition-colors">
               Edit Profile
             </button>
           </div>
@@ -335,6 +401,43 @@ const ProfileScreen = () => {
         {/* App version */}
         <p className="text-center text-xs text-muted-foreground mt-6 mb-4">AfroHub v1.0.0</p>
       </div>
+
+      {/* Edit Profile Modal */}
+      {showEditProfile && (
+        <div className="fixed inset-0 z-50 bg-background/95 overflow-y-auto">
+          <div className="max-w-lg mx-auto px-4 py-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="font-display text-xl font-bold text-gradient-gold">Edit Profile</h2>
+              <button onClick={() => setShowEditProfile(false)} className="p-2 rounded-full bg-secondary">
+                <X size={20} className="text-foreground" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Display Name</label>
+                <input value={editName} onChange={e => setEditName(e.target.value)} className="w-full py-3 px-4 rounded-xl bg-secondary text-foreground border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+              </div>
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Bio</label>
+                <textarea value={editBio} onChange={e => setEditBio(e.target.value)} rows={3} className="w-full py-3 px-4 rounded-xl bg-secondary text-foreground border border-border text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/40" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">City</label>
+                  <input value={editCity} onChange={e => setEditCity(e.target.value)} placeholder="Houston, TX" className="w-full py-3 px-4 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground border border-border text-sm focus:outline-none" />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Age</label>
+                  <input type="number" value={editAge} onChange={e => setEditAge(e.target.value)} className="w-full py-3 px-4 rounded-xl bg-secondary text-foreground border border-border text-sm focus:outline-none" />
+                </div>
+              </div>
+              <button onClick={saveProfile} disabled={updateProfile.isPending} className="w-full py-3 rounded-xl gradient-gold text-primary-foreground font-bold text-sm disabled:opacity-50">
+                {updateProfile.isPending ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

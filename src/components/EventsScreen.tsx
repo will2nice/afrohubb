@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, ChevronDown, Check, UserCheck } from "lucide-react";
+import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, ChevronDown, Check, UserCheck, Plus } from "lucide-react";
 import { events as allEvents, cities, type City, type EventItem } from "@/data/cityData";
 import EventAttendeesSheet from "@/components/EventAttendeesSheet";
+import CreateEventSheet from "@/components/CreateEventSheet";
 
 const filters = ["All", "Today", "This Weekend", "Concerts", "Festivals", "Sports", "Art", "Networking"];
 
@@ -28,6 +29,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const [rsvpEvents, setRsvpEvents] = useState<Set<number>>(new Set());
   const [activeFilter, setActiveFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [showCreateEvent, setShowCreateEvent] = useState(false);
 
   const cityEvents = allEvents.filter((e) => e.city === selectedCity.id);
   const filterFn = filterMap[activeFilter] || (() => true);
@@ -55,14 +57,22 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-3">
             <h1 className="font-display text-xl font-bold text-gradient-gold">Events</h1>
-            <button
-              onClick={() => setShowCityPicker(!showCityPicker)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-border"
-            >
-              <MapPin size={14} className="text-primary" />
-              <span className="text-sm font-medium text-foreground">{selectedCity.flag} {selectedCity.name}</span>
-              <ChevronDown size={14} className={`text-muted-foreground transition-transform ${showCityPicker ? "rotate-180" : ""}`} />
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setShowCreateEvent(true)}
+                className="p-2 rounded-full gradient-gold"
+              >
+                <Plus size={16} className="text-primary-foreground" />
+              </button>
+              <button
+                onClick={() => setShowCityPicker(!showCityPicker)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-border"
+              >
+                <MapPin size={14} className="text-primary" />
+                <span className="text-sm font-medium text-foreground">{selectedCity.flag} {selectedCity.name}</span>
+                <ChevronDown size={14} className={`text-muted-foreground transition-transform ${showCityPicker ? "rotate-180" : ""}`} />
+              </button>
+            </div>
           </div>
 
           {showCityPicker && (
@@ -223,6 +233,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
       {selectedEvent && (
         <EventAttendeesSheet event={selectedEvent} onClose={() => setSelectedEvent(null)} />
       )}
+      <CreateEventSheet open={showCreateEvent} onClose={() => setShowCreateEvent(false)} defaultCity={selectedCity.name} />
     </div>
   );
 };
