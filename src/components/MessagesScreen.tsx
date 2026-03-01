@@ -1,8 +1,26 @@
 import { useState } from "react";
-import { Search, Users, MessageSquarePlus, Loader2 } from "lucide-react";
+import { Search, Users, MessageSquarePlus, Loader2, BadgeCheck } from "lucide-react";
 import { useMessages, type ConversationWithDetails } from "@/hooks/useMessages";
 import { useAuth } from "@/contexts/AuthContext";
 import DMChatScreen from "@/components/DMChatScreen";
+import founderWilly from "@/assets/founder-willy.jpg";
+
+const founderProfiles = [
+  {
+    id: "founder-willy",
+    name: "Willie",
+    role: "Founder",
+    avatar: founderWilly,
+    message: "Hey! Welcome to the fam 🙌🏾 We built this for us — explore, connect, and let us know what you think!",
+  },
+  {
+    id: "founder-daniel",
+    name: "Daniel",
+    role: "Founder",
+    avatar: null,
+    message: "Welcome to AfroHub! I'm one of the founders. We're building something special for the culture. Don't be a stranger 🤝🏾",
+  },
+];
 
 const MessagesScreen = () => {
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
@@ -75,19 +93,51 @@ const MessagesScreen = () => {
       </header>
 
       <div className="max-w-lg mx-auto">
+        {/* Pinned Founder Messages */}
+        {founderProfiles.map((founder) => (
+          <div
+            key={founder.id}
+            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors border-b border-border/30 cursor-pointer"
+          >
+            <div className="relative">
+              {founder.avatar ? (
+                <img src={founder.avatar} alt={founder.name} className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/40" />
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/60 to-primary/30 flex items-center justify-center ring-2 ring-primary/40">
+                  <span className="text-lg font-bold text-primary-foreground">{founder.name.charAt(0)}</span>
+                </div>
+              )}
+              <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full gradient-gold flex items-center justify-center">
+                <BadgeCheck size={10} className="text-primary-foreground" />
+              </div>
+            </div>
+            <div className="flex-1 min-w-0 text-left">
+              <div className="flex items-center gap-1.5">
+                <p className="text-sm font-bold text-foreground">{founder.name}</p>
+                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold gradient-gold text-primary-foreground leading-none">{founder.role}</span>
+              </div>
+              <p className="text-xs text-muted-foreground truncate mt-0.5">{founder.message}</p>
+            </div>
+          </div>
+        ))}
+
         {loadingConversations ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 size={24} className="text-primary animate-spin" />
           </div>
-        ) : filtered.length === 0 ? (
-          <div className="text-center py-20 px-4">
+        ) : filtered.length === 0 && !searchQuery ? (
+          <div className="text-center py-12 px-4">
             <div className="w-16 h-16 rounded-full bg-secondary mx-auto flex items-center justify-center mb-4">
               <MessageSquarePlus size={28} className="text-muted-foreground" />
             </div>
             <h3 className="font-display text-lg font-bold text-foreground mb-1">No messages yet</h3>
             <p className="text-sm text-muted-foreground">
-              {searchQuery ? "No conversations match your search" : "Start connecting! Match with someone or message an event attendee to start a conversation."}
+              Start connecting! Match with someone or message an event attendee to start a conversation.
             </p>
+          </div>
+        ) : filtered.length === 0 && searchQuery ? (
+          <div className="text-center py-12 px-4">
+            <p className="text-sm text-muted-foreground">No conversations match your search</p>
           </div>
         ) : (
           filtered.map((conv) => {
