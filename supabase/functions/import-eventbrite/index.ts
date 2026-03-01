@@ -6,100 +6,23 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const EVENTBRITE_API = "https://www.eventbriteapi.com/v3";
-
-// Diaspora-relevant search keywords
-const SEARCH_KEYWORDS = [
-  "afrobeats",
-  "african",
-  "caribbean",
-  "diaspora",
-  "afro",
-  "jollof",
-  "amapiano",
-  "dancehall",
-  "soca",
-  "afro house",
-  "afrofuturism",
-  "black culture",
-  "hip hop",
-  "r&b",
-  "gospel brunch",
-  "african art",
-  "black networking",
-];
-
-// City name to Eventbrite location mapping
-const CITY_LOCATIONS: Record<string, string> = {
-  nyc: "New York",
-  atlanta: "Atlanta",
-  houston: "Houston",
-  chicago: "Chicago",
-  dc: "Washington DC",
-  la: "Los Angeles",
-  miami: "Miami",
-  dallas: "Dallas",
-  detroit: "Detroit",
-  philly: "Philadelphia",
-  charlotte: "Charlotte",
-  london: "London",
-  paris: "Paris",
-  toronto: "Toronto",
-  montreal: "Montreal",
+const CITY_SLUGS: Record<string, string> = {
+  dallas: "Dallas--TX",
+  austin: "Austin--TX",
+  "san-antonio": "San-Antonio--TX",
+  houston: "Houston--TX",
+  nyc: "New-York--NY",
+  atlanta: "Atlanta--GA",
+  chicago: "Chicago--IL",
+  dc: "Washington--DC",
+  la: "Los-Angeles--CA",
+  miami: "Miami--FL",
+  london: "London--United-Kingdom",
+  paris: "Paris--France",
+  toronto: "Toronto--Canada",
 };
 
-interface EventbriteEvent {
-  id: string;
-  name: { text: string };
-  description: { text: string } | null;
-  start: { utc: string; local: string };
-  end: { utc: string; local: string } | null;
-  url: string;
-  logo: { original: { url: string } } | null;
-  venue_id: string | null;
-  category_id: string | null;
-  is_free: boolean;
-  capacity: number | null;
-  organizer_id: string | null;
-}
-
-interface EventbriteVenue {
-  name: string;
-  address: {
-    city: string;
-    region: string;
-    country: string;
-    localized_address_display: string;
-  };
-}
-
-async function fetchEventbriteEvents(
-  token: string,
-  locationQuery: string,
-  keyword: string
-): Promise<EventbriteEvent[]> {
-  const params = new URLSearchParams({
-    "q": keyword,
-    "location.address": locationQuery,
-    "location.within": "30mi",
-    "sort_by": "date",
-    "expand": "venue",
-  });
-
-  const res = await fetch(
-    `${EVENTBRITE_API}/events/search/?${params.toString()}`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-
-  if (!res.ok) {
-    const body = await res.text();
-    console.error(`Eventbrite search failed [${res.status}]: ${body}`);
-    return [];
-  }
-
-  const data = await res.json();
-  return data.events || [];
-}
+const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -107,129 +30,168 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const EVENTBRITE_TOKEN = Deno.env.get("EVENTBRITE_API_TOKEN");
-    if (!EVENTBRITE_TOKEN) {
-      throw new Error("EVENTBRITE_API_TOKEN is not configured");
-    }
+    const FIRECRAWL_KEY = Deno.env.get("FIRECRAWL_API_KEY");
+    if (!FIRECRAWL_KEY) throw new Error("FIRECRAWL_API_KEY is not configured");
+    const LOVABLE_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Parse request body for optional filters
-    let targetCities: string[] = Object.keys(CITY_LOCATIONS);
-    let maxKeywords = 3; // limit keywords per city to avoid rate limits
+    let city = "dallas";
+    let keyword = "afrobeats";
     try {
       const body = await req.json();
-      if (body.cities) targetCities = body.cities;
-      if (body.max_keywords) maxKeywords = body.max_keywords;
-    } catch {
-      // No body, use defaults
+      if (body.city) city = body.city;
+      if (body.keyword) keyword = body.keyword;
+    } catch { /* defaults */ }
+
+    const slug = CITY_SLUGS[city];
+    if (!slug) {
+      return new Response(
+        JSON.stringify({ success: false, error: `Unknown city: ${city}` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
     }
 
+    const searchUrl = `https://www.eventbrite.com/d/${slug}/${keyword}/`;
+    console.log("Step 1: Scraping", searchUrl);
+
+    // Step 1: Scrape as markdown (fast)
+    const scrapeRes = await fetch("https://api.firecrawl.dev/v1/scrape", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${FIRECRAWL_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        url: searchUrl,
+        formats: ["markdown"],
+        waitFor: 2000,
+      }),
+    });
+
+    if (!scrapeRes.ok) {
+      const errText = await scrapeRes.text();
+      console.error(`Firecrawl error [${scrapeRes.status}]:`, errText);
+      throw new Error(`Firecrawl scrape failed: ${scrapeRes.status}`);
+    }
+
+    const scrapeData = await scrapeRes.json();
+    const markdown = scrapeData?.data?.markdown || scrapeData?.markdown || "";
+    console.log(`Step 1 done. Markdown length: ${markdown.length}`);
+
+    if (markdown.length < 100) {
+      return new Response(
+        JSON.stringify({ success: true, city, imported: 0, skipped: 0, total_found: 0, message: "No content found on page" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Step 2: Use AI to extract events from markdown
+    console.log("Step 2: Parsing events with AI");
+    const aiRes = await fetch(AI_GATEWAY, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          {
+            role: "system",
+            content: "You extract event data from scraped Eventbrite pages. Return ONLY valid JSON, no markdown code fences."
+          },
+          {
+            role: "user",
+            content: `Extract all events from this Eventbrite search results page. Return a JSON object with an "events" array. Each event should have: title, date (ISO 8601 format like 2025-03-15T20:00:00), location (venue name), price (string like "Free" or "$25"), url (eventbrite URL if found), image_url (if found). Only include actual events, not ads or navigation. Here is the page content:\n\n${markdown.substring(0, 8000)}`
+          }
+        ],
+        temperature: 0,
+        max_tokens: 4000,
+      }),
+    });
+
+    if (!aiRes.ok) {
+      const errText = await aiRes.text();
+      console.error(`AI Gateway error [${aiRes.status}]:`, errText);
+      throw new Error(`AI parsing failed: ${aiRes.status}`);
+    }
+
+    const aiData = await aiRes.json();
+    const aiContent = aiData?.choices?.[0]?.message?.content || "";
+    console.log("Step 2 done. AI response length:", aiContent.length);
+
+    // Parse AI response
+    let events: any[] = [];
+    try {
+      const cleaned = aiContent.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      const parsed = JSON.parse(cleaned);
+      events = parsed.events || [];
+    } catch (e) {
+      console.error("Failed to parse AI response:", aiContent.substring(0, 200));
+      return new Response(
+        JSON.stringify({ success: true, city, imported: 0, skipped: 0, total_found: 0, message: "Could not parse events from page" }),
+        { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    console.log(`Found ${events.length} events for ${city}`);
+
+    // Step 3: Insert into database
     let totalImported = 0;
     let totalSkipped = 0;
     const errors: string[] = [];
-
-    // Use a system user ID for imported events
     const SYSTEM_USER_ID = "00000000-0000-0000-0000-000000000000";
 
-    for (const cityId of targetCities) {
-      const locationQuery = CITY_LOCATIONS[cityId];
-      if (!locationQuery) continue;
+    for (const ev of events) {
+      if (!ev.title || ev.title.length < 3) continue;
 
-      // Pick a subset of keywords to avoid rate limits
-      const keywords = SEARCH_KEYWORDS.slice(0, maxKeywords);
+      const { data: existing } = await supabase
+        .from("events")
+        .select("id")
+        .eq("source", "eventbrite")
+        .eq("city", city)
+        .ilike("title", ev.title.substring(0, 40) + "%")
+        .maybeSingle();
 
-      for (const keyword of keywords) {
-        try {
-          const events = await fetchEventbriteEvents(
-            EVENTBRITE_TOKEN,
-            locationQuery,
-            keyword
-          );
+      if (existing) { totalSkipped++; continue; }
 
-          for (const ev of events) {
-            // Check if already imported
-            const { data: existing } = await supabase
-              .from("events")
-              .select("id")
-              .eq("external_id", ev.id)
-              .eq("source", "eventbrite")
-              .maybeSingle();
+      let parsedDate = ev.date;
+      try {
+        const d = new Date(ev.date);
+        if (!isNaN(d.getTime())) parsedDate = d.toISOString();
+      } catch { /* keep as-is */ }
 
-            if (existing) {
-              totalSkipped++;
-              continue;
-            }
+      const externalId = ev.url || `eb-${city}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-            // Determine venue/location
-            let venueName = "";
-            if ((ev as any).venue) {
-              venueName =
-                (ev as any).venue.name ||
-                (ev as any).venue.address?.localized_address_display ||
-                "";
-            }
+      const { error: insertError } = await supabase.from("events").insert({
+        title: ev.title,
+        description: "",
+        date: parsedDate,
+        city,
+        location: ev.location || "",
+        image_url: ev.image_url || null,
+        price: ev.price || "Free",
+        category: "Concert",
+        creator_id: SYSTEM_USER_ID,
+        source: "eventbrite",
+        external_id: externalId,
+        external_url: ev.url || null,
+        is_approved: true,
+      });
 
-            // Determine category from keyword
-            const categoryMap: Record<string, string> = {
-              afrobeats: "Concert",
-              amapiano: "Concert",
-              dancehall: "Concert",
-              soca: "Concert",
-              "afro house": "Concert",
-              "hip hop": "Concert",
-              "r&b": "Concert",
-              african: "Festival",
-              caribbean: "Festival",
-              diaspora: "Festival",
-              afro: "Festival",
-              jollof: "Festival",
-              afrofuturism: "Art",
-              "african art": "Art",
-              "black culture": "Art",
-              "gospel brunch": "Brunch",
-              "black networking": "Networking",
-            };
-
-            const { error: insertError } = await supabase.from("events").insert({
-              title: ev.name.text,
-              description: ev.description?.text?.substring(0, 500) || "",
-              date: ev.start.utc,
-              end_date: ev.end?.utc || null,
-              city: cityId,
-              location: venueName,
-              image_url: ev.logo?.original?.url || null,
-              price: ev.is_free ? "Free" : "Tickets",
-              capacity: ev.capacity,
-              category: categoryMap[keyword.toLowerCase()] || "Event",
-              creator_id: SYSTEM_USER_ID,
-              source: "eventbrite",
-              external_id: ev.id,
-              external_url: ev.url,
-              is_approved: true, // auto-approve imported events
-            });
-
-            if (insertError) {
-              errors.push(`Insert failed for ${ev.id}: ${insertError.message}`);
-            } else {
-              totalImported++;
-            }
-          }
-        } catch (err) {
-          errors.push(`Search failed for ${cityId}/${keyword}: ${err.message}`);
-        }
+      if (insertError) {
+        errors.push(`"${ev.title}": ${insertError.message}`);
+      } else {
+        totalImported++;
       }
     }
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        imported: totalImported,
-        skipped: totalSkipped,
-        errors: errors.slice(0, 10),
-      }),
+      JSON.stringify({ success: true, city, imported: totalImported, skipped: totalSkipped, total_found: events.length, errors: errors.slice(0, 10) }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error: unknown) {
