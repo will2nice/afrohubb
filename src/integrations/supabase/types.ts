@@ -202,6 +202,72 @@ export type Database = {
           },
         ]
       }
+      places: {
+        Row: {
+          address: string | null
+          category: string
+          city: string
+          created_at: string
+          cuisine_type: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_halal: boolean | null
+          is_ramadan_friendly: boolean | null
+          latitude: number | null
+          longitude: number | null
+          name: string
+          phone: string | null
+          price_range: string | null
+          source: string | null
+          subcategory: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address?: string | null
+          category?: string
+          city: string
+          created_at?: string
+          cuisine_type?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_halal?: boolean | null
+          is_ramadan_friendly?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name: string
+          phone?: string | null
+          price_range?: string | null
+          source?: string | null
+          subcategory?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address?: string | null
+          category?: string
+          city?: string
+          created_at?: string
+          cuisine_type?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_halal?: boolean | null
+          is_ramadan_friendly?: boolean | null
+          latitude?: number | null
+          longitude?: number | null
+          name?: string
+          phone?: string | null
+          price_range?: string | null
+          source?: string | null
+          subcategory?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           age: number | null
