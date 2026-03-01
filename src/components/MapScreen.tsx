@@ -116,6 +116,30 @@ const poshIcon = new L.DivIcon({
   iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
 });
 
+const diceIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(200,80%,50%),hsl(220,70%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="8" cy="8" r="1.5" fill="white"/><circle cx="16" cy="16" r="1.5" fill="white"/></svg>
+  </div>`,
+  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
+});
+
+const shotgunIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(340,80%,55%),hsl(10,80%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+  </div>`,
+  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
+});
+
+const billettoIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(170,70%,45%),hsl(190,60%,50%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>
+  </div>`,
+  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
+});
+
 const personIcon = new L.DivIcon({
   className: "custom-marker",
   html: `<div style="width:32px;height:32px;border-radius:50%;background:hsl(0,0%,16%);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(43,96%,56%);">
@@ -324,7 +348,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const dbEventPositions = useMemo(() => {
     return dbEvents.filter(e => {
       const source = (e as any).source;
-      return source === "eventbrite" || source === "posh";
+      return source === "eventbrite" || source === "posh" || source === "dice" || source === "shotgun" || source === "billetto";
     }).map((e) => {
       const city = (e as any).city || "austin";
       const center = cityCoords[city] || cityCoords.austin;
@@ -361,7 +385,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
     .map(e => ({
       id: Math.abs(e.id.split("").reduce((a: number, b: string) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0)),
       title: e.title,
-      host: e.source === "posh" ? "via Posh" : "via Eventbrite",
+      host: e.source === "posh" ? "via Posh" : e.source === "dice" ? "via DICE" : e.source === "shotgun" ? "via Shotgun" : e.source === "billetto" ? "via Billetto" : "via Eventbrite",
       date: new Date(e.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
       venue: e.location || "",
       city: e.city,
@@ -582,6 +606,87 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
                   <span className="text-xs font-bold text-purple-600">{event.price || "Free"}</span>
                   {event.external_url && (
                     <a href={event.external_url} target="_blank" rel="noopener noreferrer" className="text-xs text-purple-500 flex items-center gap-1">
+                      View <ExternalLink size={10} />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* DICE events from DB */}
+        {showEventbrite && dbEventPositions.filter(e => e.source === "dice").map((event) => (
+          <Marker key={`dice-${event.id}`} position={[event.lat, event.lng]} icon={diceIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
+            <Popup className="afro-popup" maxWidth={280}>
+              <div className="p-1">
+                {event.image_url && <img src={event.image_url} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />}
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">DICE</span>
+                </div>
+                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
+                  <span>{new Date(event.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
+                </div>
+                {event.location && <div className="text-xs text-gray-500 mt-1">{event.location}</div>}
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs font-bold text-blue-600">{event.price || "Free"}</span>
+                  {event.external_url && (
+                    <a href={event.external_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 flex items-center gap-1">
+                      View <ExternalLink size={10} />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* Shotgun events from DB */}
+        {showEventbrite && dbEventPositions.filter(e => e.source === "shotgun").map((event) => (
+          <Marker key={`sg-${event.id}`} position={[event.lat, event.lng]} icon={shotgunIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
+            <Popup className="afro-popup" maxWidth={280}>
+              <div className="p-1">
+                {event.image_url && <img src={event.image_url} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />}
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-pink-100 text-pink-700">Shotgun</span>
+                </div>
+                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
+                  <span>{new Date(event.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
+                </div>
+                {event.location && <div className="text-xs text-gray-500 mt-1">{event.location}</div>}
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs font-bold text-pink-600">{event.price || "Free"}</span>
+                  {event.external_url && (
+                    <a href={event.external_url} target="_blank" rel="noopener noreferrer" className="text-xs text-pink-500 flex items-center gap-1">
+                      View <ExternalLink size={10} />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* Billetto events from DB */}
+        {showEventbrite && dbEventPositions.filter(e => e.source === "billetto").map((event) => (
+          <Marker key={`bl-${event.id}`} position={[event.lat, event.lng]} icon={billettoIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
+            <Popup className="afro-popup" maxWidth={280}>
+              <div className="p-1">
+                {event.image_url && <img src={event.image_url} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />}
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 text-teal-700">Billetto</span>
+                </div>
+                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
+                  <span>{new Date(event.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
+                </div>
+                {event.location && <div className="text-xs text-gray-500 mt-1">{event.location}</div>}
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs font-bold text-teal-600">{event.price || "Free"}</span>
+                  {event.external_url && (
+                    <a href={event.external_url} target="_blank" rel="noopener noreferrer" className="text-xs text-teal-500 flex items-center gap-1">
                       View <ExternalLink size={10} />
                     </a>
                   )}
