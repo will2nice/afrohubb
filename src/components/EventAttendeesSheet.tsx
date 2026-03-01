@@ -38,7 +38,12 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   if (chatContact) {
     return (
       <DMChatScreen
-        contact={chatContact}
+        conversationId=""
+        contactName={chatContact.name}
+        contactPhoto={chatContact.photo}
+        contactAge={chatContact.age}
+        contactVibe={chatContact.vibe}
+        isOnline={true}
         eventContext={event.title}
         onBack={() => setChatContact(null)}
       />
