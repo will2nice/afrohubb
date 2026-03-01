@@ -276,6 +276,47 @@ export const feedPosts: FeedPost[] = [
     text: "Who Decides War show was absolutely MIND-BLOWING. Ev Bravado is a genius. The craftsmanship, the storytelling through fashion… NYC is the center of the universe fr 🌍🪡",
     image: eventNyfw, likes: 2189, comments: 534, type: "post", city: "nyc",
   },
+  // Rio de Janeiro
+  {
+    id: 40, author: "Mariana Santos", avatar: profileWoman1, location: "Rio de Janeiro, Brazil", time: "1h ago",
+    text: "Pedra do Sal on a Monday night is SPIRITUAL 🇧🇷🎶 The samba, the energy, the history — this is where it all started. Rio is the heart of Black Brazil!",
+    image: eventParty, likes: 1245, comments: 312, type: "post", city: "rio",
+  },
+  {
+    id: 41, author: "AfroHub Rio", avatar: null, location: "Rio de Janeiro, Brazil", time: "Today",
+    text: null, image: eventUkAfrobeats, likes: 3421, comments: 567, type: "event", city: "rio",
+    eventTitle: "AFRO LOVE — The Party 🖤✨", eventDate: "Sat, Mar 1 · 11:00 PM",
+    eventVenue: "Casa da Matriz, Botafogo", attending: 3000,
+  },
+  {
+    id: 42, author: "Carlos Silva", avatar: profileMan1, location: "Rio de Janeiro, Brazil", time: "3h ago",
+    text: "Carnaval 2026 is going to be INSANE 🎭🔥 Mangueira and Salgueiro are bringing pure Afro-Brazilian pride to the Sambódromo this year. Who's coming to Rio?!",
+    image: eventConcert, likes: 2567, comments: 489, type: "post", city: "rio",
+  },
+  // São Paulo
+  {
+    id: 43, author: "Rafael Oliveira", avatar: profileMan2, location: "São Paulo, Brazil", time: "2h ago",
+    text: "Baile Black in SP is unmatched 🖤🇧🇷 The Black movement here is STRONG — from Feira Preta to the art scene. São Paulo is the engine of Afro-Brazilian culture!",
+    image: eventParty, likes: 1890, comments: 345, type: "post", city: "saopaulo",
+  },
+  {
+    id: 44, author: null, avatar: null, location: "São Paulo, Brazil", time: "This Weekend",
+    text: null, image: eventRapConcert, likes: 4521, comments: 890, type: "event", city: "saopaulo",
+    eventTitle: "Afro Nation São Paulo 2026", eventDate: "Sat, Mar 7 · 1:00 PM",
+    eventVenue: "Interlagos Park", attending: 25000,
+  },
+  // Salvador
+  {
+    id: 45, author: "Ana Souza", avatar: profileWoman2, location: "Salvador, Brazil", time: "30m ago",
+    text: "Salvador IS Africa in the Americas 🇧🇷🌍 Pelourinho tonight with Olodum drumming, acarajé from Dinha, and Candomblé energy everywhere. There is NO place like this on earth 🙏🏾✨",
+    image: eventAfricanArt, likes: 3456, comments: 678, type: "post", city: "salvador",
+  },
+  {
+    id: 46, author: null, avatar: null, location: "Salvador, Brazil", time: "Carnaval Week",
+    text: null, image: eventUkAfrobeats, likes: 8912, comments: 1234, type: "event", city: "salvador",
+    eventTitle: "Carnaval Salvador 2026 — Barra-Ondina", eventDate: "Fri, Feb 27 – Tue, Mar 3",
+    eventVenue: "Barra-Ondina Circuit", attending: 200000,
+  },
 ];
 
 export const events: EventItem[] = [
