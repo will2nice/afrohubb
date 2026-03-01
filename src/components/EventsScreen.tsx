@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, ChevronDown, Check, UserCheck, Plus, Download, Loader2 } from "lucide-react";
+import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, ChevronDown, Check, UserCheck, Plus, Download, Loader2, ExternalLink } from "lucide-react";
 import { events as allEvents, cities, type City, type EventItem } from "@/data/cityData";
 import EventAttendeesSheet from "@/components/EventAttendeesSheet";
 import CreateEventSheet from "@/components/CreateEventSheet";
@@ -39,7 +39,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const { importEvents, importing } = useEventbriteImport();
 
   // Merge mock events with DB events (DB events mapped to EventItem shape)
-  const dbMapped: EventItem[] = dbEvents.map((e) => ({
+  const dbMapped: (EventItem & { source?: string; external_url?: string })[] = dbEvents.map((e) => ({
     id: typeof e.id === "string" ? Math.abs(hashCode(e.id)) : 0,
     title: e.title,
     host: (e as any).source === "eventbrite" ? "via Eventbrite" : "Community",
@@ -52,6 +52,8 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
     free: e.price === "Free",
     price: e.price || undefined,
     category: e.category,
+    source: (e as any).source || "user",
+    external_url: (e as any).external_url || undefined,
   }));
 
   const cityEvents = [
@@ -174,6 +176,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
           </div>
         ) : filteredEvents.map((event) => {
           const isGoing = rsvpEvents.has(event.id);
+          const isEventbrite = (event as any).source === "eventbrite";
           return (
             <article
               key={event.id}
@@ -182,6 +185,11 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
               <div className="relative">
                 <img src={event.image} alt={event.title} className="w-full aspect-[16/9] object-cover" loading="lazy" />
                 <div className="absolute top-3 left-3 flex gap-1.5">
+                  {isEventbrite && (
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[hsl(14,100%,53%)]/90 text-white backdrop-blur-sm flex items-center gap-1">
+                      <ExternalLink size={10} /> Eventbrite
+                    </span>
+                  )}
                   {event.category && (
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-card/90 text-foreground border border-border backdrop-blur-sm">
                       {event.category}
