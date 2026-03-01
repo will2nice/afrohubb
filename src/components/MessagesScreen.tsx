@@ -4,6 +4,7 @@ import { useMessages, type ConversationWithDetails } from "@/hooks/useMessages";
 import { useAuth } from "@/contexts/AuthContext";
 import DMChatScreen from "@/components/DMChatScreen";
 import founderWilly from "@/assets/founder-willy.jpg";
+import founderDaniel from "@/assets/founder-tom.jpg";
 
 const founderProfiles = [
   {
@@ -17,7 +18,7 @@ const founderProfiles = [
     id: "founder-daniel",
     name: "Daniel",
     role: "Founder",
-    avatar: null,
+    avatar: founderDaniel,
     message: "Welcome to AfroHub! I'm one of the founders. We're building something special for the culture. Don't be a stranger 🤝🏾",
   },
 ];
