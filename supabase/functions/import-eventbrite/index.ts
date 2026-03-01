@@ -15,11 +15,17 @@ const CITY_SLUGS: Record<string, string> = {
   atlanta: "Atlanta--GA",
   chicago: "Chicago--IL",
   dc: "Washington--DC",
+  losangeles: "Los-Angeles--CA",
   la: "Los-Angeles--CA",
   miami: "Miami--FL",
   london: "London--United-Kingdom",
   paris: "Paris--France",
   toronto: "Toronto--Canada",
+};
+
+// Normalize city IDs to match app's cityData
+const CITY_NORMALIZE: Record<string, string> = {
+  la: "losangeles",
 };
 
 const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
@@ -48,6 +54,8 @@ Deno.serve(async (req) => {
     } catch { /* defaults */ }
 
     const slug = CITY_SLUGS[city];
+    // Normalize city ID for DB storage
+    const dbCity = CITY_NORMALIZE[city] || city;
     if (!slug) {
       return new Response(
         JSON.stringify({ success: false, error: `Unknown city: ${city}` }),
@@ -171,7 +179,7 @@ Deno.serve(async (req) => {
         title: ev.title,
         description: "",
         date: parsedDate,
-        city,
+        city: dbCity,
         location: ev.location || "",
         image_url: ev.image_url || null,
         price: ev.price || "Free",
