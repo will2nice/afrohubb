@@ -56,9 +56,11 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
     external_url: (e as any).external_url || undefined,
   }));
 
-  // Put Eventbrite events first, then mock events
+  // Put Posh events first, then other DB events, then mock events
+  const poshEvents = dbMapped.filter((e) => e.source === "posh");
+  const otherDbEvents = dbMapped.filter((e) => e.source !== "posh");
   const mockEvents = allEvents.filter((e) => e.city === selectedCity.id);
-  const cityEvents = [...dbMapped, ...mockEvents];
+  const cityEvents = [...poshEvents, ...otherDbEvents, ...mockEvents];
   const filterFn = filterMap[activeFilter] || (() => true);
   const filteredEvents = cityEvents.filter(filterFn).filter(e => 
     searchQuery === "" || e.title.toLowerCase().includes(searchQuery.toLowerCase()) || e.host.toLowerCase().includes(searchQuery.toLowerCase())
