@@ -117,11 +117,14 @@ export type Database = {
           date: string
           description: string | null
           end_date: string | null
+          external_id: string | null
+          external_url: string | null
           id: string
           image_url: string | null
           is_approved: boolean | null
           location: string | null
           price: string | null
+          source: string | null
           title: string
           updated_at: string
         }
@@ -134,11 +137,14 @@ export type Database = {
           date: string
           description?: string | null
           end_date?: string | null
+          external_id?: string | null
+          external_url?: string | null
           id?: string
           image_url?: string | null
           is_approved?: boolean | null
           location?: string | null
           price?: string | null
+          source?: string | null
           title: string
           updated_at?: string
         }
@@ -151,11 +157,14 @@ export type Database = {
           date?: string
           description?: string | null
           end_date?: string | null
+          external_id?: string | null
+          external_url?: string | null
           id?: string
           image_url?: string | null
           is_approved?: boolean | null
           location?: string | null
           price?: string | null
+          source?: string | null
           title?: string
           updated_at?: string
         }

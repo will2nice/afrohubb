@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, ChevronDown, Check, UserCheck, Plus } from "lucide-react";
+import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, ChevronDown, Check, UserCheck, Plus, Download, Loader2 } from "lucide-react";
 import { events as allEvents, cities, type City, type EventItem } from "@/data/cityData";
 import EventAttendeesSheet from "@/components/EventAttendeesSheet";
 import CreateEventSheet from "@/components/CreateEventSheet";
+import { useEvents } from "@/hooks/useEvents";
+import { useEventbriteImport } from "@/hooks/useEventbriteImport";
 
 const filters = ["All", "Today", "This Weekend", "Concerts", "Festivals", "Sports", "Art", "Networking"];
 
@@ -23,6 +25,9 @@ interface EventsScreenProps {
   onCityChange: (city: City) => void;
 }
 
+// Simple string hash for stable IDs
+const hashCode = (s: string) => s.split("").reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0);
+
 const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
   const [showCityPicker, setShowCityPicker] = useState(false);
@@ -30,8 +35,29 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const [activeFilter, setActiveFilter] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateEvent, setShowCreateEvent] = useState(false);
+  const { events: dbEvents } = useEvents(selectedCity.id);
+  const { importEvents, importing } = useEventbriteImport();
 
-  const cityEvents = allEvents.filter((e) => e.city === selectedCity.id);
+  // Merge mock events with DB events (DB events mapped to EventItem shape)
+  const dbMapped: EventItem[] = dbEvents.map((e) => ({
+    id: typeof e.id === "string" ? Math.abs(hashCode(e.id)) : 0,
+    title: e.title,
+    host: (e as any).source === "eventbrite" ? "via Eventbrite" : "Community",
+    date: new Date(e.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
+    venue: e.location || "",
+    city: e.city,
+    distance: "",
+    image: e.image_url || "/placeholder.svg",
+    attending: 0,
+    free: e.price === "Free",
+    price: e.price || undefined,
+    category: e.category,
+  }));
+
+  const cityEvents = [
+    ...allEvents.filter((e) => e.city === selectedCity.id),
+    ...dbMapped,
+  ];
   const filterFn = filterMap[activeFilter] || (() => true);
   const filteredEvents = cityEvents.filter(filterFn).filter(e => 
     searchQuery === "" || e.title.toLowerCase().includes(searchQuery.toLowerCase()) || e.host.toLowerCase().includes(searchQuery.toLowerCase())
@@ -58,6 +84,14 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
           <div className="flex items-center justify-between mb-3">
             <h1 className="font-display text-xl font-bold text-gradient-gold">Events</h1>
             <div className="flex items-center gap-2">
+              <button
+                onClick={() => importEvents([selectedCity.id])}
+                disabled={importing}
+                className="p-2 rounded-full bg-secondary border border-border hover:bg-muted transition-colors"
+                title="Import from Eventbrite"
+              >
+                {importing ? <Loader2 size={16} className="text-primary animate-spin" /> : <Download size={16} className="text-primary" />}
+              </button>
               <button
                 onClick={() => setShowCreateEvent(true)}
                 className="p-2 rounded-full gradient-gold"
