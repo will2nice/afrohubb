@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase } from "lucide-react";
+import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket } from "lucide-react";
 import { events as allEvents, cities, type City } from "@/data/cityData";
 import { cityResources, type CityResource } from "@/data/resourceData";
 import { diasporaHubs, type DiasporaHub } from "@/data/diasporaHubs";
+import { useEvents } from "@/hooks/useEvents";
 
 // City coordinates - includes Brazil
 const cityCoords: Record<string, [number, number]> = {
@@ -95,6 +96,22 @@ const eventIcon = new L.DivIcon({
   className: "custom-marker",
   html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(25,95%,55%),hsl(43,96%,56%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(0,0%,5%)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3v4M8 3v4M2 11h20"/></svg>
+  </div>`,
+  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
+});
+
+const eventbriteIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(14,100%,53%),hsl(25,100%,60%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>
+  </div>`,
+  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
+});
+
+const poshIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(270,80%,60%),hsl(290,70%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>
   </div>`,
   iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
 });
@@ -295,10 +312,34 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [showGroups, setShowGroups] = useState(true);
   const [showResources, setShowResources] = useState(true);
   const [showHubs, setShowHubs] = useState(true);
+  const [showEventbrite, setShowEventbrite] = useState(true);
+  const [showPosh, setShowPosh] = useState(true);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [zoomTarget, setZoomTarget] = useState<string | null>(selectedCity.id);
   const [nearbyCollapsed, setNearbyCollapsed] = useState(false);
   const [selectedNearbyEvent, setSelectedNearbyEvent] = useState<typeof allEventPositions[0] | null>(null);
+
+  const { events: dbEvents } = useEvents();
+
+  const dbEventPositions = useMemo(() => {
+    return dbEvents.filter(e => {
+      const source = (e as any).source;
+      return source === "eventbrite" || source === "posh";
+    }).map((e) => {
+      const city = (e as any).city || "austin";
+      const center = cityCoords[city] || cityCoords.austin;
+      const seed = e.id.split("").reduce((a: number, b: string) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0);
+      const lat = center[0] + (((Math.abs(seed) % 100) - 50) / 500);
+      const lng = center[1] + ((((Math.abs(seed) * 7) % 100) - 50) / 400);
+      return {
+        ...e,
+        lat,
+        lng,
+        source: (e as any).source as string,
+        external_url: (e as any).external_url as string | null,
+      };
+    });
+  }, [dbEvents]);
 
   const center = cityCoords[selectedCity.id] || cityCoords.austin;
 
@@ -360,6 +401,12 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </button>
           <button onClick={() => setShowHubs(!showHubs)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showHubs ? "bg-[hsl(25,95%,55%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
             <MapPin size={14} /> Hubs
+          </button>
+          <button onClick={() => setShowEventbrite(!showEventbrite)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showEventbrite ? "bg-[hsl(14,100%,53%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
+            <Ticket size={14} /> Eventbrite
+          </button>
+          <button onClick={() => setShowPosh(!showPosh)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showPosh ? "bg-[hsl(270,80%,60%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
+            <Ticket size={14} /> Posh
           </button>
         </div>
       </div>
@@ -462,6 +509,60 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
                       <span className="text-[10px] font-bold text-amber-600">{c.population}</span>
                     </div>
                   ))}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* Eventbrite events from DB */}
+        {showEventbrite && dbEventPositions.filter(e => e.source === "eventbrite").map((event) => (
+          <Marker key={`eb-${event.id}`} position={[event.lat, event.lng]} icon={eventbriteIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
+            <Popup className="afro-popup" maxWidth={280}>
+              <div className="p-1">
+                {event.image_url && <img src={event.image_url} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />}
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-700">Eventbrite</span>
+                </div>
+                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
+                  <span>{new Date(event.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
+                </div>
+                {event.location && <div className="text-xs text-gray-500 mt-1">{event.location}</div>}
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs font-bold text-amber-600">{event.price || "Free"}</span>
+                  {event.external_url && (
+                    <a href={event.external_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 flex items-center gap-1">
+                      View <ExternalLink size={10} />
+                    </a>
+                  )}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* Posh events from DB */}
+        {showPosh && dbEventPositions.filter(e => e.source === "posh").map((event) => (
+          <Marker key={`posh-${event.id}`} position={[event.lat, event.lng]} icon={poshIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
+            <Popup className="afro-popup" maxWidth={280}>
+              <div className="p-1">
+                {event.image_url && <img src={event.image_url} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />}
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700">Posh</span>
+                </div>
+                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
+                  <span>{new Date(event.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
+                </div>
+                {event.location && <div className="text-xs text-gray-500 mt-1">{event.location}</div>}
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs font-bold text-purple-600">{event.price || "Free"}</span>
+                  {event.external_url && (
+                    <a href={event.external_url} target="_blank" rel="noopener noreferrer" className="text-xs text-purple-500 flex items-center gap-1">
+                      View <ExternalLink size={10} />
+                    </a>
+                  )}
                 </div>
               </div>
             </Popup>
