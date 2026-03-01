@@ -8,6 +8,7 @@ import EventsScreen from "@/components/EventsScreen";
 import MessagesScreen from "@/components/MessagesScreen";
 import CultureLearnScreen from "@/components/CultureLearnScreen";
 import CampusScreen from "@/components/CampusScreen";
+import PlacesScreen from "@/components/PlacesScreen";
 import ProfileScreen from "@/components/ProfileScreen";
 import { cities, type City } from "@/data/cityData";
 import { useMessages } from "@/hooks/useMessages";
@@ -25,6 +26,7 @@ const Index = () => {
       {activeTab === "map" && <MapScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "match" && <MatchScreen selectedCity={selectedCity} />}
       {activeTab === "events" && <EventsScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
+      {activeTab === "places" && <PlacesScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "messages" && <MessagesScreen />}
       {activeTab === "culture" && <CultureLearnScreen />}
       {activeTab === "campus" && <CampusScreen />}

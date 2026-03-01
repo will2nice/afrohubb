@@ -2,11 +2,12 @@ import { useEffect, useState, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket } from "lucide-react";
+import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon } from "lucide-react";
 import { events as allEvents, cities, type City } from "@/data/cityData";
 import { cityResources, type CityResource } from "@/data/resourceData";
 import { diasporaHubs, type DiasporaHub } from "@/data/diasporaHubs";
 import { useEvents } from "@/hooks/useEvents";
+import { usePlaces } from "@/hooks/usePlaces";
 
 // City coordinates - includes Brazil
 const cityCoords: Record<string, [number, number]> = {
@@ -178,6 +179,30 @@ const youIcon = new L.DivIcon({
   iconSize: [20, 20], iconAnchor: [10, 10],
 });
 
+const restaurantIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,hsl(25,90%,50%),hsl(35,85%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
+    <span style="font-size:14px;">🍽️</span>
+  </div>`,
+  iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32],
+});
+
+const fitnessIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,hsl(210,80%,50%),hsl(230,70%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
+    <span style="font-size:14px;">💪</span>
+  </div>`,
+  iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32],
+});
+
+const prayerIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,hsl(170,70%,40%),hsl(190,60%,45%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
+    <span style="font-size:14px;">🕌</span>
+  </div>`,
+  iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32],
+});
+
 const getAllEventPositions = () => {
   return allEvents.map((event) => {
     const eventCity = cityCoords[event.city] || cityCoords.austin;
@@ -338,13 +363,14 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [showHubs, setShowHubs] = useState(true);
   const [showEventbrite, setShowEventbrite] = useState(true);
   const [showPosh, setShowPosh] = useState(true);
+  const [showPlaces, setShowPlaces] = useState(true);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [zoomTarget, setZoomTarget] = useState<string | null>(selectedCity.id);
   const [nearbyCollapsed, setNearbyCollapsed] = useState(false);
   const [selectedNearbyEvent, setSelectedNearbyEvent] = useState<typeof allEventPositions[0] | null>(null);
 
   const { events: dbEvents } = useEvents();
-
+  const { places: dbPlaces } = usePlaces();
   const dbEventPositions = useMemo(() => {
     return dbEvents.filter(e => {
       const source = (e as any).source;
@@ -453,6 +479,9 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </button>
           <button onClick={() => setShowPosh(!showPosh)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showPosh ? "bg-[hsl(270,80%,60%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
             <Ticket size={14} /> Posh
+          </button>
+          <button onClick={() => setShowPlaces(!showPlaces)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showPlaces ? "bg-[hsl(25,90%,50%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
+            <UtensilsCrossed size={14} /> Places
           </button>
         </div>
       </div>
@@ -691,6 +720,35 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
                     </a>
                   )}
                 </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* Places from DB */}
+        {showPlaces && dbPlaces.filter(p => p.latitude && p.longitude).map((place) => (
+          <Marker
+            key={`place-${place.id}`}
+            position={[place.latitude!, place.longitude!]}
+            icon={place.category === "restaurant" ? restaurantIcon : place.category === "fitness" ? fitnessIcon : prayerIcon}
+          >
+            <Popup className="afro-popup" maxWidth={280}>
+              <div className="p-1">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                    place.category === "restaurant" ? "bg-amber-100 text-amber-700" :
+                    place.category === "fitness" ? "bg-blue-100 text-blue-700" :
+                    "bg-teal-100 text-teal-700"
+                  }`}>
+                    {place.subcategory || place.category}
+                  </span>
+                  {place.cuisine_type && <span className="text-[10px] text-gray-500">{place.cuisine_type}</span>}
+                  {place.is_halal && <span className="text-[9px] font-bold text-emerald-500">Halal</span>}
+                </div>
+                <h3 className="font-bold text-sm leading-tight">{place.name}</h3>
+                {place.description && <p className="text-xs text-gray-500 mt-1">{place.description}</p>}
+                {place.address && <p className="text-[10px] text-gray-400 mt-1">📍 {place.address}</p>}
+                {place.price_range && <span className="text-xs font-bold text-amber-600">{place.price_range}</span>}
               </div>
             </Popup>
           </Marker>
