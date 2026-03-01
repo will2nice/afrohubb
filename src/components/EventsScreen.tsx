@@ -42,7 +42,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const dbMapped: (EventItem & { source?: string; external_url?: string })[] = dbEvents.map((e) => ({
     id: typeof e.id === "string" ? Math.abs(hashCode(e.id)) : 0,
     title: e.title,
-    host: (e as any).source === "eventbrite" ? "via Eventbrite" : "Community",
+    host: (e as any).source === "eventbrite" ? "via Eventbrite" : (e as any).source === "posh" ? "via Posh" : "Community",
     date: new Date(e.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
     venue: e.location || "",
     city: e.city,
@@ -176,6 +176,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
         ) : filteredEvents.map((event) => {
           const isGoing = rsvpEvents.has(event.id);
           const isEventbrite = (event as any).source === "eventbrite";
+          const isPosh = (event as any).source === "posh";
           return (
             <article
               key={event.id}
@@ -187,6 +188,11 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                   {isEventbrite && (
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[hsl(14,100%,53%)]/90 text-white backdrop-blur-sm flex items-center gap-1">
                       <ExternalLink size={10} /> Eventbrite
+                    </span>
+                  )}
+                  {isPosh && (
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[hsl(270,80%,60%)]/90 text-white backdrop-blur-sm flex items-center gap-1">
+                      <ExternalLink size={10} /> Posh
                     </span>
                   )}
                   {event.category && (
