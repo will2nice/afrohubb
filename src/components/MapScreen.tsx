@@ -355,7 +355,29 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
     setShowCityPicker(false);
   };
 
-  const nearbyEvents = allEventPositions.filter(e => e.city === selectedCity.id).slice(0, 5);
+  // Prioritize Posh/Eventbrite DB events in "Nearby This Week"
+  const dbNearby = dbEventPositions
+    .filter(e => e.city === selectedCity.id)
+    .map(e => ({
+      id: Math.abs(e.id.split("").reduce((a: number, b: string) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0)),
+      title: e.title,
+      host: e.source === "posh" ? "via Posh" : "via Eventbrite",
+      date: new Date(e.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
+      venue: e.location || "",
+      city: e.city,
+      distance: "",
+      image: e.image_url || "/placeholder.svg",
+      attending: 0,
+      free: e.price === "Free",
+      price: e.price || undefined,
+      category: e.category,
+      lat: e.lat,
+      lng: e.lng,
+      source: e.source,
+      external_url: e.external_url,
+    }));
+  const mockNearby = allEventPositions.filter(e => e.city === selectedCity.id);
+  const nearbyEvents = [...dbNearby, ...mockNearby].slice(0, 8);
 
   return (
     <div className="fixed inset-0 bg-background">
