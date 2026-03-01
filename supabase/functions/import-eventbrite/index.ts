@@ -9,7 +9,7 @@ const corsHeaders = {
 const CITY_SLUGS: Record<string, string> = {
   dallas: "Dallas--TX",
   austin: "Austin--TX",
-  "san-antonio": "San-Antonio--TX",
+  sanantonio: "San-Antonio--TX",
   houston: "Houston--TX",
   nyc: "New-York--NY",
   atlanta: "Atlanta--GA",
