@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, ChevronDown, Check, UserCheck, Plus, Download, Loader2, ExternalLink } from "lucide-react";
+import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, UserCheck, Plus, Download, Loader2, ExternalLink } from "lucide-react";
 import { events as allEvents, cities, type City, type EventItem } from "@/data/cityData";
+import CityPicker from "@/components/CityPicker";
 import EventAttendeesSheet from "@/components/EventAttendeesSheet";
 import CreateEventSheet from "@/components/CreateEventSheet";
 import { useEvents } from "@/hooks/useEvents";
@@ -30,9 +31,8 @@ const hashCode = (s: string) => s.split("").reduce((a, b) => ((a << 5) - a + b.c
 
 const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
-  const [showCityPicker, setShowCityPicker] = useState(false);
-  const [rsvpEvents, setRsvpEvents] = useState<Set<number>>(new Set());
   const [activeFilter, setActiveFilter] = useState("All");
+  const [rsvpEvents, setRsvpEvents] = useState<Set<number>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const { events: dbEvents } = useEvents(selectedCity.id);
@@ -101,32 +101,9 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
               >
                 <Plus size={16} className="text-primary-foreground" />
               </button>
-              <button
-                onClick={() => setShowCityPicker(!showCityPicker)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-border"
-              >
-                <MapPin size={14} className="text-primary" />
-                <span className="text-sm font-medium text-foreground">{selectedCity.flag} {selectedCity.name}</span>
-                <ChevronDown size={14} className={`text-muted-foreground transition-transform ${showCityPicker ? "rotate-180" : ""}`} />
-              </button>
+              <CityPicker selectedCity={selectedCity} onCityChange={onCityChange} />
             </div>
           </div>
-
-          {showCityPicker && (
-            <div className="absolute left-4 right-4 top-14 bg-card border border-border rounded-xl shadow-elevated z-50 overflow-y-auto max-h-[60vh] animate-slide-up max-w-lg mx-auto">
-              {cities.map((city) => (
-                <button
-                  key={city.id}
-                  onClick={() => { onCityChange(city); setShowCityPicker(false); }}
-                  className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors"
-                >
-                  <span className="text-lg">{city.flag}</span>
-                  <span className="text-sm font-medium text-foreground flex-1 text-left">{city.name}</span>
-                  {city.id === selectedCity.id && <Check size={16} className="text-primary" />}
-                </button>
-              ))}
-            </div>
-          )}
 
           <div className="relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
