@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { MapPin, Search, ChevronDown, Check, UtensilsCrossed, Dumbbell, Moon, X, ExternalLink, Church } from "lucide-react";
-import { cities, type City } from "@/data/cityData";
+import { MapPin, Search, UtensilsCrossed, Dumbbell, Moon, X, ExternalLink, Church } from "lucide-react";
+import { type City } from "@/data/cityData";
+import CityPicker from "@/components/CityPicker";
 import { usePlaces, type Place } from "@/hooks/usePlaces";
 
 const categories = [
@@ -32,7 +33,6 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeSubcategory, setActiveSubcategory] = useState("All");
-  const [showCityPicker, setShowCityPicker] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
 
   const { places, isLoading } = usePlaces(selectedCity.id);
@@ -52,24 +52,8 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
       <header className="sticky top-0 z-40 glass border-b border-border px-4 py-3">
         <div className="flex items-center justify-between">
           <h1 className="font-display text-xl font-bold text-gradient-gold">Places</h1>
-          <button onClick={() => setShowCityPicker(!showCityPicker)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-border">
-            <MapPin size={14} className="text-primary" />
-            <span className="text-sm font-medium text-foreground">{selectedCity.flag} {selectedCity.name}</span>
-            <ChevronDown size={14} className={`text-muted-foreground transition-transform ${showCityPicker ? "rotate-180" : ""}`} />
-          </button>
+          <CityPicker selectedCity={selectedCity} onCityChange={onCityChange} />
         </div>
-
-        {showCityPicker && (
-          <div className="absolute left-4 right-4 top-full mt-1 bg-card border border-border rounded-xl shadow-elevated z-50 overflow-y-auto max-h-[60vh] animate-slide-up">
-            {cities.map((city) => (
-              <button key={city.id} onClick={() => { onCityChange(city); setShowCityPicker(false); }} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors">
-                <span className="text-lg">{city.flag}</span>
-                <span className="text-sm font-medium text-foreground flex-1 text-left">{city.name}</span>
-                {city.id === selectedCity.id && <Check size={16} className="text-primary" />}
-              </button>
-            ))}
-          </div>
-        )}
 
         {/* Search */}
         <div className="mt-3 relative">

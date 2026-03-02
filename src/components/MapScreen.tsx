@@ -4,6 +4,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon } from "lucide-react";
 import { events as allEvents, cities, type City } from "@/data/cityData";
+import CityPicker from "@/components/CityPicker";
 import { cityResources, type CityResource } from "@/data/resourceData";
 import { diasporaHubs, type DiasporaHub } from "@/data/diasporaHubs";
 import { useEvents } from "@/hooks/useEvents";
@@ -520,24 +521,8 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             <Navigation size={18} className="text-primary" />
             <h1 className="font-display text-lg font-bold text-gradient-gold">Explore</h1>
           </div>
-          <button onClick={() => setShowCityPicker(!showCityPicker)} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary border border-border">
-            <MapPin size={14} className="text-primary" />
-            <span className="text-sm font-medium text-foreground">{selectedCity.flag} {selectedCity.name}</span>
-            <ChevronDown size={14} className={`text-muted-foreground transition-transform ${showCityPicker ? "rotate-180" : ""}`} />
-          </button>
+          <CityPicker selectedCity={selectedCity} onCityChange={(city) => { onCityChange(city); setZoomTarget(city.id); }} />
         </div>
-
-        {showCityPicker && (
-          <div className="absolute left-4 right-4 top-full mt-1 bg-card border border-border rounded-xl shadow-elevated z-50 overflow-y-auto max-h-[60vh] animate-slide-up max-w-lg mx-auto">
-            {cities.map((city) => (
-              <button key={city.id} onClick={() => handleCitySelect(city)} className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors">
-                <span className="text-lg">{city.flag}</span>
-                <span className="text-sm font-medium text-foreground flex-1 text-left">{city.name}</span>
-                {city.id === selectedCity.id && <Check size={16} className="text-primary" />}
-              </button>
-            ))}
-          </div>
-        )}
       </header>
 
       <div className="absolute top-16 left-4 right-4 z-[1000] max-w-lg mx-auto">

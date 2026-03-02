@@ -1,6 +1,7 @@
 import { useState } from "react";
-import { MapPin, Search, Bell, Heart, MessageCircle, Share2, Bookmark, Users, ChevronDown, Check } from "lucide-react";
-import { cities, feedPosts, type City } from "@/data/cityData";
+import { Search, Bell, Heart, MessageCircle, Share2, Bookmark, Users } from "lucide-react";
+import { feedPosts, type City } from "@/data/cityData";
+import CityPicker from "@/components/CityPicker";
 
 const chips = ["For You", "Nearby", "Diaspora", "Culture", "Business", "Dating Tips", "New Here"];
 
@@ -21,7 +22,6 @@ interface FeedScreenProps {
 }
 
 const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
-  const [showCityPicker, setShowCityPicker] = useState(false);
   const [activeChip, setActiveChip] = useState("For You");
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
   const [savedPosts, setSavedPosts] = useState<Set<number>>(new Set());
@@ -53,14 +53,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
       {/* Header */}
       <header className="sticky top-0 z-40 glass border-b border-border px-4 py-3">
         <div className="flex items-center justify-between max-w-lg mx-auto">
-          <button
-            onClick={() => setShowCityPicker(!showCityPicker)}
-            className="flex items-center gap-1.5 group"
-          >
-            <MapPin size={16} className="text-primary" />
-            <span className="text-sm font-medium text-foreground">{selectedCity.flag} {selectedCity.name}</span>
-            <ChevronDown size={14} className={`text-muted-foreground transition-transform ${showCityPicker ? "rotate-180" : ""}`} />
-          </button>
+          <CityPicker selectedCity={selectedCity} onCityChange={onCityChange} />
           <div className="flex items-center gap-3">
             <button className="p-2 rounded-full hover:bg-secondary transition-colors">
               <Search size={20} className="text-muted-foreground" />
@@ -71,25 +64,6 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
             </button>
           </div>
         </div>
-
-        {/* City picker dropdown */}
-        {showCityPicker && (
-          <div className="absolute left-4 right-4 top-full mt-1 bg-card border border-border rounded-xl shadow-elevated z-50 overflow-y-auto max-h-[60vh] animate-slide-up max-w-lg mx-auto">
-            {cities.map((city) => (
-              <button
-                key={city.id}
-                onClick={() => { onCityChange(city); setShowCityPicker(false); }}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors"
-              >
-                <span className="text-lg">{city.flag}</span>
-                <span className="text-sm font-medium text-foreground flex-1 text-left">{city.name}</span>
-                {city.id === selectedCity.id && (
-                  <Check size={16} className="text-primary" />
-                )}
-              </button>
-            ))}
-          </div>
-        )}
       </header>
 
       {/* Chips */}
