@@ -326,46 +326,46 @@ export const feedPosts: FeedPost[] = [
     eventVenue: "Barra-Ondina Circuit", attending: 200000,
   },
 
-  // ─── NWE (Instagram) Posts ───
+  // ─── NWE (Instagram) Posts — shown globally ───
   {
-    id: 50, author: "NWE", avatar: null, location: "Accra, Ghana", time: "1d ago",
+    id: 500, author: "NWE", avatar: null, location: "Accra, Ghana", time: "1d ago",
     text: "Kwame Nkrumah — the man who changed everything. First President of Ghana, Pan-African visionary. 🇬🇭",
-    image: nweNkrumahPortrait, likes: 2341, comments: 189, type: "post", city: "london",
+    image: nweNkrumahPortrait, likes: 2341, comments: 189, type: "post", city: "_global",
   },
   {
-    id: 51, author: "NWE", avatar: null, location: "Accra, Ghana", time: "1d ago",
+    id: 501, author: "NWE", avatar: null, location: "Accra, Ghana", time: "1d ago",
     text: "Muhammad Ali meets Kwame Nkrumah. Two legends, one vision of Black excellence. 🇬🇭🥊",
-    image: nweAliNkrumah, likes: 4512, comments: 327, type: "post", city: "nyc",
+    image: nweAliNkrumah, likes: 4512, comments: 327, type: "post", city: "_global",
   },
   {
-    id: 52, author: "NWE", avatar: null, location: "Peckham, London", time: "2d ago",
+    id: 502, author: "NWE", avatar: null, location: "Peckham, London", time: "2d ago",
     text: "Lagos in London. Yoruba elegance in Peckham. One of Europe's largest Nigerian diasporas. 🇳🇬🇬🇧",
-    image: nweLagosLondon, likes: 3890, comments: 245, type: "post", city: "london",
+    image: nweLagosLondon, likes: 3890, comments: 245, type: "post", city: "_global",
   },
   {
-    id: 53, author: "NWE", avatar: null, location: "London, UK", time: "2d ago",
+    id: 503, author: "NWE", avatar: null, location: "London, UK", time: "2d ago",
     text: "Market queens. The elegance and grace of West African women never fades, no matter where in the world. 👑",
-    image: nweMarketWomen, likes: 5678, comments: 412, type: "post", city: "london",
+    image: nweMarketWomen, likes: 5678, comments: 412, type: "post", city: "_global",
   },
   {
-    id: 54, author: "NWE", avatar: null, location: "London, UK", time: "2d ago",
+    id: 504, author: "NWE", avatar: null, location: "London, UK", time: "2d ago",
     text: "Style is heritage. Ankara, aso-oke, gele — carrying culture with pride in the diaspora. 🌍✨",
-    image: nweElegance, likes: 4123, comments: 298, type: "post", city: "paris",
+    image: nweElegance, likes: 4123, comments: 298, type: "post", city: "_global",
   },
   {
-    id: 55, author: "NWE", avatar: null, location: "London, UK", time: "3d ago",
+    id: 505, author: "NWE", avatar: null, location: "London, UK", time: "3d ago",
     text: "Fresh produce, fresh fits. African markets keep the culture alive wherever we go. 🛒🌶️",
-    image: nweMarketLady, likes: 3456, comments: 201, type: "post", city: "london",
+    image: nweMarketLady, likes: 3456, comments: 201, type: "post", city: "_global",
   },
   {
-    id: 56, author: "NWE", avatar: null, location: "Global", time: "3d ago",
+    id: 506, author: "NWE", avatar: null, location: "Global", time: "3d ago",
     text: "\"The independence of Ghana is meaningless unless it is linked to the total liberation of the African continent.\" — Kwame Nkrumah 🇬🇭",
-    image: nweNkrumahQuote, likes: 8901, comments: 567, type: "post", city: "austin",
+    image: nweNkrumahQuote, likes: 8901, comments: 567, type: "post", city: "_global",
   },
   {
-    id: 57, author: "NWE", avatar: null, location: "Global", time: "3d ago",
+    id: 507, author: "NWE", avatar: null, location: "Global", time: "3d ago",
     text: "Nkrumah's vision of Pan-African unity and sovereignty was interrupted, but not erased. His ideas continue to shape political thought across Africa and the diaspora. ✊🏾",
-    image: nweNkrumahLegacy, likes: 6789, comments: 456, type: "post", city: "nyc",
+    image: nweNkrumahLegacy, likes: 6789, comments: 456, type: "post", city: "_global",
   },
 ];
 
