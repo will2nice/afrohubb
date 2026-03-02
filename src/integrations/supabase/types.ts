@@ -334,6 +334,50 @@ export type Database = {
         }
         Relationships: []
       }
+      waitlist_signups: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string | null
+          position: number
+          referral_code: string
+          referral_count: number
+          referred_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+          position?: number
+          referral_code?: string
+          referral_count?: number
+          referred_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+          position?: number
+          referral_code?: string
+          referral_count?: number
+          referred_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "waitlist_signups_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "waitlist_signups"
+            referencedColumns: ["referral_code"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
