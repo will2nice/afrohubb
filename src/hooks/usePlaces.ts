@@ -18,6 +18,7 @@ export interface Place {
   price_range: string | null;
   is_halal: boolean;
   is_ramadan_friendly: boolean;
+  is_lent_friendly: boolean;
 }
 
 export const usePlaces = (city?: string) => {

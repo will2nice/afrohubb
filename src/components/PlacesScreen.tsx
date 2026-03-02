@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapPin, Search, UtensilsCrossed, Dumbbell, Moon, X, ExternalLink, Church } from "lucide-react";
+import { MapPin, Search, UtensilsCrossed, Dumbbell, Moon, X, ExternalLink, Church, Cross } from "lucide-react";
 import { type City } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
 import { usePlaces, type Place } from "@/hooks/usePlaces";
@@ -45,6 +45,7 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
   });
 
   const ramadanPlaces = places.filter(p => p.is_ramadan_friendly);
+  const lentPlaces = places.filter(p => p.is_lent_friendly);
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -121,6 +122,32 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
                     <p className="text-[11px] font-semibold text-foreground leading-tight line-clamp-2">{place.name}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5">{place.subcategory}</p>
                     {place.is_halal && <span className="text-[9px] font-bold text-emerald-500">✓ Halal</span>}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Lent section */}
+        {lentPlaces.length > 0 && activeCategory === "all" && activeSubcategory === "All" && !search && (
+          <div>
+            <h2 className="font-display font-bold text-foreground text-sm mb-2 flex items-center gap-2">
+              <Cross size={16} className="text-purple-400" /> Lent-Friendly Spots
+            </h2>
+            <div className="flex gap-3 overflow-x-auto scrollbar-hide pb-2">
+              {lentPlaces.slice(0, 6).map((place) => (
+                <button
+                  key={place.id}
+                  onClick={() => setSelectedPlace(place)}
+                  className="flex-shrink-0 w-40 bg-card rounded-xl border border-border overflow-hidden text-left hover:ring-2 hover:ring-primary/30 transition-all"
+                >
+                  <div className="h-20 bg-gradient-to-br from-purple-900/40 to-violet-900/40 flex items-center justify-center">
+                    <Cross size={24} className="text-purple-400" />
+                  </div>
+                  <div className="p-2.5">
+                    <p className="text-[11px] font-semibold text-foreground leading-tight line-clamp-2">{place.name}</p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">{place.subcategory}</p>
                   </div>
                 </button>
               ))}
@@ -221,12 +248,15 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
                   </div>
                 )}
 
-                <div className="flex items-center gap-3 mt-3">
+                <div className="flex items-center gap-3 mt-3 flex-wrap">
                   {selectedPlace.is_halal && (
                     <span className="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold">✓ Halal</span>
                   )}
                   {selectedPlace.is_ramadan_friendly && (
                     <span className="px-3 py-1 rounded-full bg-teal-500/20 text-teal-400 text-xs font-semibold">🌙 Ramadan Friendly</span>
+                  )}
+                  {selectedPlace.is_lent_friendly && (
+                    <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 text-xs font-semibold">✝ Lent Friendly</span>
                   )}
                 </div>
 

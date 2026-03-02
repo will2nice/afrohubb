@@ -1,0 +1,1 @@
+ALTER TABLE public.places ADD COLUMN is_lent_friendly boolean DEFAULT false;
