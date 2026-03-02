@@ -1,15 +1,15 @@
 import { useState } from "react";
-import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, UserCheck, Plus, Download, Loader2, ExternalLink } from "lucide-react";
+import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, UserCheck, Plus, Download, Loader2, ExternalLink, X, CheckCircle, XCircle } from "lucide-react";
 import { events as allEvents, cities, type City, type EventItem } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
 import EventAttendeesSheet from "@/components/EventAttendeesSheet";
 import CreateEventSheet from "@/components/CreateEventSheet";
 import { useEvents } from "@/hooks/useEvents";
 import { useEventbriteImport } from "@/hooks/useEventbriteImport";
+import { TOTAL_ATTENDING, ON_APP_TOTAL } from "@/data/eventAttendees";
 
 const filters = ["All", "Today", "This Weekend", "Concerts", "Festivals", "Sports", "Art", "Networking"];
 
-// Map filter chips to event filtering logic
 const filterMap: Record<string, (e: EventItem) => boolean> = {
   "All": () => true,
   "Today": (e) => e.date.toLowerCase().includes("today") || e.date.toLowerCase().includes("fri,") || e.date.toLowerCase().includes("mon,"),
@@ -26,19 +26,19 @@ interface EventsScreenProps {
   onCityChange: (city: City) => void;
 }
 
-// Simple string hash for stable IDs
 const hashCode = (s: string) => s.split("").reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0);
 
 const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
   const [activeFilter, setActiveFilter] = useState("All");
   const [rsvpEvents, setRsvpEvents] = useState<Set<number>>(new Set());
+  const [notGoingEvents, setNotGoingEvents] = useState<Set<number>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateEvent, setShowCreateEvent] = useState(false);
+  const [rsvpDialogEvent, setRsvpDialogEvent] = useState<EventItem | null>(null);
   const { events: dbEvents } = useEvents(selectedCity.id);
   const { importEvents, importing } = useEventbriteImport();
 
-  // Merge mock events with DB events (DB events mapped to EventItem shape)
   const dbMapped: (EventItem & { source?: string; external_url?: string })[] = dbEvents.map((e) => ({
     id: typeof e.id === "string" ? Math.abs(hashCode(e.id)) : 0,
     title: e.title,
@@ -48,7 +48,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
     city: e.city,
     distance: "",
     image: e.image_url || "/placeholder.svg",
-    attending: 0,
+    attending: TOTAL_ATTENDING,
     free: e.price === "Free",
     price: e.price || undefined,
     category: e.category,
@@ -56,28 +56,28 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
     external_url: (e as any).external_url || undefined,
   }));
 
-  // Put Posh events first, then other DB events, then mock events
   const poshEvents = dbMapped.filter((e) => e.source === "posh");
   const otherDbEvents = dbMapped.filter((e) => e.source !== "posh");
   const mockEvents = allEvents.filter((e) => e.city === selectedCity.id);
   const cityEvents = [...poshEvents, ...otherDbEvents, ...mockEvents];
   const filterFn = filterMap[activeFilter] || (() => true);
-  const filteredEvents = cityEvents.filter(filterFn).filter(e => 
+  const filteredEvents = cityEvents.filter(filterFn).filter(e =>
     searchQuery === "" || e.title.toLowerCase().includes(searchQuery.toLowerCase()) || e.host.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const toggleRsvp = (event: EventItem) => {
-    setRsvpEvents((prev) => {
-      const next = new Set(prev);
-      if (next.has(event.id)) {
-        next.delete(event.id);
-      } else {
-        next.add(event.id);
-        setSelectedEvent(event);
-      }
-      return next;
-    });
+  const handleRsvpAction = (event: EventItem, action: "going" | "not_going") => {
+    if (action === "going") {
+      setRsvpEvents((prev) => new Set(prev).add(event.id));
+      setNotGoingEvents((prev) => { const n = new Set(prev); n.delete(event.id); return n; });
+      setSelectedEvent(event); // show attendees
+    } else {
+      setNotGoingEvents((prev) => new Set(prev).add(event.id));
+      setRsvpEvents((prev) => { const n = new Set(prev); n.delete(event.id); return n; });
+    }
+    setRsvpDialogEvent(null);
   };
+
+  const formatAttending = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}K` : n;
 
   return (
     <div className="min-h-screen pb-24">
@@ -95,16 +95,12 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
               >
                 {importing ? <Loader2 size={16} className="text-primary animate-spin" /> : <Download size={16} className="text-primary" />}
               </button>
-              <button
-                onClick={() => setShowCreateEvent(true)}
-                className="p-2 rounded-full gradient-gold"
-              >
+              <button onClick={() => setShowCreateEvent(true)} className="p-2 rounded-full gradient-gold">
                 <Plus size={16} className="text-primary-foreground" />
               </button>
               <CityPicker selectedCity={selectedCity} onCityChange={onCityChange} />
             </div>
           </div>
-
           <div className="relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -137,7 +133,6 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
         </div>
       </div>
 
-      {/* Results count */}
       {activeFilter !== "All" && (
         <div className="px-4 pb-2 max-w-lg mx-auto">
           <p className="text-xs text-muted-foreground">{filteredEvents.length} events found</p>
@@ -154,13 +149,13 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
           </div>
         ) : filteredEvents.map((event) => {
           const isGoing = rsvpEvents.has(event.id);
+          const isNotGoing = notGoingEvents.has(event.id);
           const isEventbrite = (event as any).source === "eventbrite";
           const isPosh = (event as any).source === "posh";
+          const displayAttending = TOTAL_ATTENDING;
+
           return (
-            <article
-              key={event.id}
-              className="bg-card rounded-2xl border border-border overflow-hidden shadow-card animate-slide-up"
-            >
+            <article key={event.id} className="bg-card rounded-2xl border border-border overflow-hidden shadow-card animate-slide-up">
               <div className="relative">
                 <img src={event.image} alt={event.title} className="w-full aspect-[16/9] object-cover" loading="lazy" />
                 <div className="absolute top-3 left-3 flex gap-1.5">
@@ -182,6 +177,11 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                   {isGoing && (
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-green-500/90 text-white backdrop-blur-sm flex items-center gap-1">
                       <UserCheck size={10} /> Going
+                    </span>
+                  )}
+                  {isNotGoing && (
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-red-500/90 text-white backdrop-blur-sm flex items-center gap-1">
+                      <XCircle size={10} /> Not Going
                     </span>
                   )}
                 </div>
@@ -211,43 +211,41 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between mt-4">
-                  <button
-                    onClick={() => setSelectedEvent(event)}
-                    className="flex items-center gap-1.5 group"
-                  >
+                {/* Attending stats row */}
+                <div className="flex items-center gap-3 mt-3">
+                  <button onClick={() => setSelectedEvent(event)} className="flex items-center gap-1.5 group">
                     <Users size={14} className="text-muted-foreground group-hover:text-primary transition-colors" />
                     <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors underline-offset-2 group-hover:underline">
-                      {event.attending >= 1000 ? `${(event.attending / 1000).toFixed(1)}K` : event.attending} attending
+                      {formatAttending(displayAttending)} attending
                     </span>
                     <Eye size={12} className="text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                   </button>
+                  <span className="text-[10px] text-primary font-medium px-2 py-0.5 rounded-full bg-primary/10">
+                    {ON_APP_TOTAL.toLocaleString()} on app
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between mt-4">
+                  <button className="p-2 rounded-full hover:bg-secondary transition-colors">
+                    <Share2 size={16} className="text-muted-foreground" />
+                  </button>
                   <div className="flex items-center gap-2">
-                    <button className="p-2 rounded-full hover:bg-secondary transition-colors">
-                      <Share2 size={16} className="text-muted-foreground" />
-                    </button>
-                    <button
-                      onClick={() => toggleRsvp(event)}
-                      className={`px-5 py-2 rounded-full text-sm font-semibold transition-all flex items-center gap-1.5 ${
-                        isGoing
-                          ? "bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30"
-                          : "gradient-gold text-primary-foreground shadow-gold hover:scale-105 active:scale-95"
-                      }`}
-                    >
-                      {isGoing ? (
-                        <>
-                          <UserCheck size={14} />
-                          I'm Going
-                        </>
-                      ) : event.price ? (
-                        <>
-                          <Ticket size={14} />
-                          Get Tickets
-                        </>
-                      ) : (
-                        "RSVP"
-                      )}
-                    </button>
+                    {isGoing ? (
+                      <button
+                        onClick={() => { setRsvpEvents(prev => { const n = new Set(prev); n.delete(event.id); return n; }); }}
+                        className="px-5 py-2 rounded-full text-sm font-semibold bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 transition-all flex items-center gap-1.5"
+                      >
+                        <UserCheck size={14} /> I'm Going
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setRsvpDialogEvent(event)}
+                        className="px-5 py-2 rounded-full text-sm font-semibold gradient-gold text-primary-foreground shadow-gold hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5"
+                      >
+                        <Ticket size={14} />
+                        {event.free ? "RSVP" : "Get Tickets"}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -255,6 +253,59 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
           );
         })}
       </div>
+
+      {/* RSVP Dialog */}
+      {rsvpDialogEvent && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setRsvpDialogEvent(null)} />
+          <div className="relative w-full max-w-sm mx-4 mb-8 sm:mb-0 bg-card rounded-2xl border border-border shadow-2xl p-5 animate-slide-up">
+            <button onClick={() => setRsvpDialogEvent(null)} className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-secondary">
+              <X size={18} className="text-muted-foreground" />
+            </button>
+            <h3 className="font-display font-bold text-foreground text-base pr-8 leading-tight">{rsvpDialogEvent.title}</h3>
+            <p className="text-xs text-muted-foreground mt-1">{rsvpDialogEvent.date}</p>
+
+            <div className="mt-5 space-y-3">
+              <button
+                onClick={() => handleRsvpAction(rsvpDialogEvent, "going")}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-green-500/10 border border-green-500/30 hover:bg-green-500/20 transition-all"
+              >
+                <CheckCircle size={20} className="text-green-500" />
+                <div className="text-left">
+                  <p className="text-sm font-semibold text-foreground">I'm Going ✅</p>
+                  <p className="text-[11px] text-muted-foreground">RSVP & see who else is attending</p>
+                </div>
+              </button>
+
+              <button
+                onClick={() => handleRsvpAction(rsvpDialogEvent, "not_going")}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-secondary border border-border hover:bg-muted transition-all"
+              >
+                <XCircle size={20} className="text-muted-foreground" />
+                <div className="text-left">
+                  <p className="text-sm font-semibold text-foreground">Not Going</p>
+                  <p className="text-[11px] text-muted-foreground">Maybe next time</p>
+                </div>
+              </button>
+
+              {!rsvpDialogEvent.free && (rsvpDialogEvent as any).external_url && (
+                <a
+                  href={(rsvpDialogEvent as any).external_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl gradient-gold text-primary-foreground transition-all hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <Ticket size={20} />
+                  <div className="text-left">
+                    <p className="text-sm font-semibold">Buy Tickets</p>
+                    <p className="text-[11px] opacity-80">{rsvpDialogEvent.price || "View pricing"}</p>
+                  </div>
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {selectedEvent && (
         <EventAttendeesSheet event={selectedEvent} onClose={() => setSelectedEvent(null)} />

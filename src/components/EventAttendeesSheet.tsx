@@ -1,8 +1,10 @@
 import { useState } from "react";
-import { X, Heart, MessageCircle, Users, Sparkles } from "lucide-react";
+import { X, Heart, MessageCircle, Users, Sparkles, Lock, Crown } from "lucide-react";
 import { type EventItem } from "@/data/cityData";
-import { getEventAttendees, type Attendee } from "@/data/eventAttendees";
+import { getEventAttendees, type Attendee, ON_APP_WOMEN, ON_APP_MEN, ON_APP_TOTAL, TOTAL_ATTENDING, FREE_ATTENDEE_LIMIT } from "@/data/eventAttendees";
 import DMChatScreen, { type ChatContact } from "@/components/DMChatScreen";
+import { useUserRole } from "@/hooks/useUserRole";
+import { useToast } from "@/hooks/use-toast";
 
 interface EventAttendeesSheetProps {
   event: EventItem;
@@ -12,19 +14,30 @@ interface EventAttendeesSheetProps {
 const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   const [filter, setFilter] = useState<"women" | "men" | "all">("women");
   const [chatContact, setChatContact] = useState<ChatContact | null>(null);
-  const { females, males } = getEventAttendees(event.id, event.attending);
+  const { females, males } = getEventAttendees(event.id);
+  const userRole = useUserRole();
+  const { toast } = useToast();
 
-  const displayedAttendees =
+  const isPaid = userRole === "admin"; // admins = paid subscribers for now
+
+  const allAttendees =
     filter === "women" ? females :
     filter === "men" ? males :
-    [...females, ...males].sort((a, b) => a.mutualFriends > b.mutualFriends ? -1 : 1);
+    [...females, ...males].sort((a, b) => b.mutualFriends - a.mutualFriends);
 
-  const totalOnApp = females.length + males.length;
-  const formattedAttending = event.attending >= 1000
-    ? `${(event.attending / 1000).toFixed(1)}K`
-    : event.attending;
+  // Free users see only FREE_ATTENDEE_LIMIT
+  const visibleAttendees = isPaid ? allAttendees : allAttendees.slice(0, FREE_ATTENDEE_LIMIT);
+  const hiddenCount = isPaid ? 0 : Math.max(0, allAttendees.length - FREE_ATTENDEE_LIMIT);
+
+  const formattedAttending = TOTAL_ATTENDING >= 1000
+    ? `${(TOTAL_ATTENDING / 1000).toFixed(1)}K`
+    : TOTAL_ATTENDING;
 
   const openChat = (person: Attendee) => {
+    if (!isPaid) {
+      toast({ title: "Upgrade to AfroHub Plus 👑", description: "Subscribe to message attendees and see full profiles." });
+      return;
+    }
     setChatContact({
       id: person.id,
       name: person.name,
@@ -52,12 +65,9 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col">
-      {/* Backdrop */}
       <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={onClose} />
 
-      {/* Sheet */}
       <div className="relative mt-16 flex-1 bg-card rounded-t-3xl border-t border-border overflow-hidden flex flex-col animate-slide-up">
-        {/* Handle */}
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 rounded-full bg-muted" />
         </div>
@@ -82,15 +92,15 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full gradient-gold">
               <Sparkles size={14} className="text-primary-foreground" />
-              <span className="text-xs font-semibold text-primary-foreground">{totalOnApp} on the app</span>
+              <span className="text-xs font-semibold text-primary-foreground">{ON_APP_TOTAL.toLocaleString()} on the app</span>
             </div>
           </div>
 
           {/* Gender filter */}
           <div className="flex gap-2">
             {([
-              { key: "women" as const, label: `Women (${females.length})`, emoji: "👩🏾" },
-              { key: "men" as const, label: `Men (${males.length})`, emoji: "👨🏾" },
+              { key: "women" as const, label: `Women (${ON_APP_WOMEN})`, emoji: "👩🏾" },
+              { key: "men" as const, label: `Men (${ON_APP_MEN})`, emoji: "👨🏾" },
               { key: "all" as const, label: "All", emoji: "👥" },
             ]).map((f) => (
               <button
@@ -111,10 +121,42 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
 
         {/* Attendees list */}
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 pb-24">
-          {displayedAttendees.map((person) => (
-            <AttendeeCard key={person.id} person={person} onMessage={() => openChat(person)} />
+          {visibleAttendees.map((person) => (
+            <AttendeeCard
+              key={person.id}
+              person={person}
+              isPaid={isPaid}
+              onMessage={() => openChat(person)}
+              onLikeBlocked={() => {
+                if (!isPaid) toast({ title: "Upgrade to AfroHub Plus 👑", description: "Subscribe to like and connect with attendees." });
+              }}
+            />
           ))}
-          {displayedAttendees.length === 0 && (
+
+          {/* Paywall blur wall */}
+          {hiddenCount > 0 && (
+            <div className="relative mt-4">
+              {/* Blurred preview cards */}
+              <div className="space-y-3 blur-md pointer-events-none select-none">
+                {allAttendees.slice(FREE_ATTENDEE_LIMIT, FREE_ATTENDEE_LIMIT + 3).map((person) => (
+                  <AttendeeCard key={person.id} person={person} isPaid={true} onMessage={() => {}} onLikeBlocked={() => {}} />
+                ))}
+              </div>
+              {/* Upgrade overlay */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/60 backdrop-blur-sm rounded-2xl">
+                <Crown size={32} className="text-primary mb-2" />
+                <p className="font-display font-bold text-foreground text-base">+{hiddenCount.toLocaleString()} more people</p>
+                <p className="text-xs text-muted-foreground mt-1 text-center px-8">
+                  Upgrade to AfroHub Plus to see all attendees, names, ages & connect
+                </p>
+                <button className="mt-3 px-6 py-2.5 rounded-full gradient-gold text-primary-foreground text-sm font-semibold shadow-gold hover:scale-105 active:scale-95 transition-transform">
+                  Unlock AfroHub Plus 👑
+                </button>
+              </div>
+            </div>
+          )}
+
+          {visibleAttendees.length === 0 && (
             <div className="text-center py-12">
               <p className="text-muted-foreground text-sm">No matches found for this filter</p>
             </div>
@@ -125,34 +167,50 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   );
 };
 
-const AttendeeCard = ({ person, onMessage }: { person: Attendee; onMessage: () => void }) => {
+const AttendeeCard = ({ person, isPaid, onMessage, onLikeBlocked }: { person: Attendee; isPaid: boolean; onMessage: () => void; onLikeBlocked: () => void }) => {
   const [liked, setLiked] = useState(false);
 
   return (
     <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-2xl border border-border">
       <img
         src={person.photo}
-        alt={person.name}
+        alt="Attendee"
         className="w-16 h-16 rounded-xl object-cover ring-2 ring-border"
       />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <h3 className="font-semibold text-foreground text-sm">{person.name}, {person.age}</h3>
-          <span className="px-2 py-0.5 rounded-full bg-card text-[10px] font-medium text-muted-foreground border border-border">
-            {person.vibe}
-          </span>
+          {isPaid ? (
+            <h3 className="font-semibold text-foreground text-sm">{person.name}, {person.age}</h3>
+          ) : (
+            <div className="flex items-center gap-1.5">
+              <div className="w-16 h-4 rounded bg-muted animate-pulse" />
+              <Lock size={12} className="text-muted-foreground" />
+            </div>
+          )}
+          {isPaid && (
+            <span className="px-2 py-0.5 rounded-full bg-card text-[10px] font-medium text-muted-foreground border border-border">
+              {person.vibe}
+            </span>
+          )}
         </div>
-        <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{person.bio}</p>
+        {isPaid ? (
+          <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{person.bio}</p>
+        ) : (
+          <p className="text-xs text-muted-foreground mt-0.5 italic">Profile hidden</p>
+        )}
         <div className="flex items-center gap-3 mt-1">
-          <span className="text-[10px] text-muted-foreground">📍 {person.distance}</span>
-          {person.mutualFriends > 0 && (
+          {isPaid && <span className="text-[10px] text-muted-foreground">📍 {person.distance}</span>}
+          {isPaid && person.mutualFriends > 0 && (
             <span className="text-[10px] text-primary font-medium">👥 {person.mutualFriends} mutual</span>
           )}
         </div>
       </div>
       <div className="flex flex-col gap-2">
         <button
-          onClick={() => setLiked(!liked)}
+          onClick={() => {
+            if (!isPaid) { onLikeBlocked(); return; }
+            setLiked(!liked);
+          }}
           className={`p-2 rounded-full transition-all ${
             liked ? "bg-red-500/20" : "hover:bg-secondary"
           }`}
