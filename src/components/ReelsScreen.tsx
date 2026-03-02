@@ -50,8 +50,9 @@ const getDayLabel = () => {
 };
 
 // --- Reel data ---
-const reelData: Record<Exclude<ReelCategory, "crush">, { id: number; author: string; avatar: string; image: string; caption: string; song: string; likes: string; comments: string; shares: string }[]> = {
+const reelData: Record<Exclude<ReelCategory, "crush">, { id: number; author: string; avatar: string; image: string; video?: string; caption: string; song: string; likes: string; comments: string; shares: string }[]> = {
   trending: [
+    { id: 0, author: "NWE", avatar: profileMan1, image: reel1, video: "/videos/nwe-trending-reel.mp4", caption: "Pan-African culture, history & excellence. The diaspora united 🌍✊🏾 #NWE #PanAfrican #BlackExcellence", song: "Original Sound — NWE", likes: "58.7K", comments: "4.2K", shares: "12.1K" },
     { id: 1, author: "Dayo", avatar: profileMan2, image: reel1, caption: "This Afrobeats challenge is taking over 🔥💃 #AfroHub #DanceChallenge", song: "CKay — Love Nwantiti", likes: "19.3K", comments: "842", shares: "1.2K" },
     { id: 2, author: "Nneka Cooks", avatar: profileWoman1, image: reel2, caption: "The REAL jollof recipe. No debates 🍚🔥 Drop your country flag if you claim the best jollof!", song: "Original Sound — Nneka Cooks", likes: "42.1K", comments: "3.8K", shares: "5.6K" },
     { id: 3, author: "Kofi Styles", avatar: profileMan1, image: reel3, caption: "Ankara drip check ✨ Where my fashion lovers at? #AfricanFashion #Ankara", song: "Burna Boy — City Boys", likes: "8.7K", comments: "412", shares: "967" },
@@ -277,7 +278,20 @@ const ReelsScreen = () => {
       >
         {reel && (
           <div className="relative w-full h-full animate-fade-in" key={`${category}-${reel.id}`}>
-            <img src={reel.image} alt="" className="w-full h-full object-cover" onDoubleClick={() => handleDoubleTap(reel.id)} />
+            {reel.video ? (
+              <video
+                src={reel.video}
+                poster={reel.image}
+                className="w-full h-full object-cover"
+                autoPlay
+                loop
+                muted={muted}
+                playsInline
+                onDoubleClick={() => handleDoubleTap(reel.id)}
+              />
+            ) : (
+              <img src={reel.image} alt="" className="w-full h-full object-cover" onDoubleClick={() => handleDoubleTap(reel.id)} />
+            )}
 
             {showHeart && (
               <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
