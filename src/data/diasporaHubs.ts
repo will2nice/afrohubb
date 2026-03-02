@@ -533,4 +533,243 @@ export const diasporaHubs: DiasporaHub[] = [
       { country: "Jamaica", countryFlag: "🇯🇲", population: "~15,000+", neighborhoods: ["NDG", "Côte-des-Neiges"], notes: "Jamaican community contributing to Montreal's English-speaking Caribbean community." },
     ],
   },
+
+  // ── AFRICA ──
+  {
+    city: "Cairo", state: "Egypt", flag: "🇪🇬", cityId: "cairo",
+    communities: [
+      { country: "Egypt", countryFlag: "🇪🇬", population: "~110,000,000", neighborhoods: ["Cairo", "Alexandria", "Giza", "Luxor", "Aswan"], notes: "The most populous country in the Arab world and third-most in Africa. One of the oldest civilizations on Earth — Ancient Kemet (Egypt) birthed writing, mathematics, architecture, and medicine." },
+      { country: "Pyramids of Giza", countryFlag: "🏛️", population: "Wonder of the Ancient World", neighborhoods: ["Giza Plateau"], notes: "The Great Pyramid of Khufu is the last surviving Wonder of the Ancient World. Built ~2560 BCE by African engineers. The Sphinx guards the plateau — carved from a single limestone ridge." },
+      { country: "Valley of the Kings", countryFlag: "⚱️", population: "63+ Royal Tombs", neighborhoods: ["Luxor (Thebes)"], notes: "Burial ground of pharaohs including Tutankhamun, Ramesses II, and Hatshepsut. Luxor Temple and Karnak Temple Complex are among the most spectacular ancient sites on Earth." },
+      { country: "Nubian Culture", countryFlag: "🎨", population: "~3,000,000 Nubians", neighborhoods: ["Aswan", "Abu Simbel", "Elephantine Island"], notes: "The Nubian people — one of Africa's oldest civilizations. Colorful villages along the Nile, unique language, and the magnificent Abu Simbel temples built by Ramesses II." },
+      { country: "Islamic Cairo", countryFlag: "🕌", population: "1,000+ Historic Mosques", neighborhoods: ["Khan el-Khalili", "Al-Azhar", "Citadel of Saladin"], notes: "Al-Azhar University (founded 970 CE) is the oldest degree-granting university in the world. Khan el-Khalili bazaar has been trading since the 14th century." },
+    ],
+  },
+  {
+    city: "Luxor", state: "Egypt", flag: "🇪🇬", cityId: "luxor",
+    communities: [
+      { country: "Ancient Thebes", countryFlag: "🏛️", population: "Ancient Capital of Kemet", neighborhoods: ["East Bank", "West Bank"], notes: "Luxor is built on the ruins of Thebes, the ancient capital of Upper Egypt. The East Bank holds Karnak and Luxor temples; the West Bank holds the Valley of the Kings and Queens." },
+      { country: "Karnak Temple Complex", countryFlag: "⛩️", population: "Largest Ancient Religious Site", neighborhoods: ["East Bank"], notes: "The largest ancient religious complex ever built — construction spanned 2,000 years. The Hypostyle Hall has 134 massive columns, each 70 feet tall." },
+      { country: "Hatshepsut's Temple", countryFlag: "👑", population: "First Female Pharaoh's Legacy", neighborhoods: ["Deir el-Bahari (West Bank)"], notes: "The mortuary temple of Hatshepsut — one of the most powerful women in ancient history. She ruled as pharaoh for over 20 years during the 18th Dynasty." },
+    ],
+  },
+  {
+    city: "Khartoum", state: "Sudan", flag: "🇸🇩", cityId: "khartoum",
+    communities: [
+      { country: "Sudan", countryFlag: "🇸🇩", population: "~48,000,000", neighborhoods: ["Khartoum", "Omdurman", "Port Sudan", "Wad Madani"], notes: "Sudan sits at the confluence of the Blue and White Nile. Home to more pyramids than Egypt — the Kingdom of Kush rivaled and at times conquered Ancient Egypt." },
+      { country: "Pyramids of Meroë", countryFlag: "🏛️", population: "200+ Pyramids", neighborhoods: ["Meroë (Shendi)"], notes: "The Nubian Pyramids of Meroë — over 200 pyramids, more than all of Egypt combined. Capital of the Kingdom of Kush (800 BCE – 350 CE), a powerful African empire that traded with Rome and India." },
+      { country: "Kingdom of Kush", countryFlag: "👑", population: "Ancient African Empire", neighborhoods: ["Kerma", "Napata", "Meroë"], notes: "The Kushites conquered Egypt in the 25th Dynasty — Black pharaohs like Taharqa ruled both nations. Kerma is one of the oldest cities in Africa (2500 BCE)." },
+      { country: "Nubian Heritage", countryFlag: "🎨", population: "~5,000,000 Nubians", neighborhoods: ["Northern Sudan", "Dongola", "Wadi Halfa"], notes: "Nubian civilization predates Egypt. Rich traditions in gold-working, pottery, and architecture. The 'Land of Gold' (Ta-Seti) was ancient Egypt's name for Nubia." },
+      { country: "Sufi Islam & Omdurman", countryFlag: "🕌", population: "Cultural Capital", neighborhoods: ["Omdurman"], notes: "Omdurman is Sudan's cultural heart — the Hamed al-Nil Mosque hosts mesmerizing Sufi whirling ceremonies every Friday. The largest souk in Sudan is here." },
+    ],
+  },
+  {
+    city: "Addis Ababa", state: "Ethiopia", flag: "🇪🇹", cityId: "addisababa",
+    communities: [
+      { country: "Ethiopia", countryFlag: "🇪🇹", population: "~126,000,000", neighborhoods: ["Addis Ababa", "Dire Dawa", "Bahir Dar", "Gondar", "Lalibela", "Harar"], notes: "Ethiopia is the only African country never colonized. Home of the African Union HQ, birthplace of coffee, and one of the oldest Christian civilizations on Earth. The Ge'ez script is one of Africa's oldest writing systems." },
+      { country: "Rock-Hewn Churches of Lalibela", countryFlag: "⛪", population: "UNESCO World Heritage", neighborhoods: ["Lalibela"], notes: "11 medieval churches carved entirely from solid rock in the 12th century by King Lalibela. Called the 'New Jerusalem' — the Church of St. George is carved in the shape of a cross into the earth." },
+      { country: "Aksumite Empire", countryFlag: "🏛️", population: "Ancient World Power", neighborhoods: ["Axum (Tigray)"], notes: "The Kingdom of Aksum (100–940 CE) was one of the four great world powers alongside Rome, Persia, and China. Home of the Stelae of Aksum — giant obelisks up to 79 feet tall. Said to house the Ark of the Covenant." },
+      { country: "Lucy (Dinkinesh)", countryFlag: "🦴", population: "3.2 Million Years Old", neighborhoods: ["National Museum, Addis Ababa"], notes: "The fossil 'Lucy' (Dinkinesh in Amharic, meaning 'you are marvelous') was found in Ethiopia — the oldest known human ancestor. Ethiopia is literally the birthplace of humanity." },
+      { country: "Harar — City of Saints", countryFlag: "🕌", population: "4th Holiest City in Islam", neighborhoods: ["Harar Jugol (Walled City)"], notes: "Harar is a UNESCO World Heritage Site with 82 mosques inside its ancient walls. Famous for the 'Hyena Man' who feeds wild hyenas by hand every night — a tradition spanning centuries." },
+      { country: "Coffee Culture", countryFlag: "☕", population: "Birthplace of Coffee", neighborhoods: ["Kaffa region", "Sidamo", "Yirgacheffe"], notes: "Coffee originated in Ethiopia's Kaffa region. The traditional coffee ceremony (Buna) is a sacred social ritual. Ethiopian coffee is considered the finest in the world." },
+    ],
+  },
+  {
+    city: "Nairobi", state: "Kenya", flag: "🇰🇪", cityId: "nairobi",
+    communities: [
+      { country: "Kenya", countryFlag: "🇰🇪", population: "~56,000,000", neighborhoods: ["Nairobi", "Mombasa", "Kisumu", "Nakuru", "Eldoret"], notes: "East Africa's economic powerhouse and tech hub ('Silicon Savannah'). M-Pesa mobile banking was invented here, revolutionizing global fintech. Over 40 ethnic groups including Kikuyu, Luo, Maasai, and Kalenjin." },
+      { country: "Maasai Mara", countryFlag: "🦁", population: "Great Migration", neighborhoods: ["Maasai Mara National Reserve"], notes: "Home to the Great Wildebeest Migration — 2 million animals cross from the Serengeti annually. The Maasai people are iconic warriors and pastoralists who have maintained their traditions for centuries." },
+      { country: "Mount Kenya & Rift Valley", countryFlag: "🏔️", population: "Africa's 2nd Highest Peak", neighborhoods: ["Mount Kenya", "Great Rift Valley", "Lake Nakuru"], notes: "The Great Rift Valley runs through Kenya with stunning lakes, flamingos, and geological wonders. Kenya's long-distance runners from the Rift Valley (Kalenjin people) dominate world athletics." },
+      { country: "Swahili Coast & Lamu", countryFlag: "🏝️", population: "UNESCO Heritage", neighborhoods: ["Lamu Old Town", "Mombasa Old Town", "Fort Jesus"], notes: "Lamu is the oldest continuously inhabited Swahili settlement — a UNESCO World Heritage Site. Swahili civilization blended African, Arab, and Persian cultures into a unique coastal culture." },
+      { country: "Nairobi National Park", countryFlag: "🦒", population: "Only Urban Safari in the World", neighborhoods: ["Nairobi South"], notes: "The only national park inside a capital city — lions, rhinos, and giraffes roam with Nairobi's skyline in the background. The David Sheldrick Elephant Orphanage rescues baby elephants." },
+    ],
+  },
+  {
+    city: "Dar es Salaam", state: "Tanzania", flag: "🇹🇿", cityId: "daressalaam",
+    communities: [
+      { country: "Tanzania", countryFlag: "🇹🇿", population: "~65,000,000", neighborhoods: ["Dar es Salaam", "Arusha", "Dodoma", "Mwanza", "Zanzibar"], notes: "Home to Mount Kilimanjaro (Africa's highest peak), Serengeti, and Zanzibar. Tanzania's Ujamaa philosophy under Julius Nyerere made it a beacon of Pan-Africanism. Swahili is the national language." },
+      { country: "Mount Kilimanjaro", countryFlag: "🏔️", population: "19,341 ft — Highest in Africa", neighborhoods: ["Kilimanjaro Region", "Moshi"], notes: "The 'Roof of Africa' — a free-standing volcanic mountain with snow-capped peaks on the equator. Sacred to the Chagga people. One of the most iconic mountains on Earth." },
+      { country: "Serengeti & Ngorongoro", countryFlag: "🦁", population: "World's Greatest Wildlife Spectacle", neighborhoods: ["Serengeti National Park", "Ngorongoro Crater"], notes: "The Serengeti hosts the Great Migration. Ngorongoro Crater is the world's largest intact volcanic caldera — a natural amphitheater teeming with wildlife including the endangered Black Rhino." },
+      { country: "Zanzibar", countryFlag: "🏝️", population: "~1,800,000", neighborhoods: ["Stone Town", "Nungwi", "Paje"], notes: "Stone Town is a UNESCO World Heritage Site — a maze of narrow alleys, carved doors, and centuries of Swahili, Arab, Persian, and Indian trade history. Birthplace of Freddie Mercury." },
+      { country: "Olduvai Gorge", countryFlag: "🦴", population: "Cradle of Mankind", neighborhoods: ["Ngorongoro Conservation Area"], notes: "One of the most important paleoanthropological sites on Earth. Early human fossils dating back 2 million years were discovered here — proving Africa is the origin of all humanity." },
+    ],
+  },
+  {
+    city: "Zanzibar", state: "Tanzania", flag: "🇹🇿", cityId: "zanzibar",
+    communities: [
+      { country: "Zanzibar Archipelago", countryFlag: "🏝️", population: "~1,800,000", neighborhoods: ["Stone Town", "Nungwi", "Paje", "Jambiani"], notes: "The Spice Islands — cloves, nutmeg, cinnamon, and black pepper. A crossroads of African, Arab, Indian, and Persian civilizations for over 1,000 years." },
+      { country: "Stone Town", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["Old Town", "Forodhani Gardens"], notes: "Ancient trading port with stunning architecture, carved wooden doors, and the House of Wonders. Forodhani Night Market is legendary for its seafood." },
+      { country: "Spice Trade Heritage", countryFlag: "🌿", population: "Spice Islands", neighborhoods: ["Throughout Zanzibar"], notes: "Zanzibar was the world's largest producer of cloves. The spice trade shaped global commerce for centuries. Spice farm tours remain a signature experience." },
+    ],
+  },
+  {
+    city: "Lagos", state: "Nigeria", flag: "🇳🇬", cityId: "lagos",
+    communities: [
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~230,000,000", neighborhoods: ["Lagos", "Abuja", "Kano", "Ibadan", "Port Harcourt", "Enugu", "Benin City"], notes: "Africa's most populous country and largest economy. Over 250 ethnic groups and 500+ languages. Nollywood is the world's second-largest film industry. Afrobeats was born here and now dominates global music." },
+      { country: "Afrobeats & Music", countryFlag: "🎵", population: "Global Cultural Export", neighborhoods: ["Lagos Island", "Victoria Island", "Lekki"], notes: "Lagos is the global capital of Afrobeats — Wizkid, Burna Boy, Davido, Tiwa Savage all came from here. From Fela Kuti's Afrobeat to modern Afrobeats, Nigerian music has conquered the world." },
+      { country: "Nollywood", countryFlag: "🎬", population: "2nd Largest Film Industry", neighborhoods: ["Surulere", "Ikeja", "Victoria Island"], notes: "Nigeria produces more films annually than Hollywood. Nollywood generates $6+ billion yearly and employs over a million people. Nigerian storytelling is a global force." },
+      { country: "Benin Kingdom & Bronzes", countryFlag: "🏛️", population: "Ancient Empire", neighborhoods: ["Benin City (Edo State)"], notes: "The Kingdom of Benin (1180–1897) created the world-famous Benin Bronzes — masterpieces of African art looted by the British in 1897 and now being repatriated. The Oba of Benin remains a revered traditional ruler." },
+      { country: "Yoruba, Igbo & Hausa Heritage", countryFlag: "👑", population: "Three Major Civilizations", neighborhoods: ["Ile-Ife (Yoruba)", "Enugu (Igbo)", "Kano (Hausa)"], notes: "Ile-Ife is the spiritual homeland of the Yoruba people — cradle of Yoruba civilization. Igbo culture is known for democratic governance and entrepreneurship. Kano's ancient city walls and dyeing pits date to the 15th century." },
+    ],
+  },
+  {
+    city: "Abuja", state: "Nigeria", flag: "🇳🇬", cityId: "abuja",
+    communities: [
+      { country: "Nigeria's Capital", countryFlag: "🇳🇬", population: "~3,500,000", neighborhoods: ["Central Area", "Garki", "Wuse", "Maitama", "Asokoro"], notes: "Purpose-built capital city since 1991. Modern architecture meets Nigerian culture. Aso Rock — a massive 400-meter monolith — looms over the city." },
+      { country: "Zuma Rock", countryFlag: "🪨", population: "Natural Landmark", neighborhoods: ["Niger State border"], notes: "A 725-meter natural monolith known as the 'Gateway to Abuja.' Sacred to the Gwari people. Its face-like formation on the rock surface is legendary." },
+      { country: "Nok Civilization", countryFlag: "🏛️", population: "2,500+ Years Old", neighborhoods: ["Jos Plateau (nearby)"], notes: "The Nok civilization (1500 BCE – 500 CE) produced Africa's oldest known terracotta sculptures. Discovered near Jos, these artworks revolutionized understanding of ancient African art." },
+    ],
+  },
+  {
+    city: "Accra", state: "Ghana", flag: "🇬🇭", cityId: "accra",
+    communities: [
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~34,000,000", neighborhoods: ["Accra", "Kumasi", "Tamale", "Cape Coast", "Takoradi"], notes: "First sub-Saharan African country to gain independence (1957). Kwame Nkrumah — Pan-Africanist icon — led the way. 'Year of Return' (2019) brought the diaspora home. Ghana means 'Warrior King.'" },
+      { country: "Cape Coast Castle & Elmina", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["Cape Coast", "Elmina"], notes: "Cape Coast Castle and Elmina Castle — the 'Door of No Return.' Where millions of enslaved Africans were held before the Middle Passage. Now powerful museums of memory and healing for the diaspora." },
+      { country: "Ashanti Kingdom", countryFlag: "👑", population: "Living Monarchy", neighborhoods: ["Kumasi", "Manhyia Palace"], notes: "The Ashanti Kingdom is one of Africa's most powerful historical empires. The Golden Stool (Sika Dwa) is sacred — it's believed to contain the soul of the Ashanti nation. The Asantehene still reigns from Manhyia Palace in Kumasi." },
+      { country: "Year of Return & Beyond the Return", countryFlag: "✊🏿", population: "Diaspora Homecoming", neighborhoods: ["Accra", "Cape Coast", "Kumasi"], notes: "Ghana's 'Year of Return' (2019) and 'Beyond the Return' welcomed the African diaspora home. Thousands of African Americans, Caribbeans, and Afro-Europeans have relocated, invested, and reconnected with the motherland." },
+      { country: "Kakum National Park", countryFlag: "🌿", population: "Tropical Rainforest", neighborhoods: ["Central Region"], notes: "A stunning canopy walkway 30 meters above the rainforest floor. Home to forest elephants, rare birds, and medicinal plants used for centuries by local communities." },
+    ],
+  },
+  {
+    city: "Dakar", state: "Senegal", flag: "🇸🇳", cityId: "dakar",
+    communities: [
+      { country: "Senegal", countryFlag: "🇸🇳", population: "~18,000,000", neighborhoods: ["Dakar", "Saint-Louis", "Thiès", "Touba", "Ziguinchor"], notes: "Westernmost point of continental Africa. Known as the 'Gateway to Africa.' Senegalese Teranga (hospitality) is legendary. Home of Youssou N'Dour, Akon, and the vibrant Wolof culture." },
+      { country: "African Renaissance Monument", countryFlag: "🗽", population: "Tallest Statue in Africa (161 ft)", neighborhoods: ["Ouakam, Dakar"], notes: "The African Renaissance Monument — taller than the Statue of Liberty — depicts a man, woman, and child looking toward the Atlantic. Designed by Senegalese architect Pierre Goudiaby and built in 2010 as a symbol of Africa's rebirth." },
+      { country: "Gorée Island", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["Off the coast of Dakar"], notes: "Gorée Island — the 'Door of No Return.' A powerful memorial to the transatlantic slave trade. The Maison des Esclaves (House of Slaves) is a pilgrimage site for the diaspora worldwide." },
+      { country: "Saint-Louis", countryFlag: "🏘️", population: "UNESCO World Heritage", neighborhoods: ["Saint-Louis"], notes: "Former capital of French West Africa. A stunning colonial-era island city at the mouth of the Senegal River. Known for its jazz festival — one of the biggest in Africa." },
+      { country: "Touba & Mouride Brotherhood", countryFlag: "🕌", population: "~3,000,000+ Annual Pilgrimage", neighborhoods: ["Touba"], notes: "Touba is the holy city of the Mouride Sufi brotherhood. The Grand Mosque of Touba is one of the largest in Africa. The annual Grand Magal pilgrimage draws millions." },
+    ],
+  },
+  {
+    city: "Johannesburg", state: "South Africa", flag: "🇿🇦", cityId: "johannesburg",
+    communities: [
+      { country: "South Africa", countryFlag: "🇿🇦", population: "~62,000,000", neighborhoods: ["Johannesburg", "Cape Town", "Durban", "Pretoria", "Soweto"], notes: "The 'Rainbow Nation' — 11 official languages, birthplace of Mandela's freedom struggle. Africa's most industrialized economy. From apartheid to democracy, South Africa's story is one of the most powerful on Earth." },
+      { country: "Soweto & Apartheid History", countryFlag: "✊🏿", population: "~2,000,000", neighborhoods: ["Soweto", "Vilakazi Street", "Hector Pieterson Memorial"], notes: "Soweto (South Western Townships) — where the anti-apartheid struggle was born. Vilakazi Street is the only street in the world where two Nobel Prize winners lived (Mandela and Tutu). The 1976 Soweto Uprising changed history." },
+      { country: "Cradle of Humankind", countryFlag: "🦴", population: "UNESCO World Heritage", neighborhoods: ["Sterkfontein Caves", "Maropeng"], notes: "The Cradle of Humankind — where some of the oldest hominid fossils on Earth were found, including 'Mrs. Ples' (2.1 million years old) and 'Little Foot' (3.7 million years old). Proof that humanity began in Africa." },
+      { country: "Gold & Mining Heritage", countryFlag: "⛏️", population: "City of Gold", neighborhoods: ["Johannesburg CBD", "Gold Reef City"], notes: "Johannesburg was built on the world's largest gold deposit. 'Egoli' (City of Gold) in Zulu. The gold rush of 1886 transformed a empty veld into Africa's largest city." },
+      { country: "Amapiano & Gqom Music", countryFlag: "🎵", population: "Global Sound", neighborhoods: ["Soweto", "Alexandra", "Pretoria"], notes: "South Africa birthed Kwaito, Amapiano, and Gqom — sounds that now dominate global dance music. From Brenda Fassie to Black Coffee to Uncle Waffles, SA music is unstoppable." },
+    ],
+  },
+  {
+    city: "Cape Town", state: "South Africa", flag: "🇿🇦", cityId: "capetown",
+    communities: [
+      { country: "Western Cape", countryFlag: "🇿🇦", population: "~4,800,000", neighborhoods: ["Cape Town CBD", "Khayelitsha", "Bo-Kaap", "Langa", "Gugulethu"], notes: "The 'Mother City' — where the Cape Malay, Khoisan, Xhosa, and colonial histories converge. Table Mountain overlooks one of the most beautiful cities on Earth." },
+      { country: "Table Mountain", countryFlag: "🏔️", population: "New 7 Wonders of Nature", neighborhoods: ["Table Mountain National Park"], notes: "A flat-topped mountain that is one of the New 7 Wonders of Nature. Sacred to the Khoisan people. Over 1,500 species of plants found nowhere else on Earth." },
+      { country: "Robben Island", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["Table Bay"], notes: "Where Nelson Mandela was imprisoned for 18 of his 27 years. Now a museum and powerful symbol of the triumph of the human spirit over oppression." },
+      { country: "Bo-Kaap & Cape Malay Culture", countryFlag: "🏘️", population: "Historic Quarter", neighborhoods: ["Bo-Kaap"], notes: "Bo-Kaap's colorful houses represent the Cape Malay community — descendants of enslaved people from Southeast Asia brought by the Dutch. Rich culinary traditions including bobotie and koeksisters." },
+      { country: "Khoisan Heritage", countryFlag: "🌍", population: "Oldest People on Earth", neighborhoods: ["Throughout Western Cape"], notes: "The Khoisan are the oldest human population on Earth — their DNA is the most genetically diverse. Rock art in the Cederberg mountains dates back 6,000+ years." },
+    ],
+  },
+  {
+    city: "Kinshasa", state: "DR Congo", flag: "🇨🇩", cityId: "kinshasa",
+    communities: [
+      { country: "DR Congo", countryFlag: "🇨🇩", population: "~105,000,000", neighborhoods: ["Kinshasa", "Lubumbashi", "Mbuji-Mayi", "Kisangani", "Goma"], notes: "The largest francophone country in the world by population. The Congo River is the deepest river on Earth. DR Congo has the world's second-largest rainforest and extraordinary mineral wealth — cobalt, diamonds, coltan." },
+      { country: "Congolese Rumba & Music", countryFlag: "🎵", population: "UNESCO Intangible Heritage", neighborhoods: ["Matonge (Kinshasa)", "Bandal"], notes: "Congolese Rumba is a UNESCO Intangible Cultural Heritage. From Franco to Papa Wemba to Fally Ipupa — Kinshasa is the music capital of Africa. Rumba, soukous, and ndombolo shaped the sound of the entire continent." },
+      { country: "Congo Rainforest", countryFlag: "🌿", population: "2nd Largest Rainforest", neighborhoods: ["Central Basin"], notes: "The Congo Basin rainforest is the 'lungs of Africa' — second only to the Amazon. Home to bonobos, okapis, and forest elephants. Critical for global climate regulation." },
+      { country: "Virunga National Park", countryFlag: "🦍", population: "Africa's Oldest National Park", neighborhoods: ["North Kivu"], notes: "Home to endangered mountain gorillas, active volcanoes (Mount Nyiragongo), and extraordinary biodiversity. Africa's first national park (1925)." },
+      { country: "Kuba Kingdom Art", countryFlag: "🎨", population: "Artistic Legacy", neighborhoods: ["Kasai Region"], notes: "The Kuba Kingdom produced some of Africa's most sophisticated art — intricate raffia textiles, carved masks, and wooden sculptures that influenced Picasso and modern art." },
+    ],
+  },
+  {
+    city: "Marrakech", state: "Morocco", flag: "🇲🇦", cityId: "marrakech",
+    communities: [
+      { country: "Morocco", countryFlag: "🇲🇦", population: "~37,000,000", neighborhoods: ["Marrakech", "Casablanca", "Fez", "Tangier", "Chefchaouen"], notes: "Crossroads of Africa, Europe, and the Arab world. Berber (Amazigh), Arab, and sub-Saharan cultures blend uniquely. Morocco's medinas, riads, and cuisine are world-renowned." },
+      { country: "Jemaa el-Fnaa", countryFlag: "🎭", population: "UNESCO Masterpiece", neighborhoods: ["Marrakech Medina"], notes: "The central square of Marrakech — a UNESCO 'Masterpiece of the Oral and Intangible Heritage of Humanity.' Snake charmers, storytellers, musicians, and food stalls create an ancient open-air theater." },
+      { country: "Amazigh (Berber) Heritage", countryFlag: "ⵣ", population: "~15,000,000 Amazigh People", neighborhoods: ["Atlas Mountains", "Sahara", "Rif Mountains"], notes: "The indigenous Amazigh (Berber) people have lived in North Africa for over 10,000 years. Their language, Tamazight, is now an official language. Stunning architecture, carpets, and jewelry." },
+      { country: "Fez Medina", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["Fez el-Bali"], notes: "The world's largest car-free urban zone. Fez el-Bali (Old Fez) has 9,000+ labyrinthine streets. The University of al-Qarawiyyin (859 CE) is the world's oldest existing university." },
+      { country: "Gnawa Music", countryFlag: "🎵", population: "UNESCO Intangible Heritage", neighborhoods: ["Essaouira", "Marrakech"], notes: "Gnawa music — rooted in sub-Saharan African spiritual traditions — is a UNESCO Intangible Heritage. The Essaouira Gnawa Festival celebrates this powerful Afro-Moroccan tradition." },
+    ],
+  },
+  {
+    city: "Kampala", state: "Uganda", flag: "🇺🇬", cityId: "kampala",
+    communities: [
+      { country: "Uganda", countryFlag: "🇺🇬", population: "~48,000,000", neighborhoods: ["Kampala", "Entebbe", "Jinja", "Fort Portal", "Mbarara"], notes: "The 'Pearl of Africa' — Churchill's famous description still holds. Home to half of the world's mountain gorillas, the source of the Nile, and extraordinary biodiversity." },
+      { country: "Mountain Gorilla Trekking", countryFlag: "🦍", population: "~1,000 Mountain Gorillas Left", neighborhoods: ["Bwindi Impenetrable Forest", "Mgahinga"], notes: "Bwindi Impenetrable Forest is a UNESCO World Heritage Site — home to roughly half of all remaining mountain gorillas. Trekking to see these gentle giants is one of the most profound wildlife experiences on Earth." },
+      { country: "Source of the Nile", countryFlag: "🌊", population: "World's Longest River", neighborhoods: ["Jinja"], notes: "Jinja is where the White Nile begins its 4,130-mile journey to the Mediterranean. A sacred site and now a hub for white-water rafting and adventure sports." },
+      { country: "Buganda Kingdom", countryFlag: "👑", population: "Living Monarchy", neighborhoods: ["Kampala", "Mengo Palace"], notes: "The Kabaka (King) of Buganda still reigns as a cultural monarch. The Kasubi Tombs (UNESCO site) are the burial grounds of Buganda kings — a masterpiece of reed and bark-cloth architecture." },
+    ],
+  },
+  {
+    city: "Kigali", state: "Rwanda", flag: "🇷🇼", cityId: "kigali",
+    communities: [
+      { country: "Rwanda", countryFlag: "🇷🇼", population: "~14,000,000", neighborhoods: ["Kigali", "Musanze", "Huye", "Gisenyi"], notes: "The 'Land of a Thousand Hills' — one of Africa's greatest transformation stories. From the 1994 genocide to becoming Africa's cleanest, safest, and most innovative country. Kigali is Africa's cleanest city." },
+      { country: "Genocide Memorials", countryFlag: "🕊️", population: "Remembrance & Resilience", neighborhoods: ["Kigali Genocide Memorial", "Murambi", "Nyamata"], notes: "The Kigali Genocide Memorial honors the over 1 million lives lost in 1994. Rwanda's journey of reconciliation and unity is one of humanity's most powerful stories of healing." },
+      { country: "Volcanoes National Park", countryFlag: "🦍", population: "Mountain Gorilla Sanctuary", neighborhoods: ["Musanze (Ruhengeri)"], notes: "Home to endangered mountain gorillas in the Virunga Mountains. Where Dian Fossey conducted her legendary research. Gorilla trekking here is a bucket-list experience." },
+      { country: "Innovation Hub", countryFlag: "💡", population: "Africa's Tech Leader", neighborhoods: ["Kigali Innovation City"], notes: "Rwanda is building Africa's first drone delivery network, cashless economy, and smart city. Kigali Innovation City aims to be Africa's Silicon Valley. The country runs on 'Vision 2050.'" },
+    ],
+  },
+  {
+    city: "Abidjan", state: "Côte d'Ivoire", flag: "🇨🇮", cityId: "abidjan",
+    communities: [
+      { country: "Côte d'Ivoire", countryFlag: "🇨🇮", population: "~29,000,000", neighborhoods: ["Abidjan", "Yamoussoukro", "Bouaké", "San-Pédro"], notes: "The economic capital of francophone West Africa. Known as the 'Paris of West Africa' for its skyline and nightlife. World's largest cocoa producer — your chocolate likely started here." },
+      { country: "Basilica of Our Lady of Peace", countryFlag: "⛪", population: "Largest Church in the World", neighborhoods: ["Yamoussoukro"], notes: "The Basilica of Our Lady of Peace in Yamoussoukro — the largest church on Earth, larger than St. Peter's in Vatican City. Built by President Houphouët-Boigny in 1989." },
+      { country: "Coupé-Décalé & Zouglou Music", countryFlag: "🎵", population: "Cultural Export", neighborhoods: ["Yopougon", "Treichville", "Marcory"], notes: "Côte d'Ivoire birthed Coupé-Décalé and Zouglou — infectious dance music that conquered francophone Africa and the global club scene. DJ Arafat was the genre's king." },
+      { country: "Cocoa & Coffee Heritage", countryFlag: "🍫", population: "World's #1 Cocoa Producer", neighborhoods: ["San-Pédro", "Western Region"], notes: "Côte d'Ivoire produces 40% of the world's cocoa. The cocoa belt in the west is the foundation of the global chocolate industry." },
+    ],
+  },
+  {
+    city: "Bamako", state: "Mali", flag: "🇲🇱", cityId: "bamako",
+    communities: [
+      { country: "Mali", countryFlag: "🇲🇱", population: "~23,000,000", neighborhoods: ["Bamako", "Timbuktu", "Djenné", "Ségou", "Mopti"], notes: "Home to some of the greatest empires in human history — Ghana, Mali, and Songhai. Mansa Musa of the Mali Empire is considered the richest person who ever lived." },
+      { country: "Timbuktu", countryFlag: "📚", population: "City of 333 Saints", neighborhoods: ["Timbuktu"], notes: "Timbuktu was the intellectual capital of the world in the 14th–16th centuries. The University of Sankore had 25,000 students. Over 700,000 ancient manuscripts survive — proof of Africa's scholarly tradition." },
+      { country: "Great Mosque of Djenné", countryFlag: "🕌", population: "UNESCO World Heritage", neighborhoods: ["Djenné"], notes: "The largest mud-brick building in the world — rebuilt annually by the entire community in a massive festival. A masterpiece of Sudano-Sahelian architecture dating to the 13th century." },
+      { country: "Mansa Musa & Mali Empire", countryFlag: "👑", population: "Richest Person in History", neighborhoods: ["Niani (ancient capital)"], notes: "Mansa Musa's pilgrimage to Mecca in 1324 was so lavish he crashed gold economies across the Mediterranean. The Mali Empire (1235–1600) controlled trans-Saharan gold and salt trade." },
+      { country: "Desert Blues & Malian Music", countryFlag: "🎵", population: "Musical Powerhouse", neighborhoods: ["Bamako", "Festival in the Desert"], notes: "Mali is one of the world's great music nations. Ali Farka Touré, Salif Keita, Tinariwen, and Amadou & Mariam put Malian music on the global stage. The Festival in the Desert (Timbuktu) is legendary." },
+    ],
+  },
+  {
+    city: "Luanda", state: "Angola", flag: "🇦🇴", cityId: "luanda",
+    communities: [
+      { country: "Angola", countryFlag: "🇦🇴", population: "~36,000,000", neighborhoods: ["Luanda", "Benguela", "Huambo", "Lobito", "Lubango"], notes: "Africa's second-largest oil producer. A Portuguese-speaking powerhouse recovering from decades of civil war. The Kongo, Mbundu, and Ovimbundu peoples have rich cultural traditions." },
+      { country: "Kuduro Music & Dance", countryFlag: "🎵", population: "Global Dance Phenomenon", neighborhoods: ["Luanda's musseques"], notes: "Kuduro — born in Luanda's musseques (informal neighborhoods) — is an explosive fusion of electronic music and Angolan dance. It spread to Lisbon, Paris, and global dance floors." },
+      { country: "Queen Nzinga's Legacy", countryFlag: "👑", population: "Warrior Queen", neighborhoods: ["Matamba", "Ndongo"], notes: "Queen Nzinga (1583–1663) of the Ndongo and Matamba kingdoms fought Portuguese colonizers for 40 years. She's a national hero and symbol of African resistance." },
+      { country: "Tundavala Gap", countryFlag: "🏔️", population: "Natural Wonder", neighborhoods: ["Lubango"], notes: "A dramatic 2,600-meter cleft in the Serra da Leba mountains offering breathtaking views. The Christ the King statue overlooks Lubango from the cliff edge." },
+    ],
+  },
+  {
+    city: "Maputo", state: "Mozambique", flag: "🇲🇿", cityId: "maputo",
+    communities: [
+      { country: "Mozambique", countryFlag: "🇲🇿", population: "~33,000,000", neighborhoods: ["Maputo", "Beira", "Nampula", "Inhambane", "Vilankulo"], notes: "A Portuguese-speaking East African nation with 2,500 km of Indian Ocean coastline. Mozambican culture blends Bantu, Swahili, Portuguese, and Arab influences. Known for its seafood, peri-peri cuisine, and pristine beaches." },
+      { country: "Bazaruto Archipelago", countryFlag: "🏝️", population: "Marine Paradise", neighborhoods: ["Vilankulo coast"], notes: "The Bazaruto Archipelago — crystal-clear waters, dugongs, whale sharks, and untouched coral reefs. One of the most beautiful island chains in the Indian Ocean." },
+      { country: "Ilha de Moçambique", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["Nampula Province"], notes: "Ilha de Moçambique — a tiny coral island that gave the entire country its name. A UNESCO World Heritage Site with Swahili, Portuguese, and Indian architecture dating to the 15th century." },
+      { country: "Marrabenta Music", countryFlag: "🎵", population: "National Sound", neighborhoods: ["Maputo"], notes: "Marrabenta — Mozambique's signature music — is an upbeat dance style born from traditional rhythms and Portuguese guitar. The soundtrack of Maputo's vibrant nightlife." },
+    ],
+  },
+  {
+    city: "Harare", state: "Zimbabwe", flag: "🇿🇼", cityId: "harare",
+    communities: [
+      { country: "Zimbabwe", countryFlag: "🇿🇼", population: "~16,000,000", neighborhoods: ["Harare", "Bulawayo", "Mutare", "Victoria Falls", "Masvingo"], notes: "Named after Great Zimbabwe — the largest stone structure in sub-Saharan Africa. Home to Victoria Falls, one of the most spectacular waterfalls on Earth. Shona and Ndebele cultures are rich and vibrant." },
+      { country: "Great Zimbabwe", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["Masvingo"], notes: "Great Zimbabwe — massive stone ruins of an ancient city that thrived from the 11th–15th century. Housed 18,000+ people. The conical tower and great enclosure were built without mortar. Proof of advanced African civilization." },
+      { country: "Victoria Falls (Mosi-oa-Tunya)", countryFlag: "🌊", population: "Largest Waterfall by Area", neighborhoods: ["Victoria Falls town"], notes: "'Mosi-oa-Tunya' — 'The Smoke That Thunders' in Tonga. The largest sheet of falling water on Earth — 1,708 meters wide, 108 meters tall. A UNESCO World Heritage Site and one of the Seven Natural Wonders." },
+      { country: "Shona Sculpture", countryFlag: "🎨", population: "World-Renowned Art", neighborhoods: ["Chapungu Sculpture Park", "Tengenenge"], notes: "Zimbabwe's Shona stone sculpture movement is internationally acclaimed. Carved from serpentine and springstone, these works are in galleries worldwide. Artists like Dominic Benhura and Nicholas Mukomberanwa are celebrated globally." },
+    ],
+  },
+  {
+    city: "Windhoek", state: "Namibia", flag: "🇳🇦", cityId: "windhoek",
+    communities: [
+      { country: "Namibia", countryFlag: "🇳🇦", population: "~2,600,000", neighborhoods: ["Windhoek", "Swakopmund", "Walvis Bay", "Sossusvlei"], notes: "One of the least densely populated countries on Earth. Namibia has some of the most dramatic landscapes in Africa — the oldest desert, the tallest sand dunes, and the darkest skies." },
+      { country: "Sossusvlei & Deadvlei", countryFlag: "🏜️", population: "World's Oldest Desert", neighborhoods: ["Namib-Naukluft National Park"], notes: "The Namib Desert is the oldest desert on Earth (55–80 million years). Sossusvlei's red sand dunes reach 300+ meters — among the tallest in the world. Deadvlei's 900-year-old dead trees are hauntingly beautiful." },
+      { country: "Himba People", countryFlag: "🧑🏿", population: "~50,000", neighborhoods: ["Kaokoland (Kunene Region)"], notes: "The Himba are one of the last semi-nomadic peoples in Africa. Known for their ochre-covered skin and hair, elaborate jewelry, and deep spiritual connection to the land." },
+      { country: "Skeleton Coast", countryFlag: "💀", population: "Shipwreck Graveyard", neighborhoods: ["Northern Namibia coast"], notes: "The Skeleton Coast — named for whale bones and shipwrecks littering the shore. One of the most remote, fog-shrouded coastlines on Earth. Seals, desert elephants, and lions survive in this harsh beauty." },
+      { country: "Etosha National Park", countryFlag: "🦁", population: "Premier Safari", neighborhoods: ["Northern Namibia"], notes: "Etosha's vast salt pan is visible from space. During dry season, wildlife congregates at waterholes — lions, elephants, rhinos, and cheetahs in extraordinary concentrations." },
+    ],
+  },
+  {
+    city: "Douala", state: "Cameroon", flag: "🇨🇲", cityId: "douala",
+    communities: [
+      { country: "Cameroon", countryFlag: "🇨🇲", population: "~28,000,000", neighborhoods: ["Douala", "Yaoundé", "Bafoussam", "Bamenda", "Limbe"], notes: "Called 'Africa in Miniature' — Cameroon has every African landscape: rainforests, savannas, mountains, beaches, and deserts. Over 250 ethnic groups and both French and English are official languages." },
+      { country: "Mount Cameroon", countryFlag: "🌋", population: "West Africa's Highest Peak", neighborhoods: ["Buea"], notes: "Mount Cameroon (4,095m) is an active volcano and West Africa's highest peak. The annual Mount Cameroon Race of Hope is one of Africa's toughest endurance events." },
+      { country: "Makossa & Bikutsi Music", countryFlag: "🎵", population: "Musical Legacy", neighborhoods: ["Douala", "Yaoundé"], notes: "Cameroon gave the world Makossa (popularized by Manu Dibango's 'Soul Makossa' — sampled by Michael Jackson) and Bikutsi. From Manu Dibango to Richard Bona, Cameroonian musicians are globally celebrated." },
+      { country: "Indomitable Lions", countryFlag: "⚽", population: "Football Powerhouse", neighborhoods: ["Throughout Cameroon"], notes: "Cameroon is one of Africa's greatest football nations. Roger Milla's iconic corner-flag dance at the 1990 World Cup. Samuel Eto'o is one of the greatest African footballers ever." },
+    ],
+  },
+  {
+    city: "Conakry", state: "Guinea", flag: "🇬🇳", cityId: "conakry",
+    communities: [
+      { country: "Guinea", countryFlag: "🇬🇳", population: "~14,000,000", neighborhoods: ["Conakry", "Kankan", "Labé", "Nzérékoré", "Kindia"], notes: "The 'Water Tower of West Africa' — Guinea's highlands feed the Niger, Senegal, and Gambia rivers. Home to the Mandinka, Fulani, and Susu peoples. Rich in bauxite (world's largest reserves) and cultural heritage." },
+      { country: "Fouta Djallon Highlands", countryFlag: "🏔️", population: "West Africa's Water Tower", neighborhoods: ["Labé", "Dalaba", "Pita"], notes: "The stunning Fouta Djallon highlands — dramatic waterfalls, cool plateaus, and the source of West Africa's major rivers. Home to the Fulani pastoral civilization and beautiful traditional architecture." },
+      { country: "Djembé Drumming", countryFlag: "🥁", population: "Birthplace of the Djembé", neighborhoods: ["Upper Guinea", "Hamana region"], notes: "The djembé drum originated with the Mandinka people of Guinea. Guinean master drummers like Mamady Keïta and Famoudou Konaté are the world's foremost authorities. Ballet Africains de Guinée is the oldest national dance company in Africa." },
+      { country: "Mandinka Empire Heritage", countryFlag: "👑", population: "Ancient Legacy", neighborhoods: ["Kankan", "Upper Guinea"], notes: "Guinea was part of the Mali Empire. Sundiata Keita's epic is one of Africa's greatest oral traditions. The Mandinka griot tradition preserves centuries of history through music and storytelling." },
+    ],
+  },
 ];
