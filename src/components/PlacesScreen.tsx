@@ -3,7 +3,7 @@ import { MapPin, Search, UtensilsCrossed, Dumbbell, Moon, X, ExternalLink, Churc
 import { type City } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
 import { usePlaces, type Place } from "@/hooks/usePlaces";
-import { useMenuItems } from "@/hooks/useMenuItems";
+import { useMenuItems, type MenuItem } from "@/hooks/useMenuItems";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -27,6 +27,96 @@ const categoryColors: Record<string, string> = {
   Mosque: "bg-teal-100 text-teal-700",
   Church: "bg-rose-100 text-rose-700",
   Synagogue: "bg-indigo-100 text-indigo-700",
+};
+
+const HIDDEN_CATEGORIES = ["sauce", "sauces", "dressing", "dressings", "condiment", "condiments", "beverage", "beverages", "drink", "drinks"];
+
+const MENU_SECTIONS = [
+  { key: "main", labels: ["main", "mains", "main dish", "main dishes", "entree", "entrees", "entrée", "entrées", "platter", "platters"] },
+  { key: "appetizer", labels: ["appetizer", "appetizers", "starter", "starters", "small plate", "small plates"] },
+  { key: "side", labels: ["side", "sides", "side dish", "side dishes"] },
+];
+
+function classifyMenuItem(item: MenuItem): string | null {
+  const cat = (item.category || "").toLowerCase().trim();
+  if (HIDDEN_CATEGORIES.some(h => cat.includes(h))) return null;
+  for (const section of MENU_SECTIONS) {
+    if (section.labels.some(l => cat.includes(l))) return section.key;
+  }
+  // If no category or unrecognized, default to "main"
+  if (cat === "" || !HIDDEN_CATEGORIES.some(h => cat.includes(h))) return "main";
+  return null;
+}
+
+const SECTION_TITLES: Record<string, string> = { main: "Main Dishes", appetizer: "Appetizers", side: "Sides" };
+
+const MenuSection = ({ menuItems, menuLoading }: { menuItems: MenuItem[]; menuLoading: boolean }) => {
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+
+  if (menuLoading) return <div className="mt-4"><p className="text-xs text-muted-foreground">Loading menu...</p></div>;
+  
+  const classified = menuItems
+    .map(item => ({ ...item, section: classifyMenuItem(item) }))
+    .filter(item => item.section !== null);
+
+  if (classified.length === 0) return <div className="mt-4"><p className="text-xs text-muted-foreground">No menu items yet.</p></div>;
+
+  const grouped: Record<string, typeof classified> = {};
+  for (const item of classified) {
+    const s = item.section!;
+    if (!grouped[s]) grouped[s] = [];
+    grouped[s].push(item);
+  }
+
+  const sectionOrder = ["main", "appetizer", "side"];
+
+  return (
+    <div className="mt-4">
+      <h4 className="font-semibold text-foreground text-sm flex items-center gap-1.5 mb-2">
+        <BookOpen size={14} className="text-primary" /> Menu
+      </h4>
+      <div className="space-y-3 max-h-60 overflow-y-auto">
+        {sectionOrder.map(key => {
+          const items = grouped[key];
+          if (!items || items.length === 0) return null;
+          return (
+            <div key={key}>
+              <p className="text-[11px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">{SECTION_TITLES[key]}</p>
+              <div className="space-y-1.5">
+                {items.map(item => (
+                  <button
+                    key={item.id}
+                    onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
+                    className="w-full text-left bg-secondary/50 rounded-lg p-2 hover:bg-secondary/80 transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-semibold text-foreground truncate flex-1">{item.name}</span>
+                      {item.price && <span className="text-xs font-bold text-primary ml-2 flex-shrink-0">{item.price}</span>}
+                    </div>
+                    {expandedId === item.id && (
+                      <div className="mt-2 flex gap-2">
+                        {item.image_url && (
+                          <img
+                            src={item.image_url}
+                            alt={item.name}
+                            className="w-16 h-16 rounded-md object-cover flex-shrink-0"
+                            onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                          />
+                        )}
+                        <p className="text-[11px] text-muted-foreground leading-relaxed">
+                          {item.description || "No description available for this dish."}
+                        </p>
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 };
 
 interface PlacesScreenProps {
@@ -351,40 +441,7 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
 
                 {/* Menu Items */}
                 {selectedPlace.category === "restaurant" && (
-                  <div className="mt-4">
-                    <h4 className="font-semibold text-foreground text-sm flex items-center gap-1.5 mb-2">
-                      <BookOpen size={14} className="text-primary" /> Menu
-                    </h4>
-                    {menuLoading ? (
-                      <p className="text-xs text-muted-foreground">Loading menu...</p>
-                    ) : menuItems.length === 0 ? (
-                      <p className="text-xs text-muted-foreground">No menu items yet.</p>
-                    ) : (
-                      <div className="space-y-2 max-h-48 overflow-y-auto">
-                        {menuItems.map((item) => (
-                          <div key={item.id} className="flex items-start gap-2 bg-secondary/50 rounded-lg p-2">
-                            {item.image_url && (
-                              <img
-                                src={item.image_url}
-                                alt={item.name}
-                                className="w-12 h-12 rounded-md object-cover flex-shrink-0"
-                                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                              />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs font-semibold text-foreground truncate">{item.name}</span>
-                                {item.price && <span className="text-xs font-bold text-primary ml-2 flex-shrink-0">{item.price}</span>}
-                              </div>
-                              {item.description && (
-                                <p className="text-[10px] text-muted-foreground line-clamp-2 mt-0.5">{item.description}</p>
-                              )}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  <MenuSection menuItems={menuItems} menuLoading={menuLoading} />
                 )}
 
                 <div className="flex gap-2 mt-4">
