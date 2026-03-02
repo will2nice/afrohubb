@@ -3,6 +3,7 @@ import { MapPin, ChevronDown, Check, Search, Lock, Crown } from "lucide-react";
 import { cities, type City } from "@/data/cityData";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useToast } from "@/hooks/use-toast";
+import SubscriptionModal from "@/components/SubscriptionModal";
 
 const FREE_CITY_LIMIT = 2;
 const STORAGE_KEY = "afrohub-visited-cities";
@@ -31,6 +32,7 @@ interface CityPickerProps {
 
 const CityPicker = ({ selectedCity, onCityChange }: CityPickerProps) => {
   const [open, setOpen] = useState(false);
+  const [showSubscription, setShowSubscription] = useState(false);
   const [search, setSearch] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const role = useUserRole();
@@ -58,10 +60,7 @@ const CityPicker = ({ selectedCity, onCityChange }: CityPickerProps) => {
       const visited = getVisitedCities();
       const alreadyVisited = visited.includes(city.id);
       if (!alreadyVisited && visited.length >= FREE_CITY_LIMIT) {
-        toast({
-          title: "City limit reached 🔒",
-          description: `Free users can explore ${FREE_CITY_LIMIT} cities. Upgrade to AfroHub Plus for unlimited access.`,
-        });
+        setShowSubscription(true);
         setOpen(false);
         setSearch("");
         return;
@@ -164,6 +163,7 @@ const CityPicker = ({ selectedCity, onCityChange }: CityPickerProps) => {
           </div>
         </>
       )}
+      <SubscriptionModal open={showSubscription} onOpenChange={setShowSubscription} />
     </div>
   );
 };

@@ -5,6 +5,7 @@ import { getEventAttendees, type Attendee, ON_APP_WOMEN, ON_APP_MEN, ON_APP_TOTA
 import DMChatScreen, { type ChatContact } from "@/components/DMChatScreen";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useToast } from "@/hooks/use-toast";
+import SubscriptionModal from "@/components/SubscriptionModal";
 
 interface EventAttendeesSheetProps {
   event: EventItem;
@@ -14,6 +15,7 @@ interface EventAttendeesSheetProps {
 const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   const [filter, setFilter] = useState<"women" | "men" | "all">("women");
   const [chatContact, setChatContact] = useState<ChatContact | null>(null);
+  const [showSubscription, setShowSubscription] = useState(false);
   const { females, males } = getEventAttendees(event.id);
   const userRole = useUserRole();
   const { toast } = useToast();
@@ -35,7 +37,7 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
 
   const openChat = (person: Attendee) => {
     if (!isPaid) {
-      toast({ title: "Upgrade to AfroHub Plus 👑", description: "Subscribe to message attendees and see full profiles." });
+      setShowSubscription(true);
       return;
     }
     setChatContact({
@@ -128,7 +130,7 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
               isPaid={isPaid}
               onMessage={() => openChat(person)}
               onLikeBlocked={() => {
-                if (!isPaid) toast({ title: "Upgrade to AfroHub Plus 👑", description: "Subscribe to like and connect with attendees." });
+                if (!isPaid) setShowSubscription(true);
               }}
             />
           ))}
@@ -149,7 +151,10 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
                 <p className="text-xs text-muted-foreground mt-1 text-center px-8">
                   Upgrade to AfroHub Plus to see all attendees, names, ages & connect
                 </p>
-                <button className="mt-3 px-6 py-2.5 rounded-full gradient-gold text-primary-foreground text-sm font-semibold shadow-gold hover:scale-105 active:scale-95 transition-transform">
+                <button
+                  onClick={() => setShowSubscription(true)}
+                  className="mt-3 px-6 py-2.5 rounded-full gradient-gold text-primary-foreground text-sm font-semibold shadow-gold hover:scale-105 active:scale-95 transition-transform"
+                >
                   Unlock AfroHub Plus 👑
                 </button>
               </div>
@@ -163,6 +168,7 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
           )}
         </div>
       </div>
+      <SubscriptionModal open={showSubscription} onOpenChange={setShowSubscription} />
     </div>
   );
 };
