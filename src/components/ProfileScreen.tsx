@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase } from "lucide-react";
+import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase, Sun, Moon } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
@@ -38,6 +39,7 @@ const menuItems = [
   { icon: Shield, label: "Safety & Privacy", desc: "Blocking, visibility" },
   { icon: Crown, label: "AfroHub Plus", desc: "Premium features", gold: true },
   { icon: Settings, label: "Settings", desc: "Account, notifications" },
+  { icon: Sun, label: "Appearance", desc: "Light / Dark mode", action: "theme" },
   { icon: LogOut, label: "Log Out", desc: "", danger: true, action: "logout" },
 ];
 
@@ -143,9 +145,13 @@ const ProfileScreen = () => {
     }
   };
 
+  const { theme, toggleTheme } = useTheme();
+
   const handleMenuAction = async (action?: string) => {
     if (action === "logout") {
       await signOut();
+    } else if (action === "theme") {
+      toggleTheme();
     }
   };
 
