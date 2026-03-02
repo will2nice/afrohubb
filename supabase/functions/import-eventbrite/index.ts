@@ -60,6 +60,11 @@ const CITY_SLUGS: Record<string, string> = {
   montreal: "Montreal--Canada",
   // Europe (Eventbrite works in these countries)
   london: "London--United-Kingdom",
+  birmingham: "Birmingham--United-Kingdom",
+  manchesteruk: "Manchester--United-Kingdom",
+  liverpool: "Liverpool--United-Kingdom",
+  nottingham: "Nottingham--United-Kingdom",
+  oxford: "Oxford--United-Kingdom",
   paris: "Paris--France",
   brussels: "Brussels--Belgium",
   amsterdam: "Amsterdam--Netherlands",
