@@ -534,6 +534,215 @@ export const diasporaHubs: DiasporaHub[] = [
     ],
   },
 
+  // ── AUSTRALIA ──
+  {
+    city: "Sydney", state: "Australia", flag: "🇦🇺", cityId: "sydney",
+    communities: [
+      { country: "South Sudanese", countryFlag: "🇸🇸", population: "~15,000+", neighborhoods: ["Blacktown", "Auburn", "Liverpool", "Parramatta"], notes: "One of the largest South Sudanese (Dinka and Nuer) communities in Australia. Many settled through humanitarian programs since the 2000s. Strong community organizations and cultural events." },
+      { country: "Sudanese", countryFlag: "🇸🇩", population: "~8,000+", neighborhoods: ["Blacktown", "Auburn", "Bankstown"], notes: "Sudanese community alongside South Sudanese neighbors in Western Sydney. Active cultural associations and mosques." },
+      { country: "Ethiopian", countryFlag: "🇪🇹", population: "~12,000+", neighborhoods: ["Blacktown", "Parramatta", "Inner West"], notes: "Growing Habesha community with restaurants, coffee ceremonies, and cultural events across Sydney." },
+      { country: "Eritrean", countryFlag: "🇪🇷", population: "~8,000+", neighborhoods: ["Blacktown", "Fairfield"], notes: "Eritrean community with churches, cultural associations, and restaurants in Western Sydney." },
+      { country: "Somali", countryFlag: "🇸🇴", population: "~10,000+", neighborhoods: ["Auburn", "Bankstown", "Liverpool"], notes: "Somali community with mosques, halal shops, and community centers in southwestern Sydney." },
+      { country: "Nigerian", countryFlag: "🇳🇬", population: "~5,000+", neighborhoods: ["Blacktown", "Parramatta", "CBD"], notes: "Growing Nigerian professional community. Active Igbo and Yoruba cultural groups." },
+      { country: "Ghanaian", countryFlag: "🇬🇭", population: "~3,000+", neighborhoods: ["Western Sydney"], notes: "Ghanaian community with churches and cultural events." },
+    ],
+  },
+  {
+    city: "Melbourne", state: "Australia", flag: "🇦🇺", cityId: "melbourne",
+    communities: [
+      { country: "South Sudanese", countryFlag: "🇸🇸", population: "~25,000+", neighborhoods: ["Footscray", "Flemington", "Sunshine", "Werribee", "Dandenong"], notes: "Melbourne has the largest South Sudanese community in Australia — one of the largest outside Africa. Footscray and Flemington are cultural hubs. Strong basketball culture; many NBA-drafted players from this community." },
+      { country: "Sudanese", countryFlag: "🇸🇩", population: "~10,000+", neighborhoods: ["Footscray", "Flemington", "Craigieburn"], notes: "Sudanese community with cultural organizations and mosques across Melbourne's western suburbs." },
+      { country: "Ethiopian", countryFlag: "🇪🇹", population: "~15,000+", neighborhoods: ["Footscray", "Collingwood", "Brunswick"], notes: "Largest Ethiopian community in Australia. Footscray has Ethiopian restaurants and grocery stores. Melbourne hosts the biggest Ethiopian New Year celebration outside Africa." },
+      { country: "Eritrean", countryFlag: "🇪🇷", population: "~10,000+", neighborhoods: ["Footscray", "Brunswick", "Reservoir"], notes: "Large Eritrean community with cultural centres, churches, and restaurants. Strong Tigrinya-speaking networks." },
+      { country: "Somali", countryFlag: "🇸🇴", population: "~15,000+", neighborhoods: ["Flemington", "Carlton", "Footscray", "Heidelberg"], notes: "Significant Somali community with mosques, community centres, and businesses. Flemington housing estate is a major hub." },
+      { country: "Congolese (DRC)", countryFlag: "🇨🇩", population: "~5,000+", neighborhoods: ["Footscray", "Sunshine", "St Albans"], notes: "Growing Congolese community resettled through humanitarian programs. Active cultural associations." },
+      { country: "Nigerian", countryFlag: "🇳🇬", population: "~5,000+", neighborhoods: ["CBD", "Western suburbs"], notes: "Nigerian professionals and students. Active Nollywood screenings and cultural events." },
+    ],
+  },
+  {
+    city: "Brisbane", state: "Australia", flag: "🇦🇺", cityId: "brisbane",
+    communities: [
+      { country: "South Sudanese", countryFlag: "🇸🇸", population: "~8,000+", neighborhoods: ["Moorooka", "Annerley", "Logan", "Toowoomba"], notes: "Growing South Sudanese community in Brisbane's southern suburbs. Toowoomba has a significant population too. Strong community basketball programs." },
+      { country: "Sudanese", countryFlag: "🇸🇩", population: "~4,000+", neighborhoods: ["Moorooka", "Rocklea", "Logan"], notes: "Sudanese community alongside South Sudanese neighbors." },
+      { country: "Ethiopian & Eritrean", countryFlag: "🇪🇹", population: "~6,000+", neighborhoods: ["South Brisbane", "West End", "Moorooka"], notes: "Habesha community with restaurants and cultural events in Brisbane's inner south." },
+      { country: "Somali", countryFlag: "🇸🇴", population: "~6,000+", neighborhoods: ["Moorooka", "Logan", "Woodridge"], notes: "Somali community with mosques and community organisations in southern Brisbane and Logan." },
+      { country: "Congolese (DRC)", countryFlag: "🇨🇩", population: "~3,000+", neighborhoods: ["Logan", "Moorooka"], notes: "Congolese refugee community with churches and cultural gatherings." },
+    ],
+  },
+  {
+    city: "Perth", state: "Australia", flag: "🇦🇺", cityId: "perth",
+    communities: [
+      { country: "South Sudanese", countryFlag: "🇸🇸", population: "~5,000+", neighborhoods: ["Mirrabooka", "Balga", "Girrawheen", "Gosnells"], notes: "South Sudanese community in Perth's northern suburbs. Strong community leaders and cultural organizations." },
+      { country: "Ethiopian & Eritrean", countryFlag: "🇪🇹", population: "~4,000+", neighborhoods: ["Mirrabooka", "Northbridge"], notes: "Habesha community with restaurants and cultural events." },
+      { country: "Somali", countryFlag: "🇸🇴", population: "~5,000+", neighborhoods: ["Mirrabooka", "Balga", "Nollamara"], notes: "Somali community with mosques and businesses in northern Perth." },
+      { country: "Zimbabwean", countryFlag: "🇿🇼", population: "~8,000+", neighborhoods: ["Throughout Perth"], notes: "One of the largest Zimbabwean communities in Australia. Many arrived after 2000. Active cultural associations." },
+      { country: "South African", countryFlag: "🇿🇦", population: "~30,000+", neighborhoods: ["Throughout Perth metro"], notes: "Perth has the largest South African community in Australia. Strong braai culture and community events." },
+    ],
+  },
+  {
+    city: "Adelaide", state: "Australia", flag: "🇦🇺", cityId: "adelaide",
+    communities: [
+      { country: "South Sudanese", countryFlag: "🇸🇸", population: "~6,000+", neighborhoods: ["Salisbury", "Davoren Park", "Blair Athol", "Kilburn"], notes: "Growing South Sudanese community in Adelaide's northern suburbs. Strong community basketball culture." },
+      { country: "Congolese (DRC)", countryFlag: "🇨🇩", population: "~3,000+", neighborhoods: ["Salisbury", "Parafield Gardens"], notes: "Congolese community resettled through humanitarian programs." },
+      { country: "Eritrean & Ethiopian", countryFlag: "🇪🇷", population: "~3,000+", neighborhoods: ["Kilburn", "Blair Athol"], notes: "Habesha community with restaurants and cultural events." },
+      { country: "Somali", countryFlag: "🇸🇴", population: "~4,000+", neighborhoods: ["Salisbury", "Blair Athol"], notes: "Somali community with mosques and community organisations." },
+      { country: "Sierra Leonean", countryFlag: "🇸🇱", population: "~2,000+", neighborhoods: ["Northern Adelaide"], notes: "Small but active Sierra Leonean community." },
+    ],
+  },
+
+  // ── CARIBBEAN ──
+  {
+    city: "Kingston", state: "Jamaica", flag: "🇯🇲", cityId: "kingston",
+    communities: [
+      { country: "Jamaica", countryFlag: "🇯🇲", population: "~2,800,000", neighborhoods: ["Kingston", "Montego Bay", "Spanish Town", "Portmore", "Ocho Rios"], notes: "The island that punches above its weight more than any other on Earth. Jamaica gave the world reggae, dancehall, Bob Marley, Usain Bolt, jerk chicken, and Rastafari. 2.8 million people with an outsized global cultural influence." },
+      { country: "Reggae & Dancehall Music", countryFlag: "🎵", population: "UNESCO Intangible Heritage", neighborhoods: ["Trench Town", "Tivoli Gardens", "Downtown Kingston"], notes: "Reggae music is a UNESCO Intangible Cultural Heritage. Born in Trench Town — Bob Marley, Peter Tosh, Jimmy Cliff, and Toots changed the world. Dancehall emerged in the 1980s and now dominates global pop." },
+      { country: "Rastafari Movement", countryFlag: "🟢", population: "Global Spiritual Movement", neighborhoods: ["Nine Mile (St. Ann)", "Bull Bay", "Pinnacle"], notes: "Rastafari — born in Jamaica in the 1930s — is a spiritual and cultural movement that spread worldwide through reggae music. Haile Selassie, Marcus Garvey, and the Ethiopian connection define the faith." },
+      { country: "Blue Mountains & Coffee", countryFlag: "☕", population: "World's Finest Coffee", neighborhoods: ["Blue Mountains", "Portland"], notes: "Blue Mountain Coffee is among the most expensive and sought-after in the world. The Blue Mountains rise to 2,256 meters — lush, misty, and breathtaking." },
+      { country: "Maroon Heritage", countryFlag: "✊🏿", population: "Free African Communities", neighborhoods: ["Accompong (St. Elizabeth)", "Moore Town (Portland)"], notes: "The Jamaican Maroons — escaped enslaved Africans who fought the British and won autonomy. Accompong Town and Moore Town are self-governing communities with centuries of unbroken African traditions." },
+    ],
+  },
+  {
+    city: "Santo Domingo", state: "Dominican Republic", flag: "🇩🇴", cityId: "santodomingo",
+    communities: [
+      { country: "Dominican Republic", countryFlag: "🇩🇴", population: "~11,000,000", neighborhoods: ["Santo Domingo", "Santiago", "San Pedro de Macorís", "La Romana", "Puerto Plata"], notes: "The DR is deeply Afro-descended — over 80% of Dominicans have African ancestry. The country produced more MLB players per capita than anywhere on Earth. Bachata, merengue, and dembow are global sounds." },
+      { country: "Afro-Dominican Heritage", countryFlag: "✊🏿", population: "~8,000,000+ Afro-Descended", neighborhoods: ["San Pedro de Macorís", "Villa Mella", "Los Mina", "Sabana Grande de Boyá"], notes: "Villa Mella's Cofradía de los Congos del Espíritu Santo is a UNESCO Intangible Heritage — African spiritual traditions preserved for 500+ years. San Pedro de Macorís is the cradle of Dominican baseball." },
+      { country: "Bachata & Merengue", countryFlag: "🎵", population: "UNESCO Intangible Heritage", neighborhoods: ["Throughout DR"], notes: "Both bachata and merengue are UNESCO Intangible Cultural Heritage. Born from African, Taíno, and Spanish roots. Dembow is now the dominant sound of Latin American street music." },
+      { country: "Zona Colonial", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["Santo Domingo Zona Colonial"], notes: "The oldest European settlement in the Americas (1498). The first cathedral, hospital, and university in the New World. A crossroads of African, Indigenous, and European history." },
+      { country: "Dominican Baseball", countryFlag: "⚾", population: "MLB Pipeline", neighborhoods: ["San Pedro de Macorís", "La Romana", "Santo Domingo"], notes: "San Pedro de Macorís is called the 'Cradle of Shortstops.' The DR has produced more MLB players than any country outside the US — Pedro Martinez, David Ortiz, Sammy Sosa, and hundreds more." },
+    ],
+  },
+  {
+    city: "Havana", state: "Cuba", flag: "🇨🇺", cityId: "havana",
+    communities: [
+      { country: "Cuba", countryFlag: "🇨🇺", population: "~11,000,000", neighborhoods: ["Havana", "Santiago de Cuba", "Matanzas", "Camagüey", "Trinidad"], notes: "Cuba is deeply Afro-descended — African culture is in every beat of Cuban music, every Santería ceremony, every movement of rumba. An estimated 35%+ identify as Black or mixed, though cultural African influence touches virtually all Cubans." },
+      { country: "Afro-Cuban Religion (Santería/Lucumí)", countryFlag: "🔮", population: "Millions of Practitioners", neighborhoods: ["Havana Vieja", "Regla", "Guanabacoa", "Matanzas"], notes: "Santería (Regla de Ocha) — a Yoruba-descended spiritual tradition — is practiced by millions. Regla and Guanabacoa are sacred centers. Orishas like Yemayá, Changó, and Ochún are central to Cuban spiritual life." },
+      { country: "Afro-Cuban Music", countryFlag: "🎵", population: "Global Influence", neighborhoods: ["Havana", "Santiago de Cuba", "Matanzas"], notes: "Son, rumba, mambo, cha-cha-chá, timba — all born from African rhythms. The Buena Vista Social Club brought Cuban music back to global attention. Santiago de Cuba is the birthplace of son." },
+      { country: "Santiago de Cuba", countryFlag: "🎭", population: "Caribbean Capital of Culture", neighborhoods: ["Santiago de Cuba"], notes: "Santiago's Carnaval is the largest in Cuba — deeply African in drumming, costumes, and congas (street processions). The city has the strongest African cultural identity in Cuba." },
+    ],
+  },
+  {
+    city: "Port of Spain", state: "Trinidad & Tobago", flag: "🇹🇹", cityId: "portofspain",
+    communities: [
+      { country: "Trinidad & Tobago", countryFlag: "🇹🇹", population: "~1,400,000", neighborhoods: ["Port of Spain", "San Fernando", "Arima", "Chaguanas", "Tobago"], notes: "One of the most culturally diverse Caribbean nations. About 35% Afro-Trinidadian and 35% Indo-Trinidadian, with deep mixing. Birthplace of steelpan, calypso, and soca — three of the most joyful art forms on Earth." },
+      { country: "Trinidad Carnival", countryFlag: "🎭", population: "The Greatest Show on Earth", neighborhoods: ["Port of Spain", "Queen's Park Savannah"], notes: "Trinidad Carnival is widely considered the greatest carnival in the world. Mas bands, steelpan orchestras, soca music, and J'Ouvert — a celebration of freedom rooted in the emancipation of enslaved Africans." },
+      { country: "Steelpan Heritage", countryFlag: "🎶", population: "Only Acoustic Instrument Invented in the 20th Century", neighborhoods: ["Laventille", "Port of Spain"], notes: "The steelpan was invented in Laventille, Trinidad — the only acoustic instrument created in the 20th century. Born from African creativity and resistance when drums were banned by colonizers." },
+      { country: "Calypso & Soca", countryFlag: "🎤", population: "Caribbean Sound", neighborhoods: ["Throughout Trinidad"], notes: "Calypso originated as protest music by enslaved Africans. Lord Kitchener, Mighty Sparrow, and Machel Montano are legends. Soca — the 'Soul of Calypso' — now drives carnival worldwide." },
+    ],
+  },
+  {
+    city: "Georgetown", state: "Guyana", flag: "🇬🇾", cityId: "georgetown",
+    communities: [
+      { country: "Guyana", countryFlag: "🇬🇾", population: "~800,000", neighborhoods: ["Georgetown", "Linden", "New Amsterdam", "Bartica", "Berbice"], notes: "The only English-speaking country in South America. About 30% Afro-Guyanese and 40% Indo-Guyanese. A Caribbean-South American cultural fusion. Recently became one of the world's newest oil-rich nations." },
+      { country: "Afro-Guyanese Heritage", countryFlag: "✊🏿", population: "~250,000+", neighborhoods: ["Georgetown", "Linden", "Buxton", "Beterverwagting"], notes: "Afro-Guyanese communities were among the first to purchase land after emancipation in 1838. Buxton and Beterverwagting were bought collectively by formerly enslaved people — pioneering cooperative freedom." },
+      { country: "Mashramani & Culture", countryFlag: "🎭", population: "Republic Day Festival", neighborhoods: ["Georgetown"], notes: "Mashramani ('celebration after hard work' in Amerindian) is Guyana's Republic Day festival. Costumes, music, and street parades celebrate the nation's diverse heritage." },
+      { country: "El Dorado & Kaieteur Falls", countryFlag: "🌊", population: "World's Largest Single-Drop Waterfall", neighborhoods: ["Potaro-Siparuni"], notes: "Kaieteur Falls is the world's largest single-drop waterfall — five times the height of Niagara. The legend of El Dorado (City of Gold) originated from Guyana's interior." },
+    ],
+  },
+  {
+    city: "Bridgetown", state: "Barbados", flag: "🇧🇧", cityId: "bridgetownbb",
+    communities: [
+      { country: "Barbados", countryFlag: "🇧🇧", population: "~280,000", neighborhoods: ["Bridgetown", "Speightstown", "Holetown", "Oistins", "Bathsheba"], notes: "Barbados is over 90% Afro-descended — the highest percentage in the Caribbean. The island became a republic in 2021, removing the British monarch as head of state. Birthplace of Rihanna." },
+      { country: "Crop Over Festival", countryFlag: "🎭", population: "National Festival", neighborhoods: ["Throughout Barbados"], notes: "Crop Over — Barbados' signature festival — celebrates the end of the sugar cane harvest. Grand Kadooment Day features spectacular costumes, soca music, and dancing through the streets. A celebration of freedom and resilience." },
+      { country: "Historic Bridgetown", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["Bridgetown", "Garrison Historic Area"], notes: "Historic Bridgetown and its Garrison — a UNESCO World Heritage Site. One of the oldest colonial towns in the Caribbean, with a history deeply tied to the sugar trade and slavery." },
+      { country: "Bajan Culinary Heritage", countryFlag: "🍽️", population: "Island Cuisine", neighborhoods: ["Oistins Fish Fry", "Throughout Barbados"], notes: "Bajan food is legendary — flying fish and cou-cou is the national dish. Oistins Fish Fry on Friday nights is a must. Macaroni pie, rum punch, and Banks beer define the island." },
+    ],
+  },
+  {
+    city: "Panama City", state: "Panama", flag: "🇵🇦", cityId: "panama",
+    communities: [
+      { country: "Panama", countryFlag: "🇵🇦", population: "~4,400,000", neighborhoods: ["Panama City", "Colón", "Bocas del Toro", "Darién"], notes: "About 15–20% of Panamanians are Afro-descended. West Indian laborers from Jamaica, Barbados, and Trinidad built the Panama Canal — one of the greatest engineering feats in history." },
+      { country: "Afro-Panamanian Heritage", countryFlag: "✊🏿", population: "~600,000–800,000+", neighborhoods: ["Colón", "Panama Viejo", "Río Abajo", "Calidonia", "Bocas del Toro"], notes: "Colón province is the heart of Afro-Panamanian culture. Two distinct communities: Afro-Colonials (descended from enslaved Africans during Spanish rule) and Afro-Antilleans (West Indian canal workers). Congo traditions preserve African spiritual heritage." },
+      { country: "Congo Culture & Carnival", countryFlag: "🎭", population: "Living African Heritage", neighborhoods: ["Portobelo", "Colón"], notes: "The Congo tradition in Portobelo — dramatic reenactments of slavery and resistance with elaborate costumes, drums, and dance. A powerful living connection to Africa. Festival de Diablos y Congos is unforgettable." },
+      { country: "Panama Canal Heritage", countryFlag: "🚢", population: "Wonder of the Modern World", neighborhoods: ["Canal Zone", "Miraflores Locks"], notes: "Over 20,000 West Indian workers died building the Panama Canal (1904–1914). Their sacrifice built one of the most important waterways in human history. The Afro-Antillean community preserves this legacy." },
+    ],
+  },
+  {
+    city: "Cartagena", state: "Colombia", flag: "🇨🇴", cityId: "cartagena",
+    communities: [
+      { country: "Afro-Colombian Heritage", countryFlag: "✊🏿", population: "~5,000,000+ Afro-Colombians nationally", neighborhoods: ["Getsemaní", "San Basilio de Palenque", "La Boquilla", "Bazurto"], notes: "Colombia has the third-largest Black population in the Americas after Brazil and the US. Cartagena was the largest slave port in the Spanish Americas. Afro-Colombians are ~10–25% of the population." },
+      { country: "San Basilio de Palenque", countryFlag: "🏛️", population: "UNESCO Masterpiece", neighborhoods: ["San Basilio de Palenque (1hr from Cartagena)"], notes: "The first free African town in the Americas — founded by escaped enslaved people (cimarrones) led by Benkos Biohó in the 1600s. Their language (Palenquero) is the only Spanish-based creole in Latin America. UNESCO Masterpiece of Intangible Heritage." },
+      { country: "Champeta Music", countryFlag: "🎵", population: "Afro-Colombian Sound", neighborhoods: ["Getsemaní", "Bazurto", "Olaya"], notes: "Champeta — born in Cartagena's Black neighborhoods — fuses African soukous and Caribbean rhythms. Picó sound systems (massive speaker towers) blast champeta at street parties. It's the sound of Afro-Colombia." },
+      { country: "Walled City & Colonial History", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["Ciudad Amurallada"], notes: "Cartagena's Walled City is a UNESCO site — stunning colonial architecture built on the backs of enslaved Africans. San Pedro Claver was called the 'Slave of the Slaves' for ministering to enslaved people." },
+    ],
+  },
+  {
+    city: "Cali", state: "Colombia", flag: "🇨🇴", cityId: "cali",
+    communities: [
+      { country: "Afro-Colombian (Pacific Coast)", countryFlag: "✊🏿", population: "~1,500,000+ in Cali metro", neighborhoods: ["Aguablanca", "Distrito de Aguablanca", "Buenaventura", "Tumaco", "Quibdó"], notes: "Cali has the largest Afro-Colombian urban population in the country. The Pacific coast (Chocó department) is over 80% Afro-Colombian. Buenaventura is Colombia's largest Pacific port and predominantly Black." },
+      { country: "Salsa Capital of the World", countryFlag: "💃", population: "Cultural Export", neighborhoods: ["Juanchito", "Centro", "San Antonio"], notes: "Cali is the undisputed Salsa Capital of the World. Feria de Cali is the biggest salsa festival on Earth. Afro-Colombian dancers brought African rhythmic foundations to this art form." },
+      { country: "Currulao & Marimba Music", countryFlag: "🎵", population: "UNESCO Intangible Heritage", neighborhoods: ["Pacific Coast", "Buenaventura", "Tumaco"], notes: "Marimba music and traditional chants of Colombia's south Pacific — a UNESCO Intangible Heritage. The marimba de chonta and African-rooted rhythms like currulao preserve deep connections to West Africa." },
+    ],
+  },
+  {
+    city: "Quito & Esmeraldas", state: "Ecuador", flag: "🇪🇨", cityId: "quito",
+    communities: [
+      { country: "Afro-Ecuadorian", countryFlag: "✊🏿", population: "~1,100,000+ nationally", neighborhoods: ["Esmeraldas", "Valle del Chota", "San Lorenzo", "Guayaquil (southern barrios)"], notes: "About 7–8% of Ecuadorians are Afro-descended. Esmeraldas province on the Pacific coast is the heart of Afro-Ecuadorian culture. The Valle del Chota in the highlands has a distinct Afro-Ecuadorian community." },
+      { country: "Marimba Esmeraldeña", countryFlag: "🎵", population: "UNESCO Intangible Heritage", neighborhoods: ["Esmeraldas", "San Lorenzo"], notes: "Marimba music from Esmeraldas — a UNESCO Intangible Heritage shared with Colombia's Pacific coast. African-rooted percussion, call-and-response singing, and marimba de chonta define the sound." },
+      { country: "Valle del Chota Heritage", countryFlag: "⚽", population: "Football Powerhouse", neighborhoods: ["Valle del Chota", "Imbabura Province"], notes: "The Valle del Chota — a small Afro-Ecuadorian valley that produces a disproportionate number of Ecuador's national football players. Bomba music (African-Ecuadorian drum tradition) is unique to this region." },
+    ],
+  },
+  {
+    city: "Limón", state: "Costa Rica", flag: "🇨🇷", cityId: "limon",
+    communities: [
+      { country: "Afro-Costa Rican", countryFlag: "✊🏿", population: "~100,000+", neighborhoods: ["Limón", "Cahuita", "Puerto Viejo", "Siquirres"], notes: "About 8% of Costa Ricans are Afro-descended, concentrated on the Caribbean coast. Afro-Ticos are descended from Jamaican railroad workers who came in the 1870s. English Creole is still spoken in Limón." },
+      { country: "Calypso Limonense", countryFlag: "🎵", population: "Caribbean Costa Rica", neighborhoods: ["Limón", "Cahuita"], notes: "Calypso Limonense — a unique calypso tradition brought by Jamaican workers. Walter Ferguson, the 'King of Calypso,' kept this tradition alive for decades. Caribbean carnival culture thrives." },
+      { country: "Cahuita & Caribbean Culture", countryFlag: "🏝️", population: "Afro-Caribbean Paradise", neighborhoods: ["Cahuita", "Puerto Viejo"], notes: "Cahuita National Park protects coral reefs and rainforest. The surrounding Afro-Caribbean villages serve rice and beans, patí (meat patties), and rondon (coconut seafood stew) — authentic Caribbean cuisine." },
+    ],
+  },
+  {
+    city: "Belize City", state: "Belize", flag: "🇧🇿", cityId: "belize",
+    communities: [
+      { country: "Belize", countryFlag: "🇧🇿", population: "~400,000", neighborhoods: ["Belize City", "Dangriga", "Punta Gorda", "San Ignacio"], notes: "The only English-speaking country in Central America. About 25% Creole (Afro-Belizean) and 6% Garifuna. A Caribbean-Central American cultural fusion with African roots running deep." },
+      { country: "Garifuna People", countryFlag: "🥁", population: "~20,000+ in Belize", neighborhoods: ["Dangriga", "Hopkins", "Punta Gorda", "Seine Bight"], notes: "The Garifuna — Afro-Indigenous people descended from West African, Carib, and Arawak peoples. Their language, music, and dance are a UNESCO Masterpiece of Intangible Heritage. Dangriga is the 'Culture Capital of Belize.'" },
+      { country: "Garifuna Settlement Day", countryFlag: "🎭", population: "November 19", neighborhoods: ["Dangriga"], notes: "Garifuna Settlement Day celebrates the arrival of the Garifuna to Belize in 1832. Drumming, punta dancing, and traditional cassava bread-making. The most important cultural celebration for the Garifuna people." },
+      { country: "Kriol Culture", countryFlag: "🇧🇿", population: "~75,000+ Creoles", neighborhoods: ["Belize City", "Belize District"], notes: "Belizean Kriol — an English-based creole language — is the lingua franca. Creole culture blends African, British, and Indigenous elements. Boil-up, rice and beans, and stew chicken are staples." },
+    ],
+  },
+  {
+    city: "Managua & Bluefields", state: "Nicaragua", flag: "🇳🇮", cityId: "managua",
+    communities: [
+      { country: "Afro-Nicaraguan", countryFlag: "✊🏿", population: "~50,000+", neighborhoods: ["Bluefields", "Pearl Lagoon", "Corn Islands", "Puerto Cabezas"], notes: "Nicaragua's Caribbean coast (RACCN & RACCS regions) is home to Afro-descended Creoles and Garifuna. Bluefields is the cultural capital — English Creole is the primary language. Very different from the Pacific side of the country." },
+      { country: "Palo de Mayo Festival", countryFlag: "🎭", population: "Afro-Caribbean Celebration", neighborhoods: ["Bluefields"], notes: "Palo de Mayo (Maypole) — Bluefields' biggest festival — is a vibrant Afro-Caribbean celebration with music, dance, and costumes. The music and dance are distinctly African-influenced." },
+      { country: "Miskito & Garifuna Heritage", countryFlag: "🌿", population: "Indigenous-African Blend", neighborhoods: ["Caribbean Coast"], notes: "The Miskito Coast has a unique blend of African, Indigenous, and British cultural influences. The Garifuna community maintains their language and traditions." },
+    ],
+  },
+  {
+    city: "Tegucigalpa & La Ceiba", state: "Honduras", flag: "🇭🇳", cityId: "tegucigalpa",
+    communities: [
+      { country: "Garifuna People", countryFlag: "🥁", population: "~100,000+ in Honduras", neighborhoods: ["La Ceiba", "Tela", "Trujillo", "Roatán", "Livingston (nearby Guatemala)"], notes: "Honduras has the largest Garifuna population in Central America. Arrived in 1797 after exile from St. Vincent. Their language, music (punta), and dance are UNESCO Intangible Heritage." },
+      { country: "Afro-Honduran Heritage", countryFlag: "✊🏿", population: "~150,000+", neighborhoods: ["Caribbean Coast", "Bay Islands", "San Pedro Sula"], notes: "Afro-Hondurans include Garifuna, English-speaking Bay Islanders (descended from Cayman Island settlers), and Afro-mestizos. A diverse African-descended community." },
+      { country: "La Ceiba Carnival", countryFlag: "🎭", population: "Honduras' Biggest Party", neighborhoods: ["La Ceiba"], notes: "La Ceiba's carnival (Feria Isidra) is the biggest party in Central America. Garifuna punta drumming and dance are the heartbeat of the celebration." },
+    ],
+  },
+
+  // ── BRAZIL ──
+  {
+    city: "Rio de Janeiro", state: "Brazil", flag: "🇧🇷", cityId: "rio",
+    communities: [
+      { country: "Afro-Brazilian Heritage", countryFlag: "✊🏿", population: "~7,000,000+ Afro-Brazilians in Rio metro", neighborhoods: ["Zona Norte", "Complexo do Alemão", "Maré", "Cidade de Deus", "Rocinha"], notes: "Over 50% of Rio's population identifies as Black or pardo (mixed). Brazil has the largest African-descended population outside of Africa (~120 million). Rio's favelas and suburbs are predominantly Afro-Brazilian." },
+      { country: "Samba & Carnival", countryFlag: "🎵", population: "World's Biggest Party", neighborhoods: ["Sambódromo", "Mangueira", "Salgueiro", "Portela"], notes: "Samba was born from African rhythms in Rio's hills. Carnival is the largest festival on Earth — samba schools like Mangueira and Salgueiro are community institutions rooted in Afro-Brazilian culture." },
+      { country: "Candomblé & Afro-Brazilian Spirituality", countryFlag: "🔮", population: "Millions of Practitioners", neighborhoods: ["Throughout Rio", "Pedra do Sal", "Saúde"], notes: "Candomblé — a Yoruba-descended religion — thrives in Brazil. Pedra do Sal in the port area is the birthplace of samba and a sacred site for Afro-Brazilian culture." },
+      { country: "Capoeira", countryFlag: "🤸🏿", population: "UNESCO Intangible Heritage", neighborhoods: ["Throughout Rio"], notes: "Capoeira — the Afro-Brazilian martial art disguised as dance — is a UNESCO Intangible Heritage. Created by enslaved Africans as resistance training. Now practiced worldwide." },
+    ],
+  },
+  {
+    city: "São Paulo", state: "Brazil", flag: "🇧🇷", cityId: "saopaulo",
+    communities: [
+      { country: "Afro-Brazilian Heritage", countryFlag: "✊🏿", population: "~8,000,000+ Afro-Brazilians in SP metro", neighborhoods: ["Capão Redondo", "Cidade Ademar", "M'Boi Mirim", "Grajaú", "Jardim Ângela"], notes: "São Paulo has the largest Afro-Brazilian population of any city. The peripheries (periferia) are predominantly Black and drive the city's cultural production — rap, funk, graffiti, and social movements." },
+      { country: "Brazilian Rap & Funk", countryFlag: "🎵", population: "Cultural Movement", neighborhoods: ["Periferia zones", "Capão Redondo", "Heliópolis"], notes: "São Paulo birthed Brazilian rap (Racionais MC's are legends) and baile funk. These movements give voice to Afro-Brazilian youth in the periphery. Racionais' album 'Sobrevivendo no Inferno' is studied in universities." },
+      { country: "Museu Afro Brasil", countryFlag: "🏛️", population: "Cultural Institution", neighborhoods: ["Ibirapuera Park"], notes: "Museu Afro Brasil — one of the most important museums of African and Afro-Brazilian art and history. Over 6,000 works spanning 500 years of Black Brazilian culture." },
+    ],
+  },
+  {
+    city: "Salvador", state: "Brazil", flag: "🇧🇷", cityId: "salvador",
+    communities: [
+      { country: "Afro-Brazilian Heritage", countryFlag: "✊🏿", population: "~3,500,000 (80%+ Afro-descended)", neighborhoods: ["Pelourinho", "Liberdade", "Curuzu", "Rio Vermelho", "Itapuã"], notes: "Salvador is the Blackest major city in the Americas outside of Africa. Over 80% Afro-descended. The former capital of colonial Brazil and largest slave port in the Americas. Pelourinho is a UNESCO World Heritage Site." },
+      { country: "Candomblé", countryFlag: "🔮", population: "Spiritual Capital", neighborhoods: ["Throughout Salvador", "Terreiros"], notes: "Salvador is the global capital of Candomblé. Terreiros (temples) like Casa Branca and Ilê Axé Opô Afonjá are UNESCO-recognized. Orixás (Yoruba deities) are central to Bahian identity and culture." },
+      { country: "Olodum & Afro-Bloco", countryFlag: "🥁", population: "Cultural Revolution", neighborhoods: ["Pelourinho", "Liberdade"], notes: "Olodum and Ilê Aiyê are Afro-blocos (carnival groups) that revolutionized Black consciousness in Brazil. Michael Jackson filmed 'They Don't Care About Us' with Olodum in Pelourinho. Ilê Aiyê was Brazil's first all-Black carnival bloco." },
+      { country: "Capoeira Capital", countryFlag: "🤸🏿", population: "Birthplace of Capoeira", neighborhoods: ["Throughout Salvador"], notes: "Salvador is the birthplace and spiritual home of Capoeira. Mestre Bimba and Mestre Pastinha are the legendary founders of the two main styles (Regional and Angola). The roda de capoeira happens daily in Pelourinho." },
+    ],
+  },
+
   // ── AFRICA ──
   {
     city: "Cairo", state: "Egypt", flag: "🇪🇬", cityId: "cairo",
