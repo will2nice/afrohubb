@@ -1,8 +1,12 @@
 import { useState } from "react";
-import { MapPin, Search, UtensilsCrossed, Dumbbell, Moon, X, ExternalLink, Church, Cross } from "lucide-react";
+import { MapPin, Search, UtensilsCrossed, Dumbbell, Moon, X, ExternalLink, Church, Cross, Camera, Loader2 } from "lucide-react";
 import { type City } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
 import { usePlaces, type Place } from "@/hooks/usePlaces";
+import { useUserRole } from "@/hooks/useUserRole";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 const categories = [
   { id: "all", label: "All", icon: MapPin },
@@ -34,8 +38,32 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
   const [activeCategory, setActiveCategory] = useState("all");
   const [activeSubcategory, setActiveSubcategory] = useState("All");
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
+  const [isScraping, setIsScraping] = useState(false);
+  const userStatus = useUserRole();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const isAdmin = userStatus === "admin";
 
   const { places, isLoading } = usePlaces(selectedCity.id);
+
+  const handleScrapePhotos = async () => {
+    setIsScraping(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("scrape-place-photos", {
+        body: { city: selectedCity.id, limit: 15 },
+      });
+      if (error) throw error;
+      toast({
+        title: `📸 Photos updated`,
+        description: `${data.updated}/${data.total} restaurants updated with menu photos.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["places", selectedCity.id] });
+    } catch (err: any) {
+      toast({ title: "Scrape failed", description: err.message, variant: "destructive" });
+    } finally {
+      setIsScraping(false);
+    }
+  };
 
   const filtered = places.filter((p) => {
     if (activeCategory !== "all" && p.category !== activeCategory) return false;
@@ -53,7 +81,19 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
       <header className="sticky top-0 z-40 glass border-b border-border px-4 py-3">
         <div className="flex items-center justify-between">
           <h1 className="font-display text-xl font-bold text-gradient-gold">Places</h1>
-          <CityPicker selectedCity={selectedCity} onCityChange={onCityChange} />
+          <div className="flex items-center gap-2">
+            {isAdmin && (
+              <button
+                onClick={handleScrapePhotos}
+                disabled={isScraping}
+                className="px-3 py-1.5 rounded-full bg-secondary border border-border text-xs font-medium text-muted-foreground flex items-center gap-1"
+              >
+                {isScraping ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
+                {isScraping ? "Scraping..." : "Fetch Photos"}
+              </button>
+            )}
+            <CityPicker selectedCity={selectedCity} onCityChange={onCityChange} />
+          </div>
         </div>
 
         {/* Search */}
@@ -172,13 +212,22 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
                   key={place.id}
                   onClick={() => setSelectedPlace(place)}
                   className="w-full bg-card rounded-xl border border-border p-3 text-left hover:ring-2 hover:ring-primary/20 transition-all"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="w-14 h-14 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
-                      {place.category === "restaurant" && <UtensilsCrossed size={20} className="text-primary" />}
-                      {place.category === "fitness" && <Dumbbell size={20} className="text-blue-400" />}
-                      {place.category === "prayer" && <Church size={20} className="text-teal-400" />}
-                    </div>
+                 >
+                   <div className="flex items-start gap-3">
+                     {place.image_url ? (
+                       <img
+                         src={place.image_url}
+                         alt={place.name}
+                         className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                       />
+                     ) : (
+                       <div className="w-16 h-16 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
+                         {place.category === "restaurant" && <UtensilsCrossed size={20} className="text-primary" />}
+                         {place.category === "fitness" && <Dumbbell size={20} className="text-blue-400" />}
+                         {place.category === "prayer" && <Church size={20} className="text-teal-400" />}
+                       </div>
+                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
                         <h3 className="font-semibold text-foreground text-sm truncate">{place.name}</h3>
@@ -218,6 +267,14 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
           <div className="fixed inset-0 z-50 bg-background/60 backdrop-blur-sm" onClick={() => setSelectedPlace(null)} />
           <div className="fixed bottom-20 left-4 right-4 z-50 max-w-lg mx-auto animate-slide-up">
             <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-elevated">
+              {selectedPlace.image_url && (
+                <img
+                  src={selectedPlace.image_url}
+                  alt={selectedPlace.name}
+                  className="w-full h-40 object-cover"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                />
+              )}
               <div className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
