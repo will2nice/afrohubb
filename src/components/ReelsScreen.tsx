@@ -1,15 +1,11 @@
 import { useState, useRef } from "react";
 import { Heart, MessageCircle, Share2, Music, Bookmark, Volume2, VolumeX } from "lucide-react";
-import nweNkrumahPortrait from "@/assets/nwe-nkrumah-portrait.jpg";
-import nweAliNkrumah from "@/assets/nwe-ali-nkrumah.jpg";
-import nweMarketWomen from "@/assets/nwe-market-women.jpg";
-import nweElegance from "@/assets/nwe-elegance.jpg";
 
 const reels = [
-  { id: 0, author: "NWE", avatar: nweNkrumahPortrait, poster: nweNkrumahPortrait, video: "/videos/nwe-trending-reel.mp4", caption: "Pan-African culture, history & excellence. The diaspora united 🌍✊🏾 #NWE #PanAfrican #BlackExcellence", song: "Original Sound — NWE", likes: "58.7K", comments: "4.2K", shares: "12.1K" },
-  { id: 1, author: "NWE", avatar: nweAliNkrumah, poster: nweAliNkrumah, video: "/videos/nwe-reel-2.mp4", caption: "Our history is our power. Know where you come from 🌍📚 #NWE #AfricanHistory #Diaspora", song: "Original Sound — NWE", likes: "42.3K", comments: "3.1K", shares: "9.8K" },
-  { id: 2, author: "NWE", avatar: nweMarketWomen, poster: nweMarketWomen, video: "/videos/nwe-reel-3.mp4", caption: "The beauty of the diaspora in motion ✨🖤 #NWE #BlackExcellence #Culture", song: "Original Sound — NWE", likes: "35.6K", comments: "2.7K", shares: "7.4K" },
-  { id: 3, author: "NWE", avatar: nweElegance, poster: nweElegance, video: "/videos/nwe-reel-4.mp4", caption: "Excellence has no borders. From Africa to the world 🌍🔥 #NWE #PanAfrican", song: "Original Sound — NWE", likes: "67.1K", comments: "5.8K", shares: "14.2K" },
+  { id: 0, author: "NWE", video: "/videos/nwe-trending-reel.mp4", caption: "Pan-African culture, history & excellence. The diaspora united 🌍✊🏾 #NWE #PanAfrican #BlackExcellence", song: "Original Sound — NWE", likes: "58.7K", comments: "4.2K", shares: "12.1K" },
+  { id: 1, author: "NWE", video: "/videos/nwe-reel-2.mp4", caption: "Our history is our power. Know where you come from 🌍📚 #NWE #AfricanHistory #Diaspora", song: "Original Sound — NWE", likes: "42.3K", comments: "3.1K", shares: "9.8K" },
+  { id: 2, author: "NWE", video: "/videos/nwe-reel-3.mp4", caption: "The beauty of the diaspora in motion ✨🖤 #NWE #BlackExcellence #Culture", song: "Original Sound — NWE", likes: "35.6K", comments: "2.7K", shares: "7.4K" },
+  { id: 3, author: "NWE", video: "/videos/nwe-reel-4.mp4", caption: "Excellence has no borders. From Africa to the world 🌍🔥 #NWE #PanAfrican", song: "Original Sound — NWE", likes: "67.1K", comments: "5.8K", shares: "14.2K" },
 ];
 
 const ReelsScreen = () => {
@@ -46,12 +42,12 @@ const ReelsScreen = () => {
           <div className="relative w-full h-full animate-fade-in" key={reel.id}>
             <video
               src={reel.video}
-              poster={reel.poster}
               className="w-full h-full object-cover"
               autoPlay
               loop
               muted={muted}
               playsInline
+              preload="metadata"
               onDoubleClick={() => handleDoubleTap(reel.id)}
             />
 
@@ -83,7 +79,9 @@ const ReelsScreen = () => {
             {/* Right side actions */}
             <div className="absolute right-3 bottom-28 flex flex-col items-center gap-4 z-10">
               <div className="relative mb-1">
-                <img src={reel.avatar} alt="" className="w-10 h-10 rounded-full object-cover ring-2 ring-primary" />
+                <div className="w-10 h-10 rounded-full gradient-gold flex items-center justify-center ring-2 ring-primary">
+                  <span className="text-[10px] font-bold text-primary-foreground">NWE</span>
+                </div>
                 {!following && (
                   <button onClick={() => setFollowing(true)} className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full gradient-gold flex items-center justify-center text-primary-foreground text-xs font-bold">+</button>
                 )}
