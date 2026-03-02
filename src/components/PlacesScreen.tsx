@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { MapPin, Search, UtensilsCrossed, Dumbbell, Moon, X, ExternalLink, Church, Cross, Camera, Loader2 } from "lucide-react";
+import { MapPin, Search, UtensilsCrossed, Dumbbell, Moon, X, ExternalLink, Church, Cross, Camera, Loader2, BookOpen } from "lucide-react";
 import { type City } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
 import { usePlaces, type Place } from "@/hooks/usePlaces";
+import { useMenuItems } from "@/hooks/useMenuItems";
 import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -39,10 +40,12 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
   const [activeSubcategory, setActiveSubcategory] = useState("All");
   const [selectedPlace, setSelectedPlace] = useState<Place | null>(null);
   const [isScraping, setIsScraping] = useState(false);
+  const [isScrapingMenu, setIsScrapingMenu] = useState(false);
   const userStatus = useUserRole();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const isAdmin = userStatus === "admin";
+  const { menuItems, isLoading: menuLoading } = useMenuItems(selectedPlace?.id ?? null);
 
   const { places, isLoading } = usePlaces(selectedCity.id);
 
@@ -62,6 +65,25 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
       toast({ title: "Scrape failed", description: err.message, variant: "destructive" });
     } finally {
       setIsScraping(false);
+    }
+  };
+
+  const handleScrapeMenus = async () => {
+    setIsScrapingMenu(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("scrape-menu-items", {
+        body: { city: selectedCity.id, limit: 10 },
+      });
+      if (error) throw error;
+      toast({
+        title: `🍽️ Menus updated`,
+        description: `${data.total_items} menu items found across ${data.places_processed} restaurants.`,
+      });
+      queryClient.invalidateQueries({ queryKey: ["menu_items"] });
+    } catch (err: any) {
+      toast({ title: "Menu scrape failed", description: err.message, variant: "destructive" });
+    } finally {
+      setIsScrapingMenu(false);
     }
   };
 
@@ -90,6 +112,16 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
               >
                 {isScraping ? <Loader2 size={12} className="animate-spin" /> : <Camera size={12} />}
                 {isScraping ? "Scraping..." : "Fetch Photos"}
+              </button>
+            )}
+            {isAdmin && (
+              <button
+                onClick={handleScrapeMenus}
+                disabled={isScrapingMenu}
+                className="px-3 py-1.5 rounded-full bg-secondary border border-border text-xs font-medium text-muted-foreground flex items-center gap-1"
+              >
+                {isScrapingMenu ? <Loader2 size={12} className="animate-spin" /> : <BookOpen size={12} />}
+                {isScrapingMenu ? "Scraping..." : "Fetch Menus"}
               </button>
             )}
             <CityPicker selectedCity={selectedCity} onCityChange={onCityChange} />
@@ -212,22 +244,22 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
                   key={place.id}
                   onClick={() => setSelectedPlace(place)}
                   className="w-full bg-card rounded-xl border border-border p-3 text-left hover:ring-2 hover:ring-primary/20 transition-all"
-                 >
-                   <div className="flex items-start gap-3">
-                     {place.image_url ? (
-                       <img
-                         src={place.image_url}
-                         alt={place.name}
-                         className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
-                         onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                       />
-                     ) : (
-                       <div className="w-16 h-16 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
-                         {place.category === "restaurant" && <UtensilsCrossed size={20} className="text-primary" />}
-                         {place.category === "fitness" && <Dumbbell size={20} className="text-blue-400" />}
-                         {place.category === "prayer" && <Church size={20} className="text-teal-400" />}
-                       </div>
-                     )}
+                >
+                  <div className="flex items-start gap-3">
+                    {place.image_url ? (
+                      <img
+                        src={place.image_url}
+                        alt={place.name}
+                        className="w-16 h-16 rounded-lg object-cover flex-shrink-0"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
+                    ) : (
+                      <div className="w-16 h-16 rounded-lg bg-secondary flex items-center justify-center flex-shrink-0">
+                        {place.category === "restaurant" && <UtensilsCrossed size={20} className="text-primary" />}
+                        {place.category === "fitness" && <Dumbbell size={20} className="text-blue-400" />}
+                        {place.category === "prayer" && <Church size={20} className="text-teal-400" />}
+                      </div>
+                    )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5">
                         <h3 className="font-semibold text-foreground text-sm truncate">{place.name}</h3>
@@ -266,7 +298,7 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
         <>
           <div className="fixed inset-0 z-50 bg-background/60 backdrop-blur-sm" onClick={() => setSelectedPlace(null)} />
           <div className="fixed bottom-20 left-4 right-4 z-50 max-w-lg mx-auto animate-slide-up">
-            <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-elevated">
+            <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-elevated max-h-[70vh] overflow-y-auto">
               {selectedPlace.image_url && (
                 <img
                   src={selectedPlace.image_url}
@@ -316,6 +348,44 @@ const PlacesScreen = ({ selectedCity, onCityChange }: PlacesScreenProps) => {
                     <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-400 text-xs font-semibold">✝ Lent Friendly</span>
                   )}
                 </div>
+
+                {/* Menu Items */}
+                {selectedPlace.category === "restaurant" && (
+                  <div className="mt-4">
+                    <h4 className="font-semibold text-foreground text-sm flex items-center gap-1.5 mb-2">
+                      <BookOpen size={14} className="text-primary" /> Menu
+                    </h4>
+                    {menuLoading ? (
+                      <p className="text-xs text-muted-foreground">Loading menu...</p>
+                    ) : menuItems.length === 0 ? (
+                      <p className="text-xs text-muted-foreground">No menu items yet.</p>
+                    ) : (
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {menuItems.map((item) => (
+                          <div key={item.id} className="flex items-start gap-2 bg-secondary/50 rounded-lg p-2">
+                            {item.image_url && (
+                              <img
+                                src={item.image_url}
+                                alt={item.name}
+                                className="w-12 h-12 rounded-md object-cover flex-shrink-0"
+                                onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                              />
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-semibold text-foreground truncate">{item.name}</span>
+                                {item.price && <span className="text-xs font-bold text-primary ml-2 flex-shrink-0">{item.price}</span>}
+                              </div>
+                              {item.description && (
+                                <p className="text-[10px] text-muted-foreground line-clamp-2 mt-0.5">{item.description}</p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 <div className="flex gap-2 mt-4">
                   {selectedPlace.website && (
