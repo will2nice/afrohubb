@@ -20,15 +20,34 @@ const Auth = () => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
 
-  // Pre-fill admin code from URL if present
+  // Pre-fill admin code from URL or sessionStorage
   useEffect(() => {
     const code = searchParams.get("code");
-    if (code) setAdminCode(code);
+    if (code) {
+      setAdminCode(code);
+    } else {
+      const saved = sessionStorage.getItem("admin_code");
+      if (saved) setAdminCode(saved);
+    }
   }, [searchParams]);
 
+  // After Google OAuth redirect, if user is logged in and we have a saved admin code, activate admin
   useEffect(() => {
-    if (user) navigate("/app", { replace: true });
-  }, [user, navigate]);
+    if (!user || !session) return;
+
+    const savedCode = sessionStorage.getItem("admin_code");
+    if (savedCode) {
+      sessionStorage.removeItem("admin_code");
+      // Call the edge function to activate admin role
+      supabase.functions
+        .invoke("validate-admin-code", { body: { code: savedCode } })
+        .then(() => {
+          navigate("/app", { replace: true });
+        });
+    } else {
+      navigate("/app", { replace: true });
+    }
+  }, [user, session, navigate]);
 
   const activateAdmin = async () => {
     if (!adminCode.trim()) return;
@@ -103,9 +122,13 @@ const Auth = () => {
   };
 
   const handleGoogle = async () => {
+    // Save admin code to sessionStorage so it survives the OAuth redirect
+    if (adminCode.trim()) {
+      sessionStorage.setItem("admin_code", adminCode.trim());
+    }
     setLoading(true);
     const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
+      redirect_uri: window.location.origin + "/auth",
     });
     if (error) {
       toast({ title: "Google sign-in failed", description: String(error), variant: "destructive" });
