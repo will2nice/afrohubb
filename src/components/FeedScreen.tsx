@@ -26,9 +26,11 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
   const [savedPosts, setSavedPosts] = useState<Set<number>>(new Set());
 
+  const nwePosts = feedPosts.filter((p) => p.city === "_global");
   const cityPosts = feedPosts.filter((p) => p.city === selectedCity.id);
   const filterFn = chipTagMap[activeChip] || (() => true);
-  const posts = activeChip === "For You" ? cityPosts : cityPosts.filter(filterFn);
+  const filteredCity = activeChip === "For You" ? cityPosts : cityPosts.filter(filterFn);
+  const posts = [...nwePosts, ...filteredCity];
 
   const toggleLike = (id: number) => {
     setLikedPosts(prev => {
