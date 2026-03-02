@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
-import { Mail, Lock, User, ArrowRight, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, User, ArrowRight, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
@@ -12,15 +12,41 @@ const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [adminCode, setAdminCode] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+
+  // Pre-fill admin code from URL if present
+  useEffect(() => {
+    const code = searchParams.get("code");
+    if (code) setAdminCode(code);
+  }, [searchParams]);
 
   useEffect(() => {
     if (user) navigate("/app", { replace: true });
   }, [user, navigate]);
+
+  const activateAdmin = async () => {
+    if (!adminCode.trim()) return;
+
+    const { data, error } = await supabase.functions.invoke("validate-admin-code", {
+      body: { code: adminCode.trim() },
+    });
+
+    if (error || data?.error) {
+      toast({
+        title: "Invalid admin code",
+        description: data?.error || "The code you entered is not valid.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
+  };
 
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +62,20 @@ const Auth = () => {
           },
         });
         if (error) throw error;
+
+        // If admin code provided, try to activate after signup
+        if (adminCode.trim()) {
+          // Need to sign in first to get a session
+          const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+          if (!signInError) {
+            const success = await activateAdmin();
+            if (success) {
+              navigate("/app");
+              return;
+            }
+          }
+        }
+
         toast({
           title: "Check your email ✉️",
           description: "We sent you a verification link. Click it to activate your account.",
@@ -43,6 +83,12 @@ const Auth = () => {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+
+        // If admin code provided, activate admin role
+        if (adminCode.trim()) {
+          await activateAdmin();
+        }
+
         navigate("/app");
       }
     } catch (err: any) {
@@ -76,6 +122,18 @@ const Auth = () => {
           <p className="text-muted-foreground text-sm">
             {mode === "login" ? "Welcome back to the fam" : "Join the diaspora community"}
           </p>
+        </div>
+
+        {/* Admin Code */}
+        <div className="relative">
+          <ShieldCheck size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-primary" />
+          <input
+            type="text"
+            placeholder="Admin access code"
+            value={adminCode}
+            onChange={(e) => setAdminCode(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 rounded-xl bg-primary/5 text-foreground placeholder:text-muted-foreground border border-primary/20 focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm"
+          />
         </div>
 
         {/* Google */}
