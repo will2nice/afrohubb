@@ -4,6 +4,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
+import SubscriptionModal from "@/components/SubscriptionModal";
 import profileMan1 from "@/assets/profile-man-1.jpg";
 
 // Dating mode photos - best portraits & attractive pics
@@ -37,7 +38,7 @@ const menuItems = [
   { icon: Edit3, label: "Edit Profile", desc: "Photos, bio, prompts" },
   { icon: Heart, label: "Preferences", desc: "Dating, matching, filters" },
   { icon: Shield, label: "Safety & Privacy", desc: "Blocking, visibility" },
-  { icon: Crown, label: "AfroHub Plus", desc: "Premium features", gold: true },
+  { icon: Crown, label: "AfroHub Plus", desc: "Premium features", gold: true, action: "subscription" },
   { icon: Settings, label: "Settings", desc: "Account, notifications" },
   { icon: Sun, label: "Appearance", desc: "Light / Dark mode", action: "theme" },
   { icon: LogOut, label: "Log Out", desc: "", danger: true, action: "logout" },
@@ -147,11 +148,15 @@ const ProfileScreen = () => {
 
   const { theme, toggleTheme } = useTheme();
 
+  const [showSubscription, setShowSubscription] = useState(false);
+
   const handleMenuAction = async (action?: string) => {
     if (action === "logout") {
       await signOut();
     } else if (action === "theme") {
       toggleTheme();
+    } else if (action === "subscription") {
+      setShowSubscription(true);
     }
   };
 
@@ -444,6 +449,7 @@ const ProfileScreen = () => {
           </div>
         </div>
       )}
+      <SubscriptionModal open={showSubscription} onOpenChange={setShowSubscription} />
     </div>
   );
 };
