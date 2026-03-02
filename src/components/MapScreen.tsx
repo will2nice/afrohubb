@@ -69,6 +69,11 @@ const cityCoords: Record<string, [number, number]> = {
   // Europe
   paris: [48.8566, 2.3522],
   london: [51.5074, -0.1278],
+  birmingham: [52.4862, -1.8904],
+  manchesteruk: [53.4808, -2.2426],
+  liverpool: [53.4084, -2.9916],
+  nottingham: [52.9548, -1.1581],
+  oxford: [51.7520, -1.2577],
   brussels: [50.8503, 4.3517],
   amsterdam: [52.3676, 4.9041],
   rotterdam: [51.9244, 4.4777],

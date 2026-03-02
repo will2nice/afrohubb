@@ -83,6 +83,11 @@ export const cities: City[] = [
   { id: "montreal", name: "Montreal, Canada", flag: "🇨🇦" },
   // Europe
   { id: "london", name: "London, England", flag: "🇬🇧" },
+  { id: "birmingham", name: "Birmingham, England", flag: "🇬🇧" },
+  { id: "manchesteruk", name: "Manchester, England", flag: "🇬🇧" },
+  { id: "liverpool", name: "Liverpool, England", flag: "🇬🇧" },
+  { id: "nottingham", name: "Nottingham, England", flag: "🇬🇧" },
+  { id: "oxford", name: "Oxford, England", flag: "🇬🇧" },
   { id: "paris", name: "Paris, France", flag: "🇫🇷" },
   { id: "brussels", name: "Brussels, Belgium", flag: "🇧🇪" },
   { id: "amsterdam", name: "Amsterdam, Netherlands", flag: "🇳🇱" },

@@ -292,6 +292,60 @@ export const diasporaHubs: DiasporaHub[] = [
     ],
   },
   {
+    city: "Birmingham", state: "UK", flag: "🇬🇧", cityId: "birmingham",
+    communities: [
+      { country: "Jamaica", countryFlag: "🇯🇲", population: "~80,000+", neighborhoods: ["Handsworth", "Aston", "Lozells", "Erdington"], notes: "Handsworth is Birmingham's Caribbean heartland — Windrush generation roots run deep. Reggae, sound system culture, and jerk chicken define the area." },
+      { country: "Pakistan (Mirpuri/Kashmiri)", countryFlag: "🇵🇰", population: "~150,000+", neighborhoods: ["Sparkbrook", "Small Heath", "Alum Rock"], notes: "One of the largest South Asian communities in the UK, but the African & Caribbean diaspora is the cultural backbone of Black Birmingham." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~15,000+", neighborhoods: ["Handsworth", "Perry Barr", "Edgbaston"], notes: "Growing Nigerian community with churches, restaurants, and cultural events. Strong Igbo and Yoruba presence." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~12,000+", neighborhoods: ["Small Heath", "Sparkhill", "Aston"], notes: "Significant Somali community with mosques, community centres, and Somali-owned businesses." },
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~8,000+", neighborhoods: ["Handsworth", "Aston"], notes: "Ghanaian community with churches and cultural associations in North Birmingham." },
+      { country: "Trinidad & Tobago", countryFlag: "🇹🇹", population: "~5,000+", neighborhoods: ["Handsworth", "Smethwick"], notes: "Trini community contributing to Birmingham's vibrant Caribbean carnival culture." },
+      { country: "Eritrea & Ethiopia", countryFlag: "🇪🇷", population: "~5,000+", neighborhoods: ["City Centre", "Edgbaston"], notes: "Growing Habesha community with restaurants and cultural organisations." },
+    ],
+  },
+  {
+    city: "Manchester", state: "UK", flag: "🇬🇧", cityId: "manchesteruk",
+    communities: [
+      { country: "Jamaica", countryFlag: "🇯🇲", population: "~30,000+", neighborhoods: ["Moss Side", "Hulme", "Longsight", "Cheetham Hill"], notes: "Moss Side is Manchester's Caribbean soul. Windrush roots, sound system culture, and the famous Manchester Caribbean Carnival keep the legacy alive." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~20,000+", neighborhoods: ["Moss Side", "Rusholme", "Old Trafford", "Salford"], notes: "Growing Nigerian community with Pentecostal churches, Afrobeats nights, and Nigerian restaurants." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~15,000+", neighborhoods: ["Moss Side", "Rusholme", "Cheetham Hill"], notes: "Significant Somali community with mosques, cafés, and community centres. Strong community organisations." },
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~8,000+", neighborhoods: ["Moss Side", "Longsight"], notes: "Ghanaian community with cultural associations and churches across South Manchester." },
+      { country: "Eritrea & Ethiopia", countryFlag: "🇪🇷", population: "~5,000+", neighborhoods: ["Rusholme", "Fallowfield"], notes: "Habesha community growing around the university corridor with restaurants and cultural events." },
+      { country: "Zimbabwe", countryFlag: "🇿🇼", population: "~4,000+", neighborhoods: ["Throughout Greater Manchester"], notes: "Zimbabwean community with churches and community gatherings across the city." },
+    ],
+  },
+  {
+    city: "Liverpool", state: "UK", flag: "🇬🇧", cityId: "liverpool",
+    communities: [
+      { country: "Black British (Historic)", countryFlag: "🇬🇧", population: "~30,000+", neighborhoods: ["Toxteth", "Liverpool 8", "Granby Triangle"], notes: "Liverpool has the oldest Black community in the UK, dating back to the 1730s. Toxteth (L8) is the historic heart — generations of Black Scousers shaped the city's identity." },
+      { country: "Jamaica", countryFlag: "🇯🇲", population: "~8,000+", neighborhoods: ["Toxteth", "Kensington"], notes: "Jamaican roots woven into Liverpool's Black community since the Windrush era." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~6,000+", neighborhoods: ["Toxteth", "City Centre", "Wavertree"], notes: "Growing Nigerian community with churches and cultural events." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~10,000+", neighborhoods: ["Toxteth", "Kensington", "Edge Hill"], notes: "One of the larger Somali communities in the UK outside London, with mosques and community organisations." },
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~3,000+", neighborhoods: ["Toxteth", "Wavertree"], notes: "Ghanaian community contributing to Liverpool's African cultural scene." },
+      { country: "Sierra Leone", countryFlag: "🇸🇱", population: "~2,000+", neighborhoods: ["Toxteth"], notes: "Historic Sierra Leonean connections to Liverpool through maritime trade routes." },
+    ],
+  },
+  {
+    city: "Nottingham", state: "UK", flag: "🇬🇧", cityId: "nottingham",
+    communities: [
+      { country: "Jamaica", countryFlag: "🇯🇲", population: "~20,000+", neighborhoods: ["St Ann's", "Hyson Green", "Sneinton", "Forest Fields"], notes: "St Ann's and Hyson Green are the Caribbean heartlands of Nottingham. Windrush generation built these communities. Nottingham Carnival is one of the biggest in England." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~5,000+", neighborhoods: ["Hyson Green", "Forest Fields", "Lenton"], notes: "Growing Nigerian community around Nottingham Trent and University of Nottingham campuses." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~5,000+", neighborhoods: ["Hyson Green", "Sneinton", "St Ann's"], notes: "Somali community with mosques, shops, and community centres in inner-city Nottingham." },
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~3,000+", neighborhoods: ["Hyson Green", "Sneinton"], notes: "Ghanaian community with churches and cultural associations." },
+      { country: "Eritrea & Ethiopia", countryFlag: "🇪🇷", population: "~2,000+", neighborhoods: ["City Centre", "Lenton"], notes: "Small but growing Habesha community with restaurants." },
+    ],
+  },
+  {
+    city: "Oxford", state: "UK", flag: "🇬🇧", cityId: "oxford",
+    communities: [
+      { country: "Jamaica & Caribbean", countryFlag: "🇯🇲", population: "~5,000+", neighborhoods: ["Cowley", "Blackbird Leys", "Rose Hill"], notes: "Caribbean community established since the Windrush era, concentrated in East Oxford. Cowley Road is the multicultural heart of the city." },
+      { country: "Nigeria", countryFlag: "🇳🇬", population: "~3,000+", neighborhoods: ["Cowley", "Headington"], notes: "Nigerian community connected to Oxford's universities and NHS. Churches and cultural events growing." },
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~3,000+", neighborhoods: ["Blackbird Leys", "Cowley"], notes: "Somali community with mosques and community organisations in East Oxford." },
+      { country: "Zimbabwe", countryFlag: "🇿🇼", population: "~2,000+", neighborhoods: ["Cowley", "Blackbird Leys"], notes: "Zimbabwean community with cultural gatherings and church groups." },
+      { country: "Ghana", countryFlag: "🇬🇭", population: "~1,500+", neighborhoods: ["Cowley", "Headington"], notes: "Ghanaian community with ties to healthcare and university sectors." },
+    ],
+  },
+  {
     city: "Paris", state: "France", flag: "🇫🇷", cityId: "paris",
     communities: [
       { country: "Mali", countryFlag: "🇲🇱", population: "~80,000+", neighborhoods: ["Montreuil", "Saint-Denis", "Belleville"], notes: "Montreuil is called 'Little Bamako.' The largest Malian community outside Africa. Bambara is spoken everywhere." },
