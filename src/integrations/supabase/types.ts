@@ -213,6 +213,7 @@ export type Database = {
           id: string
           image_url: string | null
           is_halal: boolean | null
+          is_lent_friendly: boolean | null
           is_ramadan_friendly: boolean | null
           latitude: number | null
           longitude: number | null
@@ -234,6 +235,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_halal?: boolean | null
+          is_lent_friendly?: boolean | null
           is_ramadan_friendly?: boolean | null
           latitude?: number | null
           longitude?: number | null
@@ -255,6 +257,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_halal?: boolean | null
+          is_lent_friendly?: boolean | null
           is_ramadan_friendly?: boolean | null
           latitude?: number | null
           longitude?: number | null
