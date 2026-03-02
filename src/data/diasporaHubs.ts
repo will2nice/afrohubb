@@ -981,4 +981,258 @@ export const diasporaHubs: DiasporaHub[] = [
       { country: "Mandinka Empire Heritage", countryFlag: "👑", population: "Ancient Legacy", neighborhoods: ["Kankan", "Upper Guinea"], notes: "Guinea was part of the Mali Empire. Sundiata Keita's epic is one of Africa's greatest oral traditions. The Mandinka griot tradition preserves centuries of history through music and storytelling." },
     ],
   },
+
+  // ── REMAINING AFRICAN COUNTRIES ──
+  {
+    city: "N'Djamena", state: "Chad", flag: "🇹🇩", cityId: "ndjamena",
+    communities: [
+      { country: "Chad", countryFlag: "🇹🇩", population: "~18,000,000", neighborhoods: ["N'Djamena", "Moundou", "Abéché", "Sarh", "Faya-Largeau"], notes: "Crossroads of the Sahara and the Sahel. Over 200 ethnic groups and 120+ languages. French and Arabic are official languages. ~60% of the population is under 25. Known as the 'Dead Heart of Africa' but full of life — Lake Chad once rivaled the Great Lakes." },
+      { country: "Lake Chad", countryFlag: "🌊", population: "Shrinking Lifeline — Once 25,000 km²", neighborhoods: ["Western Chad border"], notes: "Lake Chad has shrunk by 90% since the 1960s — one of the world's worst ecological disasters. It once sustained 30 million people across four countries. Fishing communities and nomadic herders depend on its survival." },
+      { country: "Ennedi Plateau", countryFlag: "🏜️", population: "UNESCO World Heritage", neighborhoods: ["Northeastern Chad"], notes: "The Ennedi Plateau — a stunning sandstone labyrinth with ancient rock art dating back thousands of years. Often called the 'Sahara's Garden of Eden' for its hidden oases and wildlife." },
+      { country: "Zakouma National Park", countryFlag: "🐘", population: "Conservation Success", neighborhoods: ["Southeastern Chad"], notes: "One of Africa's greatest conservation comebacks. Elephant populations decimated by poaching have rebounded dramatically. Lions, giraffes, and massive bird flocks thrive here." },
+    ],
+  },
+  {
+    city: "Niamey", state: "Niger", flag: "🇳🇪", cityId: "niamey",
+    communities: [
+      { country: "Niger", countryFlag: "🇳🇪", population: "~27,000,000", neighborhoods: ["Niamey", "Zinder", "Maradi", "Agadez", "Tahoua"], notes: "Named after the Niger River. One of the youngest populations on Earth — median age is just 15. Hausa and Zarma/Songhai are the dominant languages alongside French. ~70% of the country is Sahara Desert." },
+      { country: "Agadez & the Tuareg", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["Agadez"], notes: "Agadez — the 'Gateway to the Sahara.' The Grand Mosque of Agadez (1515) has a 27-meter mud-brick minaret. The Tuareg 'Blue People' are legendary Saharan nomads known for indigo-dyed robes and silver jewelry." },
+      { country: "W National Park", countryFlag: "🦒", population: "UNESCO Biosphere — Last West African Giraffes", neighborhoods: ["Southwest Niger"], notes: "Part of the W-Arly-Pendjari complex — the largest protected area in West Africa. Home to the last remaining West African giraffes (Niger giraffe), elephants, and lions." },
+      { country: "Cure Salée Festival", countryFlag: "🐪", population: "Annual Nomadic Gathering", neighborhoods: ["In-Gall"], notes: "The Cure Salée ('Salt Cure') — a massive annual gathering of Tuareg and Wodaabe nomads. Features the Gerewol male beauty contest where Wodaabe men compete in elaborate makeup and dance." },
+    ],
+  },
+  {
+    city: "Ouagadougou", state: "Burkina Faso", flag: "🇧🇫", cityId: "ouagadougou",
+    communities: [
+      { country: "Burkina Faso", countryFlag: "🇧🇫", population: "~23,000,000", neighborhoods: ["Ouagadougou", "Bobo-Dioulasso", "Koudougou", "Banfora", "Ouahigouya"], notes: "'Land of the Upright People' — that's what Burkina Faso means. French is the official language, with Mooré and Dioula widely spoken. ~65% of the population is under 25. Home to some of West Africa's most vibrant culture." },
+      { country: "FESPACO Film Festival", countryFlag: "🎬", population: "Africa's Largest Film Festival", neighborhoods: ["Ouagadougou"], notes: "FESPACO (Festival Panafricain du Cinéma de Ouagadougou) is the largest and oldest African film festival, running since 1969. Ouagadougou is considered the 'Hollywood of Africa' for Pan-African cinema." },
+      { country: "Mossi Kingdom", countryFlag: "👑", population: "Living Monarchy", neighborhoods: ["Ouagadougou", "Central Plateau"], notes: "The Mogho Naaba (King of the Mossi) holds a ceremonial audience every Friday morning at the Royal Palace in Ouagadougou. The Mossi kingdoms resisted colonization for centuries." },
+      { country: "Banfora Cascades", countryFlag: "🌿", population: "Natural Wonder", neighborhoods: ["Banfora", "Sindou Peaks"], notes: "The Karfiguéla Cascades near Banfora and the otherworldly Sindou Peaks — dramatic rock formations sculpted by wind and rain over millennia. Burkina's hidden natural treasures." },
+    ],
+  },
+  {
+    city: "Juba", state: "South Sudan", flag: "🇸🇸", cityId: "juba",
+    communities: [
+      { country: "South Sudan", countryFlag: "🇸🇸", population: "~12,000,000", neighborhoods: ["Juba", "Malakal", "Wau", "Bor", "Rumbek"], notes: "The world's youngest country (independence 2011). Over 60 ethnic groups speaking 60+ languages. English is the official language. ~70% of the population is under 30. The Nilotic peoples (Dinka, Nuer, Shilluk) are among the tallest in the world." },
+      { country: "Sudd Wetland", countryFlag: "🌿", population: "One of the Largest Wetlands on Earth", neighborhoods: ["Central South Sudan"], notes: "The Sudd is one of the world's largest tropical wetlands — up to 57,000 km² during floods. A critical ecosystem for the White Nile. Home to massive herds of white-eared kob and tiang antelope." },
+      { country: "Dinka & Nuer Cattle Culture", countryFlag: "🐄", population: "Deep Cultural Heritage", neighborhoods: ["Throughout South Sudan"], notes: "Cattle are central to Dinka and Nuer identity — wealth, marriage, spirituality, and social status revolve around cattle. The annual cattle camps along the Nile are spectacular. Dinka body scarification patterns are elaborate and meaningful." },
+      { country: "Boma National Park", countryFlag: "🦌", population: "Second Largest Wildlife Migration", neighborhoods: ["Eastern South Sudan"], notes: "Boma hosts one of the largest wildlife migrations in the world — rivaling the Serengeti. Millions of white-eared kob and tiang migrate across the savanna." },
+    ],
+  },
+  {
+    city: "Asmara", state: "Eritrea", flag: "🇪🇷", cityId: "asmara",
+    communities: [
+      { country: "Eritrea", countryFlag: "🇪🇷", population: "~3,700,000", neighborhoods: ["Asmara", "Massawa", "Keren", "Assab", "Mendefera"], notes: "Tigrinya and Arabic are the main languages. ~65% of the population is under 25. Eritrea has nine ethnic groups, each with distinct languages and traditions. A fiercely independent nation that won its freedom after 30 years of war." },
+      { country: "Asmara — Modernist City", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["Central Asmara"], notes: "Asmara is a UNESCO World Heritage Site — 'Africa's Secret Modernist City.' Stunning Art Deco, Futurist, and Rationalist architecture from the 1930s. The Fiat Tagliero Building looks like it's about to take flight." },
+      { country: "Dahlak Archipelago", countryFlag: "🏝️", population: "Red Sea Paradise", neighborhoods: ["Off Massawa coast"], notes: "The Dahlak Archipelago — over 200 islands in the Red Sea with pristine coral reefs, ancient pearl-diving traditions, and ruins of Ottoman and Arab settlements. Virtually untouched by tourism." },
+      { country: "Coffee Ceremony", countryFlag: "☕", population: "Sacred Tradition", neighborhoods: ["Throughout Eritrea"], notes: "Like Ethiopia, Eritrea has a deeply ceremonial coffee culture (Bun). Green beans are roasted, ground, and brewed in a jebena (clay pot). The ceremony is a cornerstone of Eritrean hospitality and social life." },
+    ],
+  },
+  {
+    city: "Mogadishu", state: "Somalia", flag: "🇸🇴", cityId: "mogadishu",
+    communities: [
+      { country: "Somalia", countryFlag: "🇸🇴", population: "~18,000,000", neighborhoods: ["Mogadishu", "Hargeisa", "Berbera", "Kismayo", "Garowe"], notes: "Somali is the official language — one of Africa's most widely spoken. ~75% of the population is under 30. Somalis have the longest coastline in mainland Africa (3,333 km). A nation of poets, traders, and seafarers." },
+      { country: "Poetry & Oral Tradition", countryFlag: "📜", population: "Nation of Poets", neighborhoods: ["Throughout Somalia"], notes: "Somalia is called the 'Nation of Poets' — poetry is the highest art form. Political debates, love, and history are expressed through verse. Poetry competitions are major cultural events." },
+      { country: "Laas Geel Cave Paintings", countryFlag: "🎨", population: "5,000+ Year Old Rock Art", neighborhoods: ["Near Hargeisa (Somaliland)"], notes: "Laas Geel — stunning Neolithic cave paintings depicting cattle, humans, and dogs. Among the best-preserved rock art in Africa, dating back 5,000-11,000 years." },
+      { country: "Somali Coastline & Trade", countryFlag: "⚓", population: "Longest Coastline in Africa (3,333 km)", neighborhoods: ["Mogadishu", "Berbera", "Kismayo"], notes: "Ancient Somali port cities traded with Rome, India, China, and Persia. The Land of Punt (mentioned by ancient Egyptians) is believed to be in the Horn of Africa. Frankincense and myrrh were Somalia's 'liquid gold.'" },
+    ],
+  },
+  {
+    city: "Antananarivo", state: "Madagascar", flag: "🇲🇬", cityId: "antananarivo",
+    communities: [
+      { country: "Madagascar", countryFlag: "🇲🇬", population: "~30,000,000", neighborhoods: ["Antananarivo", "Toamasina", "Antsirabe", "Mahajanga", "Nosy Be"], notes: "The world's 4th largest island. Malagasy and French are official languages. ~60% of the population is under 25. 90% of its wildlife is found nowhere else on Earth — lemurs, baobabs, chameleons, and unique forests." },
+      { country: "Lemurs & Biodiversity", countryFlag: "🐒", population: "100+ Lemur Species — All Endemic", neighborhoods: ["Ranomafana", "Andasibe", "Isalo"], notes: "Madagascar is a biodiversity hotspot unlike anywhere else. Over 100 species of lemurs exist only here. The island split from Africa 160 million years ago, evolving unique species in isolation." },
+      { country: "Avenue of the Baobabs", countryFlag: "🌳", population: "Iconic Natural Monument", neighborhoods: ["Morondava"], notes: "The Avenue of the Baobabs — a row of towering 800-year-old baobab trees lining a dirt road. One of Africa's most photographed landmarks. Sacred to the Sakalava people." },
+      { country: "Tsingy de Bemaraha", countryFlag: "🏔️", population: "UNESCO World Heritage", neighborhoods: ["Western Madagascar"], notes: "The Tsingy — a forest of razor-sharp limestone pinnacles unlike anything else on Earth. A UNESCO World Heritage Site and one of the most otherworldly landscapes on the planet." },
+    ],
+  },
+  {
+    city: "Lomé", state: "Togo", flag: "🇹🇬", cityId: "lome",
+    communities: [
+      { country: "Togo", countryFlag: "🇹🇬", population: "~9,000,000", neighborhoods: ["Lomé", "Kara", "Sokodé", "Kpalimé", "Atakpamé"], notes: "A narrow West African nation stretching from the Gulf of Guinea to the Sahel. French is the official language with Ewe and Kabiyé widely spoken. ~60% of the population is under 25." },
+      { country: "Voodoo & Akodessewa Market", countryFlag: "🔮", population: "Spiritual Capital of West Africa", neighborhoods: ["Lomé — Akodessewa"], notes: "Togo is a global center of Vodou (Voodoo). The Akodessewa Fetish Market in Lomé is the world's largest voodoo market — powders, skulls, herbs, and talismans used in traditional healing and spiritual practice." },
+      { country: "Koutammakou — Batammariba", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["Northern Togo"], notes: "Koutammakou — homeland of the Batammariba people whose remarkable tower-houses (Takienta) are UNESCO World Heritage. These mud fortresses reflect a deep connection between architecture, nature, and spirituality." },
+    ],
+  },
+  {
+    city: "Cotonou", state: "Benin", flag: "🇧🇯", cityId: "cotonou",
+    communities: [
+      { country: "Benin", countryFlag: "🇧🇯", population: "~13,500,000", neighborhoods: ["Cotonou", "Porto-Novo", "Ouidah", "Abomey", "Parakou"], notes: "Birthplace of Vodou — the original Voodoo religion began here before spreading to Haiti, Brazil, and the Americas via the slave trade. French is the official language with Fon and Yoruba widely spoken. ~62% under 25." },
+      { country: "Kingdom of Dahomey", countryFlag: "👑", population: "One of Africa's Most Powerful Kingdoms", neighborhoods: ["Abomey"], notes: "The Kingdom of Dahomey (1600–1904) was one of Africa's most militarily sophisticated states. The Dahomey Amazons (Mino) were an all-female army of elite warriors — the inspiration for 'The Woman King.'" },
+      { country: "Ouidah — Door of No Return", countryFlag: "🏛️", population: "UNESCO Memory Site", neighborhoods: ["Ouidah"], notes: "Ouidah was a major slave trade port. The Route des Esclaves ends at the 'Door of No Return' on the beach — a powerful memorial. The annual Vodou Festival on January 10th draws thousands." },
+      { country: "Ganvié — Venice of Africa", countryFlag: "🏘️", population: "~30,000 People on Water", neighborhoods: ["Lake Nokoué"], notes: "Ganvié is Africa's largest lake village — 30,000 people living in stilt houses on Lake Nokoué. Founded by the Tofinu people fleeing Dahomey slave raids — the water protected them." },
+    ],
+  },
+  {
+    city: "Freetown", state: "Sierra Leone", flag: "🇸🇱", cityId: "freetown",
+    communities: [
+      { country: "Sierra Leone", countryFlag: "🇸🇱", population: "~8,600,000", neighborhoods: ["Freetown", "Bo", "Kenema", "Makeni", "Koidu"], notes: "Founded as a home for freed slaves — Freetown's name says it all. Krio (English-based Creole) is the lingua franca alongside English. ~60% of the population is under 25. Known for extraordinary resilience and warmth." },
+      { country: "Cotton Tree", countryFlag: "🌳", population: "National Symbol", neighborhoods: ["Central Freetown"], notes: "The Cotton Tree — a massive 500+ year old kapok tree in central Freetown. Legend says freed slaves gathered beneath it in 1792 to give thanks for their freedom. It remains a sacred symbol." },
+      { country: "Bunce Island", countryFlag: "🏛️", population: "Slave Trade Memorial", neighborhoods: ["Sierra Leone River"], notes: "Bunce Island — a British slave castle that supplied enslaved Africans directly to rice plantations in South Carolina and Georgia. Gullah Geechee Americans trace their ancestry here." },
+      { country: "Diamonds & Beaches", countryFlag: "💎", population: "Rich Resources, Stunning Coast", neighborhoods: ["Kono District", "Tokeh Beach", "River No. 2 Beach"], notes: "Sierra Leone's diamond fields are legendary. River No. 2 Beach and Tokeh Beach are among West Africa's most beautiful — white sand, turquoise water, and lush green hills." },
+    ],
+  },
+  {
+    city: "Monrovia", state: "Liberia", flag: "🇱🇷", cityId: "monrovia",
+    communities: [
+      { country: "Liberia", countryFlag: "🇱🇷", population: "~5,400,000", neighborhoods: ["Monrovia", "Buchanan", "Gbarnga", "Kakata", "Harper"], notes: "Founded by freed African Americans in 1847 — Africa's oldest republic. English is the official language (the only African country with English as sole official language). ~63% of the population is under 25." },
+      { country: "Americo-Liberian Heritage", countryFlag: "🇺🇸", population: "Diaspora Roots", neighborhoods: ["Monrovia", "Providence Island"], notes: "Providence Island is where the first freed American slaves landed in 1822. The Americo-Liberian community built a society modeled on the American South — antebellum architecture, top hats, and churches still visible today." },
+      { country: "Sapo National Park", countryFlag: "🌿", population: "West Africa's Largest Rainforest Reserve", neighborhoods: ["Sinoe County"], notes: "Sapo National Park — 1,804 km² of pristine lowland rainforest. Home to pygmy hippos, forest elephants, chimpanzees, and over 500 bird species. One of West Africa's last great wilderness areas." },
+    ],
+  },
+  {
+    city: "Bangui", state: "Central African Republic", flag: "🇨🇫", cityId: "bangui",
+    communities: [
+      { country: "Central African Republic", countryFlag: "🇨🇫", population: "~5,500,000", neighborhoods: ["Bangui", "Bimbo", "Berbérati", "Bambari", "Bossangoa"], notes: "The geographic heart of Africa. Sango and French are official languages. ~65% of the population is under 25. Extraordinary biodiversity — one of the last places on Earth with truly wild, untouched forest." },
+      { country: "Dzanga-Sangha Rainforest", countryFlag: "🌿", population: "UNESCO World Heritage", neighborhoods: ["Southwestern CAR"], notes: "Dzanga-Sangha — one of the most pristine rainforests in Africa. Home to forest elephants, western lowland gorillas, and the BaAka Pygmy people whose forest knowledge spans millennia." },
+      { country: "BaAka Pygmy People", countryFlag: "🎵", population: "Ancient Forest People", neighborhoods: ["Southwestern forests"], notes: "The BaAka are one of the oldest peoples on Earth. Their polyphonic singing — complex vocal harmonies echoing through the forest — is recognized by UNESCO as an intangible heritage. They are master trackers and herbalists." },
+    ],
+  },
+  {
+    city: "Nouakchott", state: "Mauritania", flag: "🇲🇷", cityId: "nouakchott",
+    communities: [
+      { country: "Mauritania", countryFlag: "🇲🇷", population: "~4,900,000", neighborhoods: ["Nouakchott", "Nouadhibou", "Atar", "Chinguetti", "Rosso"], notes: "Bridge between sub-Saharan Africa and the Arab world. Arabic is the official language with Pulaar, Soninke, and Wolof also spoken. ~60% under 25. A land of nomads, ancient libraries, and vast Saharan landscapes." },
+      { country: "Chinguetti — City of Libraries", countryFlag: "📚", population: "UNESCO World Heritage", neighborhoods: ["Chinguetti"], notes: "Chinguetti — a 13th-century caravan town and the 7th holiest city of Islam. Ancient family libraries hold manuscripts dating back 800+ years — theology, astronomy, mathematics. A beacon of Saharan scholarship." },
+      { country: "Banc d'Arguin", countryFlag: "🐦", population: "UNESCO — World's Largest Bird Sanctuary", neighborhoods: ["Atlantic Coast"], notes: "Banc d'Arguin National Park — where the Sahara meets the Atlantic. Over 2 million migratory birds from Europe and Asia winter here. Imraguen fishermen still use traditional dolphin-assisted fishing." },
+    ],
+  },
+  {
+    city: "Libreville", state: "Gabon", flag: "🇬🇦", cityId: "libreville",
+    communities: [
+      { country: "Gabon", countryFlag: "🇬🇦", population: "~2,400,000", neighborhoods: ["Libreville", "Port-Gentil", "Franceville", "Oyem", "Lambaréné"], notes: "85% covered in equatorial rainforest — one of the most forested countries on Earth. French is the official language with Fang and Myene spoken widely. ~60% of the population is under 25. Oil-rich and ecologically priceless." },
+      { country: "Lopé National Park", countryFlag: "🦍", population: "UNESCO World Heritage", neighborhoods: ["Central Gabon"], notes: "Lopé is a UNESCO site where rainforest meets savanna — home to western lowland gorillas, forest elephants, mandrills, and chimpanzees. Ancient rock engravings date human presence back 400,000 years." },
+      { country: "Bwiti Tradition", countryFlag: "🌿", population: "Sacred Spiritual Practice", neighborhoods: ["Throughout Gabon"], notes: "Bwiti — a sacred spiritual tradition centered on iboga, a powerful plant. Gabon is the only country where iboga grows naturally. The Bwiti initiation ceremony is one of Africa's most profound spiritual experiences." },
+    ],
+  },
+  {
+    city: "Brazzaville", state: "Republic of Congo", flag: "🇨🇬", cityId: "brazzaville",
+    communities: [
+      { country: "Republic of Congo", countryFlag: "🇨🇬", population: "~6,000,000", neighborhoods: ["Brazzaville", "Pointe-Noire", "Dolisie", "Nkayi", "Owando"], notes: "French is the official language with Lingala and Kituba widely spoken. ~60% under 25. Brazzaville and Kinshasa face each other across the Congo River — the closest two capital cities in the world." },
+      { country: "Sapeurs — La SAPE", countryFlag: "👔", population: "Fashion as Resistance", neighborhoods: ["Bacongo, Brazzaville"], notes: "The Sapeurs (Société des Ambianceurs et des Personnes Élégantes) — Congolese men who dress in designer suits as a form of cultural pride, resistance, and art. A global fashion phenomenon born in Brazzaville's Bacongo neighborhood." },
+      { country: "Odzala-Kokoua National Park", countryFlag: "🦍", population: "Pristine Rainforest", neighborhoods: ["Northern Congo"], notes: "One of Africa's oldest national parks (1935). Dense equatorial forest with western lowland gorillas, forest elephants, and bongo antelope. Some of the most untouched wilderness in Central Africa." },
+    ],
+  },
+  {
+    city: "Djibouti City", state: "Djibouti", flag: "🇩🇯", cityId: "djibouti",
+    communities: [
+      { country: "Djibouti", countryFlag: "🇩🇯", population: "~1,100,000", neighborhoods: ["Djibouti City", "Ali Sabieh", "Tadjoura", "Obock"], notes: "Strategically located at the Bab el-Mandeb strait where the Red Sea meets the Indian Ocean. French and Arabic are official; Somali and Afar are widely spoken. ~55% under 25. Home to multiple international military bases." },
+      { country: "Lake Assal", countryFlag: "🌊", population: "Lowest Point in Africa — Saltiest Lake on Earth", neighborhoods: ["Central Djibouti"], notes: "Lake Assal sits 155 meters below sea level — the lowest point in Africa and the third-lowest on Earth. Ten times saltier than the ocean. The surrounding salt flats and volcanic landscape are otherworldly." },
+      { country: "Afar Triangle", countryFlag: "🌋", population: "Geological Wonder", neighborhoods: ["Western Djibouti"], notes: "The Afar Triangle is where three tectonic plates meet — literally where Africa is splitting apart. Active volcanoes, lava lakes, and fumaroles make it one of the most geologically active places on Earth." },
+    ],
+  },
+  {
+    city: "Lusaka", state: "Zambia", flag: "🇿🇲", cityId: "lusaka",
+    communities: [
+      { country: "Zambia", countryFlag: "🇿🇲", population: "~20,000,000", neighborhoods: ["Lusaka", "Kitwe", "Ndola", "Livingstone", "Kabwe"], notes: "English is the official language with Bemba, Nyanja, Tonga, and Lozi widely spoken. ~65% under 25. Known for copper mining and some of the friendliest people on the continent. 72 ethnic groups living in remarkable harmony." },
+      { country: "Victoria Falls (Zambian Side)", countryFlag: "🌊", population: "UNESCO World Heritage", neighborhoods: ["Livingstone"], notes: "Mosi-oa-Tunya ('The Smoke That Thunders') — the Zambian side offers dramatic views and the famous Devil's Pool where you can swim at the edge of the falls. Named after David Livingstone, the first European to see it in 1855." },
+      { country: "South Luangwa National Park", countryFlag: "🦁", population: "Premier Walking Safari", neighborhoods: ["Eastern Zambia"], notes: "South Luangwa pioneered the walking safari — getting on foot among lions, elephants, and hippos. One of the greatest wildlife sanctuaries in Africa with extraordinary leopard sightings." },
+      { country: "Kuomboka Ceremony", countryFlag: "👑", population: "Royal Tradition", neighborhoods: ["Western Province — Barotseland"], notes: "The Kuomboka — the Lozi king's annual boat journey from the floodplain to higher ground. One of Africa's oldest and most spectacular traditional ceremonies, with drums, paddlers, and thousands of spectators." },
+    ],
+  },
+  {
+    city: "Lilongwe", state: "Malawi", flag: "🇲🇼", cityId: "lilongwe",
+    communities: [
+      { country: "Malawi", countryFlag: "🇲🇼", population: "~20,500,000", neighborhoods: ["Lilongwe", "Blantyre", "Mzuzu", "Zomba", "Mangochi"], notes: "The 'Warm Heart of Africa' — famous for its incredibly friendly people. Chichewa and English are official languages. ~65% under 25. Lake Malawi dominates the country — one of the Great Rift Valley lakes." },
+      { country: "Lake Malawi", countryFlag: "🏝️", population: "UNESCO World Heritage — 1,000+ Fish Species", neighborhoods: ["Eastern Malawi"], notes: "Lake Malawi (Lake of Stars) is a UNESCO World Heritage Site — home to more fish species than any other lake on Earth (1,000+ cichlid species, most found nowhere else). Crystal-clear freshwater beaches rival the Caribbean." },
+      { country: "Mulanje Massif", countryFlag: "🏔️", population: "Southern Africa's Highest Peak Outside SA", neighborhoods: ["Southern Malawi"], notes: "Mount Mulanje — a dramatic inselberg rising from the plains. Home to the endangered Mulanje cedar and stunning hiking trails. Cloud forests, waterfalls, and rock climbing." },
+    ],
+  },
+  {
+    city: "Gaborone", state: "Botswana", flag: "🇧🇼", cityId: "gaborone",
+    communities: [
+      { country: "Botswana", countryFlag: "🇧🇼", population: "~2,600,000", neighborhoods: ["Gaborone", "Francistown", "Maun", "Kasane", "Serowe"], notes: "One of Africa's greatest success stories — from one of the poorest countries at independence (1966) to upper-middle income. English and Setswana are official. ~55% under 25. Diamonds and good governance built this nation." },
+      { country: "Okavango Delta", countryFlag: "🌊", population: "UNESCO World Heritage — Largest Inland Delta", neighborhoods: ["Northwestern Botswana"], notes: "The Okavango Delta — the world's largest inland delta. An oasis in the Kalahari where the Okavango River fans out into 1,000+ channels. Elephants, lions, wild dogs, and hippos in pristine wilderness. Mokoro (dugout canoe) safaris are iconic." },
+      { country: "Chobe National Park", countryFlag: "🐘", population: "Largest Elephant Population on Earth", neighborhoods: ["Northern Botswana"], notes: "Chobe has the highest concentration of elephants in Africa — over 120,000. The Chobe River cruises offer some of the most spectacular wildlife viewing on the continent." },
+      { country: "San (Bushmen) People", countryFlag: "🎨", population: "World's Oldest Living Culture", neighborhoods: ["Central Kalahari", "Tsodilo Hills"], notes: "The San people are the oldest inhabitants of southern Africa — their DNA is the oldest lineage of modern humans. Tsodilo Hills (UNESCO) has 4,500+ rock paintings. The San's click languages are unique to humanity." },
+    ],
+  },
+  {
+    city: "Tripoli", state: "Libya", flag: "🇱🇾", cityId: "tripoli",
+    communities: [
+      { country: "Libya", countryFlag: "🇱🇾", population: "~7,000,000", neighborhoods: ["Tripoli", "Benghazi", "Misrata", "Sabha", "Sirte"], notes: "Africa's fourth-largest country by area. Arabic is the official language with Tamazight (Berber) also spoken. ~55% under 30. Sits atop Africa's largest proven oil reserves. Ancient civilizations left extraordinary ruins." },
+      { country: "Leptis Magna", countryFlag: "🏛️", population: "UNESCO — Best Preserved Roman City in Africa", neighborhoods: ["Al-Khums"], notes: "Leptis Magna — a Roman city so well preserved it rivals Pompeii. Birthplace of Emperor Septimius Severus (one of Rome's African-born emperors). Stunning marble arches, forums, and a theater overlooking the Mediterranean." },
+      { country: "Saharan Rock Art — Tadrart Acacus", countryFlag: "🎨", population: "UNESCO — 12,000 Years of Art", neighborhoods: ["Southwestern Libya"], notes: "The Tadrart Acacus mountains contain thousands of rock art paintings spanning 12,000 years — depicting when the Sahara was green, with hippos, crocodiles, and thriving communities." },
+    ],
+  },
+  {
+    city: "Tunis", state: "Tunisia", flag: "🇹🇳", cityId: "tunis",
+    communities: [
+      { country: "Tunisia", countryFlag: "🇹🇳", population: "~12,500,000", neighborhoods: ["Tunis", "Sfax", "Sousse", "Kairouan", "Djerba"], notes: "The northernmost country in Africa. Arabic is official with French widely spoken and Tamazight recognized. ~50% under 30. Birthplace of the Arab Spring (2011). A blend of Amazigh, Arab, Ottoman, and French cultures." },
+      { country: "Carthage", countryFlag: "🏛️", population: "UNESCO — Ancient Mediterranean Power", neighborhoods: ["Carthage (suburb of Tunis)"], notes: "Carthage was one of the most powerful civilizations in the ancient world — founded by Phoenicians, home of Hannibal who crossed the Alps with elephants to fight Rome. The ruins overlook the Mediterranean." },
+      { country: "Medina of Tunis", countryFlag: "🕌", population: "UNESCO World Heritage", neighborhoods: ["Central Tunis"], notes: "The Medina of Tunis — a UNESCO World Heritage Site with 700+ monuments, including palaces, mosques, fountains, and mausoleums from the 12th-16th century. The Zitouna Mosque dates to 732 CE." },
+      { country: "Djerba Island", countryFlag: "🏝️", population: "Mediterranean Cultural Hub", neighborhoods: ["Djerba"], notes: "Djerba — the island of Homer's Odyssey (the Land of the Lotus-Eaters). Home to one of the world's oldest synagogues (El Ghriba, 586 BCE) and a vibrant mix of Muslim, Jewish, and Amazigh cultures." },
+    ],
+  },
+  {
+    city: "Algiers", state: "Algeria", flag: "🇩🇿", cityId: "algiers",
+    communities: [
+      { country: "Algeria", countryFlag: "🇩🇿", population: "~46,000,000", neighborhoods: ["Algiers", "Oran", "Constantine", "Annaba", "Tlemcen"], notes: "Africa's largest country by area. Arabic and Tamazight are official languages with French widely spoken. ~55% under 30. Won independence from France in 1962 after a brutal 8-year war that inspired liberation movements worldwide." },
+      { country: "Casbah of Algiers", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["Central Algiers"], notes: "The Casbah — a UNESCO-listed ancient citadel overlooking the Mediterranean. A labyrinth of Ottoman-era palaces, mosques, and houses. It was a stronghold of resistance during the War of Independence." },
+      { country: "Tassili n'Ajjer", countryFlag: "🎨", population: "UNESCO — 15,000+ Rock Art Paintings", neighborhoods: ["Southeastern Algeria (Sahara)"], notes: "Tassili n'Ajjer — a vast Saharan plateau with over 15,000 prehistoric rock paintings and engravings. Evidence of a Green Sahara when hippos, crocodiles, and pastoralists thrived in what is now desert." },
+      { country: "Raï Music", countryFlag: "🎵", population: "UNESCO Intangible Heritage", neighborhoods: ["Oran — 'Capital of Raï'"], notes: "Raï music was born in Oran — a rebellious blend of Bedouin folk, Western pop, and protest. Khaled's 'Didi' went global. Raï is a UNESCO Intangible Cultural Heritage, expressing youth culture and social change." },
+    ],
+  },
+  {
+    city: "Banjul", state: "The Gambia", flag: "🇬🇲", cityId: "banjul",
+    communities: [
+      { country: "The Gambia", countryFlag: "🇬🇲", population: "~2,700,000", neighborhoods: ["Banjul", "Serekunda", "Brikama", "Bakau", "Farafenni"], notes: "Africa's smallest mainland country — entirely surrounded by Senegal except its Atlantic coast. English is the official language with Mandinka, Wolof, and Fula spoken. ~60% under 25. Known as the 'Smiling Coast of Africa.'" },
+      { country: "Kunta Kinteh Island", countryFlag: "🏛️", population: "UNESCO World Heritage", neighborhoods: ["River Gambia"], notes: "Kunta Kinteh Island (formerly James Island) — a UNESCO site and key location in Alex Haley's 'Roots.' A powerful memorial to the transatlantic slave trade. The island is slowly being reclaimed by the river." },
+      { country: "River Gambia & Birdwatching", countryFlag: "🐦", population: "560+ Bird Species", neighborhoods: ["Throughout The Gambia"], notes: "The Gambia is one of the world's top birdwatching destinations — 560+ species in a tiny country. The River Gambia runs the entire length of the nation, supporting rich wetland ecosystems." },
+    ],
+  },
+  {
+    city: "Bissau", state: "Guinea-Bissau", flag: "🇬🇼", cityId: "bissau",
+    communities: [
+      { country: "Guinea-Bissau", countryFlag: "🇬🇼", population: "~2,100,000", neighborhoods: ["Bissau", "Bafatá", "Gabú", "Cacheu", "Bijagós Islands"], notes: "Portuguese is the official language with Kriol (Portuguese Creole) spoken by most. ~60% under 25. A small but culturally rich nation known for its Carnival (one of the best in West Africa) and the unique Bijagós Archipelago." },
+      { country: "Bijagós Archipelago", countryFlag: "🏝️", population: "UNESCO Biosphere Reserve — 88 Islands", neighborhoods: ["Atlantic Coast"], notes: "The Bijagós — 88 islands with unique matriarchal Bijago culture. Women choose their husbands. The islands are a UNESCO Biosphere Reserve with sea turtles, hippos (saltwater hippos!), and pristine mangroves." },
+      { country: "Carnival of Bissau", countryFlag: "🎭", population: "West Africa's Best Carnival", neighborhoods: ["Bissau City Center"], notes: "Guinea-Bissau's Carnival is a spectacular mix of African and Portuguese traditions — elaborate masks, costumes, drums, and dancing. One of the most authentic and vibrant carnivals in West Africa." },
+    ],
+  },
+  {
+    city: "Malabo", state: "Equatorial Guinea", flag: "🇬🇶", cityId: "malabo",
+    communities: [
+      { country: "Equatorial Guinea", countryFlag: "🇬🇶", population: "~1,700,000", neighborhoods: ["Malabo", "Bata", "Ebebiyín", "Luba", "Mongomo"], notes: "The only Spanish-speaking country in Africa. French and Portuguese are also official. ~60% under 25. Oil-rich — one of the highest GDPs per capita in Africa. Bioko Island (where Malabo sits) has stunning volcanic scenery." },
+      { country: "Bioko Island", countryFlag: "🌋", population: "Volcanic Biodiversity Hotspot", neighborhoods: ["Malabo", "Pico Basilé", "Ureka"], notes: "Bioko Island has one of Africa's most pristine rainforests. Pico Basilé (3,012m) is the highest peak. Endemic primates including drills and red colobus monkeys. Ureka's beaches host nesting sea turtles." },
+    ],
+  },
+  {
+    city: "Praia", state: "Cape Verde", flag: "🇨🇻", cityId: "praia",
+    communities: [
+      { country: "Cape Verde", countryFlag: "🇨🇻", population: "~600,000", neighborhoods: ["Praia", "Mindelo", "Sal", "Boa Vista", "Santo Antão"], notes: "An archipelago of 10 volcanic islands in the Atlantic, 570 km off West Africa. Portuguese is official with Cape Verdean Creole (Kriolu) spoken by all. ~55% under 25. A nation of music, diaspora, and the ocean." },
+      { country: "Morna Music & Cesária Évora", countryFlag: "🎵", population: "UNESCO Intangible Heritage", neighborhoods: ["Mindelo (São Vicente)"], notes: "Morna is Cape Verde's soul music — hauntingly beautiful songs of saudade (longing), the sea, and migration. Cesária Évora ('The Barefoot Diva') brought Morna to the world stage. Mindelo is the cultural capital." },
+      { country: "Volcanic Landscapes", countryFlag: "🌋", population: "Dramatic Island Scenery", neighborhoods: ["Fogo (active volcano)", "Santo Antão (hiking)", "Sal (beaches)"], notes: "Fogo's volcano erupted as recently as 2014 — villagers live inside the caldera and make wine from volcanic soil. Santo Antão has stunning mountain trails. Sal and Boa Vista have world-class beaches." },
+    ],
+  },
+  {
+    city: "Mbabane", state: "Eswatini", flag: "🇸🇿", cityId: "mbabane",
+    communities: [
+      { country: "Eswatini", countryFlag: "🇸🇿", population: "~1,200,000", neighborhoods: ["Mbabane", "Manzini", "Lobamba", "Big Bend", "Nhlangano"], notes: "Africa's last absolute monarchy (formerly Swaziland). SiSwati and English are official languages. ~55% under 25. The Swazi culture is one of the most intact traditional cultures in southern Africa." },
+      { country: "Umhlanga (Reed Dance)", countryFlag: "💃", population: "Annual Cultural Festival — 40,000+ Maidens", neighborhoods: ["Lobamba Royal Residence"], notes: "The Umhlanga Reed Dance — up to 40,000 unmarried Swazi women dance before the King, carrying reeds to rebuild the Queen Mother's residence. One of Africa's most visually spectacular cultural events." },
+      { country: "Mlilwane & Hlane Wildlife", countryFlag: "🦏", population: "Conservation Sanctuaries", neighborhoods: ["Ezulwini Valley", "Northeastern Eswatini"], notes: "Mlilwane Wildlife Sanctuary in the beautiful Ezulwini Valley and Hlane Royal National Park with rhinos, elephants, and lions. Small country, big wildlife." },
+    ],
+  },
+  {
+    city: "Maseru", state: "Lesotho", flag: "🇱🇸", cityId: "maseru",
+    communities: [
+      { country: "Lesotho", countryFlag: "🇱🇸", population: "~2,300,000", neighborhoods: ["Maseru", "Teyateyaneng", "Mafeteng", "Leribe", "Mokhotlong"], notes: "The 'Kingdom in the Sky' — the only country in the world entirely above 1,000 meters. Sesotho and English are official. ~55% under 25. Entirely surrounded by South Africa. The Basotho people are proud horsemen and shepherds." },
+      { country: "Basotho Pony Trekking", countryFlag: "🐴", population: "Mountain Kingdom Heritage", neighborhoods: ["Highlands"], notes: "The Basotho pony is legendary — sure-footed mountain horses that navigate Lesotho's dramatic terrain. Pony trekking through the Maluti Mountains is the quintessential Lesotho experience." },
+      { country: "Thaba Bosiu", countryFlag: "🏔️", population: "National Monument", neighborhoods: ["Near Maseru"], notes: "Thaba Bosiu — the mountain fortress of King Moshoeshoe I, founder of the Basotho nation. He united his people here and successfully resisted Boer and British attacks. A sacred national site." },
+    ],
+  },
+  {
+    city: "Moroni", state: "Comoros", flag: "🇰🇲", cityId: "moroni",
+    communities: [
+      { country: "Comoros", countryFlag: "🇰🇲", population: "~900,000", neighborhoods: ["Moroni", "Mutsamudu", "Fomboni", "Domoni"], notes: "An archipelago between Madagascar and Mozambique. Comorian, Arabic, and French are official. ~60% under 25. Known as the 'Perfume Islands' for ylang-ylang, vanilla, and cloves. A blend of African, Arab, Malagasy, and French cultures." },
+      { country: "Mount Karthala", countryFlag: "🌋", population: "One of the World's Most Active Volcanoes", neighborhoods: ["Grande Comore"], notes: "Mount Karthala (2,361m) is one of the most active volcanoes in the world and the largest active volcano in the Indian Ocean. Its crater lake changes color. The volcano dominates Grande Comore island." },
+      { country: "Grand Mariage", countryFlag: "🎉", population: "Elaborate Cultural Ceremony", neighborhoods: ["Throughout Comoros"], notes: "The Grand Mariage (Anda) is the most important social event in Comorian culture — an elaborate, multi-day wedding celebration that can cost years of savings. It determines social status and community leadership." },
+    ],
+  },
+  {
+    city: "Port Louis", state: "Mauritius", flag: "🇲🇺", cityId: "portlouis",
+    communities: [
+      { country: "Mauritius", countryFlag: "🇲🇺", population: "~1,300,000", neighborhoods: ["Port Louis", "Curepipe", "Quatre Bornes", "Rose Hill", "Grand Baie"], notes: "A multicultural island nation — Creole, Hindi, Tamil, Chinese, French, and English all spoken. ~40% under 25. One of Africa's most developed and stable economies. Known for its stunning beaches and the extinct dodo bird." },
+      { country: "Chamarel & Le Morne", countryFlag: "🏔️", population: "UNESCO World Heritage", neighborhoods: ["Le Morne Brabant", "Chamarel"], notes: "Le Morne Brabant — a UNESCO World Heritage Site where escaped slaves (maroons) took refuge on the dramatic basalt mountain. The Seven Coloured Earths of Chamarel — naturally occurring sand dunes in seven distinct colors." },
+      { country: "Multicultural Heritage", countryFlag: "🌍", population: "African, Indian, Chinese, European Blend", neighborhoods: ["Throughout Mauritius"], notes: "Mauritius is a living example of multicultural harmony — descendants of African slaves, Indian indentured laborers, Chinese merchants, and French colonists created a unique Creole culture. Sega music and dance reflect this blend." },
+    ],
+  },
 ];
