@@ -38,11 +38,22 @@ const Auth = () => {
     const savedCode = sessionStorage.getItem("admin_code");
     if (savedCode) {
       sessionStorage.removeItem("admin_code");
-      // Call the edge function to activate admin role
-      supabase.functions
-        .invoke("validate-admin-code", { body: { code: savedCode } })
-        .then(() => {
-          navigate("/app", { replace: true });
+      // Check if user already has admin role before calling edge function
+      supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", user.id)
+        .eq("role", "admin")
+        .then(({ data }) => {
+          if (data && data.length > 0) {
+            // Already admin, skip validation
+            navigate("/app", { replace: true });
+          } else {
+            supabase.functions
+              .invoke("validate-admin-code", { body: { code: savedCode } })
+              .then(() => navigate("/app", { replace: true }))
+              .catch(() => navigate("/app", { replace: true }));
+          }
         });
     } else {
       navigate("/app", { replace: true });
