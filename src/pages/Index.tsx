@@ -31,7 +31,7 @@ const Index = () => {
       {activeTab === "messages" && <MessagesScreen />}
       {activeTab === "culture" && <CultureLearnScreen />}
       {activeTab === "campus" && <CampusScreen />}
-      {activeTab === "help" && <AskForHelpScreen />}
+      {activeTab === "help" && <AskForHelpScreen onOpenDM={() => setActiveTab("messages")} />}
       {activeTab === "profile" && <ProfileScreen />}
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} unreadMessages={unreadMessages} />
     </div>
