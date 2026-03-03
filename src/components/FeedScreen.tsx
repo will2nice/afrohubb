@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Search, Bell, Heart, MessageCircle, Share2, Bookmark, Users } from "lucide-react";
 import { feedPosts, type City } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
+import FeedReelsCarousel from "@/components/FeedReelsCarousel";
 
 const chips = ["For You", "Nearby", "Diaspora", "Culture", "Business", "Dating Tips", "New Here"];
 
@@ -84,6 +85,9 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
           ))}
         </div>
       </div>
+
+      {/* Reels carousel */}
+      <FeedReelsCarousel />
 
       {/* Feed */}
       <div className="px-4 space-y-4 max-w-lg mx-auto">
