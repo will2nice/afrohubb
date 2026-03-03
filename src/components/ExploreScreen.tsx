@@ -23,7 +23,7 @@ const ExploreScreen = ({ selectedCity, onCityChange }: ExploreScreenProps) => {
       )}
 
       {/* Floating toggle pill */}
-      <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-40">
+      <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40">
         <div className="flex items-center bg-card/95 backdrop-blur-lg border border-border rounded-full p-1 shadow-lg">
           <button
             onClick={() => setView("events")}
