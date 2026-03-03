@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { HandHelping, Plus, X, ChevronDown, MapPin, Clock, User, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useMessages } from "@/hooks/useMessages";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -30,8 +31,13 @@ const CATEGORIES = [
   { id: "general", label: "General", emoji: "✨" },
 ];
 
-const AskForHelpScreen = () => {
+interface AskForHelpScreenProps {
+  onOpenDM?: (conversationId: string) => void;
+}
+
+const AskForHelpScreen = ({ onOpenDM }: AskForHelpScreenProps) => {
   const { user } = useAuth();
+  const { startConversation, sendMessage } = useMessages();
   const [requests, setRequests] = useState<HelpRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -100,6 +106,23 @@ const AskForHelpScreen = () => {
     if (error) { toast.error("Failed to post request"); return; }
     toast.success("Help request posted!");
     setTitle(""); setDescription(""); setCategory("general"); setCity(""); setShowForm(false);
+  };
+
+  const handleOfferHelp = async (req: HelpRequest) => {
+    if (!user) { toast.error("Sign in to offer help"); return; }
+    if (req.user_id === user.id) { toast.info("This is your own request"); return; }
+    try {
+      const convId = await startConversation(req.user_id);
+      const cat = catInfo(req.category);
+      await sendMessage.mutateAsync({
+        conversationId: convId,
+        content: `👋 Hey! I saw your help request "${req.title}" (${cat.emoji} ${cat.label}) and I'd like to help!`,
+      });
+      toast.success("DM started!");
+      onOpenDM?.(convId);
+    } catch (e) {
+      toast.error("Failed to start conversation");
+    }
   };
 
   const timeAgo = (d: string) => {
@@ -248,8 +271,14 @@ const AskForHelpScreen = () => {
                 </div>
                 <h3 className="text-sm font-semibold text-foreground">{req.title}</h3>
                 <p className="text-xs text-muted-foreground leading-relaxed">{req.description}</p>
-                <Button variant="outline" size="sm" className="rounded-full gap-1.5 text-xs mt-1">
-                  <MessageCircle size={13} /> Offer Help
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="rounded-full gap-1.5 text-xs mt-1"
+                  onClick={() => handleOfferHelp(req)}
+                  disabled={req.user_id === user?.id}
+                >
+                  <MessageCircle size={13} /> {req.user_id === user?.id ? "Your Request" : "Offer Help"}
                 </Button>
               </div>
             );
