@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon } from "lucide-react";
+import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping } from "lucide-react";
 import { events as allEvents, cities, type City } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
 import { cityResources, type CityResource } from "@/data/resourceData";
@@ -610,22 +610,64 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
         {showResources && allResources.map((resource) => (
           <Marker key={`resource-${resource.id}`} position={[resource.lat, resource.lng]} icon={resource.type === "nonprofit" ? nonprofitIcon : hiringIcon}>
-            <Popup className="afro-popup" maxWidth={280}>
-              <div className="p-1">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${resource.type === "nonprofit" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700"}`}>
-                    {resource.type === "nonprofit" ? "Nonprofit" : "Hiring"}
+            <Popup className="afro-popup" maxWidth={300}>
+              <div className="p-2">
+                {/* Type & Category badges */}
+                <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${resource.type === "nonprofit" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700"}`}>
+                    {resource.type === "nonprofit" ? "💚 Nonprofit" : "💼 Hiring"}
                   </span>
                   <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-[10px] font-medium">{resource.category}</span>
                 </div>
-                <h3 className="font-bold text-sm leading-tight">{resource.name}</h3>
-                <p className="text-xs text-gray-500 mt-1">{resource.description}</p>
+
+                {/* Name */}
+                <h3 className="font-bold text-sm leading-tight text-gray-900">{resource.name}</h3>
+
+                {/* Description */}
+                <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">{resource.description}</p>
+
+                {/* City */}
+                <div className="flex items-center gap-1 mt-2 text-[10px] text-gray-400">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                  <span className="capitalize">{resource.city}</span>
+                </div>
+
+                {/* Website link */}
                 {resource.website && (
-                  <a href={resource.website} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 mt-1 block">Visit Website →</a>
+                  <a
+                    href={resource.website}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1.5 mt-2.5 px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors text-xs font-medium text-blue-600"
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                    Visit Website
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  </a>
                 )}
-                <button className={`w-full mt-2 py-1.5 rounded-full text-white text-xs font-semibold ${resource.type === "nonprofit" ? "bg-emerald-500" : "bg-blue-500"}`}>
-                  {resource.type === "nonprofit" ? "Learn More" : "View Openings"}
-                </button>
+
+                {/* Action buttons */}
+                <div className="flex gap-2 mt-3">
+                  <button
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full text-white text-xs font-semibold bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 transition-all shadow-sm"
+                    onClick={() => {
+                      if (resource.website) window.open(resource.website, "_blank");
+                    }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
+                    Contact
+                  </button>
+                  <button
+                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full text-white text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 transition-all shadow-sm"
+                    onClick={() => {
+                      const helpTab = document.querySelector('[data-tab="help"]') as HTMLElement;
+                      if (helpTab) helpTab.click();
+                    }}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                    Ask for Help
+                  </button>
+                </div>
               </div>
             </Popup>
           </Marker>
