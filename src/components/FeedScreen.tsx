@@ -1,8 +1,9 @@
 import { useState, useRef } from "react";
-import { Search, Bell, Heart, MessageCircle, Share2, Bookmark, Users, Play, Volume2, VolumeX } from "lucide-react";
+import { Search, Bell, Heart, MessageCircle, Share2, Bookmark, Users, Play, Volume2, VolumeX, Maximize2 } from "lucide-react";
 import { feedPosts, type City } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
 import FeedStories from "@/components/FeedStories";
+import FullScreenReelViewer from "@/components/FullScreenReelViewer";
 
 const chips = ["For You", "Nearby", "Diaspora", "Culture", "Business", "Dating Tips", "New Here"];
 
@@ -28,7 +29,7 @@ interface FeedScreenProps {
   onCityChange: (city: City) => void;
 }
 
-const ReelCard = ({ reel }: { reel: typeof reelItems[0] }) => {
+const ReelCard = ({ reel, onOpenFullScreen }: { reel: typeof reelItems[0]; onOpenFullScreen: () => void }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
@@ -80,6 +81,13 @@ const ReelCard = ({ reel }: { reel: typeof reelItems[0] }) => {
             </div>
           </div>
         )}
+        {/* Expand button */}
+        <button
+          className="absolute top-3 left-3 p-2 rounded-full bg-black/40 backdrop-blur-sm"
+          onClick={(e) => { e.stopPropagation(); videoRef.current?.pause(); setPlaying(false); onOpenFullScreen(); }}
+        >
+          <Maximize2 size={14} className="text-white" />
+        </button>
         {playing && (
           <button
             className="absolute top-3 right-3 p-2 rounded-full bg-black/40 backdrop-blur-sm"
@@ -122,6 +130,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
   const [activeChip, setActiveChip] = useState("For You");
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
   const [savedPosts, setSavedPosts] = useState<Set<number>>(new Set());
+  const [fullScreenReelIndex, setFullScreenReelIndex] = useState<number | null>(null);
 
   const nwePosts = feedPosts.filter((p) => p.city === "_global");
   const cityPosts = feedPosts.filter((p) => p.city === selectedCity.id);
@@ -213,7 +222,8 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
           </div>
         ) : feedItems.map((item) => {
           if (item.type === "reel") {
-            return <ReelCard key={item.data.id} reel={item.data} />;
+            const reelIndex = reelItems.findIndex(r => r.id === item.data.id);
+            return <ReelCard key={item.data.id} reel={item.data} onOpenFullScreen={() => setFullScreenReelIndex(reelIndex)} />;
           }
           const post = item.data;
           return (
@@ -288,6 +298,13 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
           );
         })}
       </div>
+      {fullScreenReelIndex !== null && (
+        <FullScreenReelViewer
+          reels={reelItems}
+          startIndex={fullScreenReelIndex}
+          onClose={() => setFullScreenReelIndex(null)}
+        />
+      )}
     </div>
   );
 };
