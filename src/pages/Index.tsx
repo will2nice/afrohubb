@@ -1,7 +1,6 @@
 import { useState } from "react";
 import BottomNav, { type Tab } from "@/components/BottomNav";
 import FeedScreen from "@/components/FeedScreen";
-import ReelsScreen from "@/components/ReelsScreen";
 import MapScreen from "@/components/MapScreen";
 import MatchScreen from "@/components/MatchScreen";
 import ExploreScreen from "@/components/ExploreScreen";
@@ -22,7 +21,6 @@ const Index = () => {
   return (
     <div className="max-w-lg mx-auto min-h-screen bg-background relative">
       {activeTab === "feed" && <FeedScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
-      {activeTab === "reels" && <ReelsScreen />}
       {activeTab === "map" && <MapScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "match" && <MatchScreen selectedCity={selectedCity} />}
       {activeTab === "explore" && <ExploreScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
