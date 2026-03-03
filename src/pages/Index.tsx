@@ -9,6 +9,7 @@ import MessagesScreen from "@/components/MessagesScreen";
 import CultureLearnScreen from "@/components/CultureLearnScreen";
 import CampusScreen from "@/components/CampusScreen";
 import PlacesScreen from "@/components/PlacesScreen";
+import AskForHelpScreen from "@/components/AskForHelpScreen";
 import ProfileScreen from "@/components/ProfileScreen";
 import { cities, type City } from "@/data/cityData";
 import { useMessages } from "@/hooks/useMessages";
@@ -30,6 +31,7 @@ const Index = () => {
       {activeTab === "messages" && <MessagesScreen />}
       {activeTab === "culture" && <CultureLearnScreen />}
       {activeTab === "campus" && <CampusScreen />}
+      {activeTab === "help" && <AskForHelpScreen />}
       {activeTab === "profile" && <ProfileScreen />}
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} unreadMessages={unreadMessages} />
     </div>
