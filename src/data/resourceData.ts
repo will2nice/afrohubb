@@ -114,4 +114,26 @@ export const cityResources: CityResource[] = [
 
   // Barcelona
   { id: 52, name: "SOS Racisme Catalunya", type: "nonprofit", category: "Civil Rights", description: "Anti-discrimination advocacy and support for Afro-Spanish communities.", city: "barcelona" },
+
+  // Dallas – Nigerian
+  { id: 53, name: "Ndi Igbo Kwenu Dallas (NIKD)", type: "nonprofit", category: "Nigerian Community", description: "Igbo cultural organization celebrating heritage, unity, and youth empowerment in DFW.", city: "dallas", website: "https://www.nikdallas.com" },
+  { id: 54, name: "Edo Association of Dallas/Fort Worth", type: "nonprofit", category: "Nigerian Community", description: "Edo cultural nonprofit fostering unity and community support across the DFW metroplex.", city: "dallas", website: "https://edoassociationdfw.com" },
+  { id: 55, name: "AKISAN Dallas Metro Chapter", type: "nonprofit", category: "Nigerian Community", description: "Akwa Ibom State Association of Nigeria – community building, cultural events, and mutual aid in Dallas.", city: "dallas", website: "https://www.akisandallas.org" },
+  { id: 56, name: "Ndokwa Association in America – DFW", type: "nonprofit", category: "Nigerian Community", description: "Civic organization for Ndokwa (Delta State) Nigerians fostering unity and charitable initiatives.", city: "dallas", website: "https://ndokwadfw.org" },
+
+  // Dallas – Sudanese & South Sudanese
+  { id: 57, name: "DFW Sudanese Community Organization", type: "nonprofit", category: "Sudanese Community", description: "Employment support, women & youth empowerment, job training, and leadership development for Sudanese families in DFW.", city: "dallas", website: "https://www.dfwsco.org" },
+  { id: 58, name: "Sudanese American Association of North Texas", type: "nonprofit", category: "Sudanese Community", description: "Community building, cultural preservation, and mutual aid for Sudanese Americans in the DFW area.", city: "dallas", website: "https://www.saantx.org" },
+
+  // Dallas – Habesha (Ethiopian & Eritrean)
+  { id: 59, name: "Ethiopian Community DFW (MAAEC)", type: "nonprofit", category: "Habesha Community", description: "Providing seamless services, cultural events, and community support for Ethiopians in Dallas-Fort Worth.", city: "dallas", website: "https://ethiopiancommunitydfw.org" },
+
+  // Houston – Nigerian
+  { id: 60, name: "Nigerian American Multicultural Council (NAMC)", type: "nonprofit", category: "Nigerian Community", description: "Strengthening Nigerian-American communities through education, mentorship, entrepreneurship, and cultural exchange.", city: "houston", website: "https://www.namchouston.org" },
+  { id: 61, name: "Eko Akete Houston", type: "nonprofit", category: "Nigerian Community", description: "Lagos-heritage nonprofit empowering children and families through community support and cultural programs.", city: "houston", website: "https://www.ekoaketehouston.com" },
+  { id: 62, name: "The Nigerian Foundation", type: "nonprofit", category: "Nigerian Community", description: "Houston-based nonprofit supporting Nigerian community development and cultural preservation.", city: "houston", website: "https://thenigerian.foundation" },
+
+  // Houston – Habesha (Ethiopian & Eritrean)
+  { id: 63, name: "Ethiopian Community Organization in Houston (ECOH)", type: "nonprofit", category: "Habesha Community", description: "Educate, engage, empower, and enrich – serving Houston's Ethiopian community with programs and events.", city: "houston", website: "https://ecohouston.org" },
+  { id: 64, name: "Eritrean American Community of Houston", type: "nonprofit", category: "Habesha Community", description: "Bridging Eritrean heritage with modern opportunities through unity, education, and community uplift.", city: "houston", website: "https://www.eritreanamericancommunityofhouston.org" },
 ];
