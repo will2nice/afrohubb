@@ -23,6 +23,7 @@ import nweMarketLady from "@/assets/nwe-market-lady.jpg";
 import nweLagosLondon from "@/assets/nwe-lagos-london.jpg";
 import nweElegance from "@/assets/nwe-elegance.jpg";
 import nweNkrumahLegacy from "@/assets/nwe-nkrumah-legacy.jpg";
+import eventDavidoFiveAlive from "@/assets/event-davido-five-alive.jpg";
 
 export interface City {
   id: string;
@@ -104,6 +105,8 @@ export const cities: City[] = [
   { id: "berlin", name: "Berlin, Germany", flag: "🇩🇪" },
   { id: "dublin", name: "Dublin, Ireland", flag: "🇮🇪" },
   { id: "copenhagen", name: "Copenhagen, Denmark", flag: "🇩🇰" },
+  { id: "vienna", name: "Vienna, Austria", flag: "🇦🇹" },
+  { id: "zurich", name: "Zurich, Switzerland", flag: "🇨🇭" },
   { id: "oslo", name: "Oslo, Norway", flag: "🇳🇴" },
   { id: "helsinki", name: "Helsinki, Finland", flag: "🇫🇮" },
   // Australia
@@ -1291,4 +1294,16 @@ export const events: EventItem[] = [
   { id: 1301, title: "AfroTech Dallas", host: "AfroTech", date: "Fri, Mar 21 · 9:00 AM", venue: "Kay Bailey Hutchison Convention Center", city: "dallas", distance: "1.0 mi", image: networkingConference, attending: 5000, free: false, price: "$199", category: "Networking" },
   { id: 1302, title: "AfroTech Houston", host: "AfroTech", date: "Sat, Mar 22 · 9:00 AM", venue: "George R. Brown Convention Center", city: "houston", distance: "0.8 mi", image: networkingConference, attending: 6000, free: false, price: "$199", category: "Networking" },
   { id: 1303, title: "AfroTech San Francisco", host: "AfroTech", date: "Fri, Mar 28 · 9:00 AM", venue: "Moscone Center", city: "sanfrancisco", distance: "0.5 mi", image: networkingConference, attending: 10000, free: false, price: "$249", category: "Networking" },
+
+  // ========== DAVIDO — FIVE ALIVE TOUR ==========
+  { id: 1400, title: "Davido — Five Alive Tour (Vienna)", host: "DMW / DMWHQ", date: "Tue, Mar 25 · 8:00 PM", venue: "Vienna, Austria", city: "vienna", distance: "", image: eventDavidoFiveAlive, attending: 8000, free: false, price: "Tickets", category: "Afrobeats", source: "posh", external_url: "https://dmwhq.com/tour" },
+  { id: 1401, title: "Davido — Five Alive Tour (Zurich)", host: "DMW / DMWHQ", date: "Thu, Mar 27 · 8:00 PM", venue: "Zurich, Switzerland", city: "zurich", distance: "", image: eventDavidoFiveAlive, attending: 7500, free: false, price: "Tickets", category: "Afrobeats", source: "posh", external_url: "https://dmwhq.com/tour" },
+  { id: 1402, title: "Davido — Five Alive Tour (Rotterdam)", host: "DMW / DMWHQ", date: "Fri, Mar 28 · 8:00 PM", venue: "Rotterdam, Netherlands", city: "rotterdam", distance: "", image: eventDavidoFiveAlive, attending: 10000, free: false, price: "Tickets", category: "Afrobeats", source: "posh", external_url: "https://dmwhq.com/tour" },
+  { id: 1403, title: "Davido — Five Alive Tour (Brussels)", host: "DMW / DMWHQ", date: "Mon, Mar 31 · 8:00 PM", venue: "Brussels, Belgium", city: "brussels", distance: "", image: eventDavidoFiveAlive, attending: 9000, free: false, price: "Tickets", category: "Afrobeats", source: "posh", external_url: "https://dmwhq.com/tour" },
+  { id: 1404, title: "Davido — Five Alive Tour (Stockholm)", host: "DMW / DMWHQ", date: "Wed, Apr 2 · 8:00 PM", venue: "Stockholm, Sweden", city: "stockholm", distance: "", image: eventDavidoFiveAlive, attending: 7000, free: false, price: "Tickets", category: "Afrobeats", source: "posh", external_url: "https://dmwhq.com/tour" },
+  { id: 1405, title: "Davido — Five Alive Tour (Copenhagen)", host: "DMW / DMWHQ", date: "Thu, Apr 3 · 8:00 PM", venue: "Copenhagen, Denmark", city: "copenhagen", distance: "", image: eventDavidoFiveAlive, attending: 6500, free: false, price: "Tickets", category: "Afrobeats", source: "posh", external_url: "https://dmwhq.com/tour" },
+  { id: 1406, title: "Davido — Five Alive Tour (Barcelona)", host: "DMW / DMWHQ", date: "Sat, Apr 5 · 8:00 PM", venue: "Barcelona, Spain", city: "barcelona", distance: "", image: eventDavidoFiveAlive, attending: 12000, free: false, price: "Tickets", category: "Afrobeats", source: "posh", external_url: "https://dmwhq.com/tour" },
+  { id: 1407, title: "Davido — Five Alive Tour (Coachella Weekend 1)", host: "DMW / DMWHQ", date: "Fri, Apr 11 · TBD", venue: "Empire Polo Club, Indio, CA", city: "losangeles", distance: "", image: eventDavidoFiveAlive, attending: 50000, free: false, price: "Tickets", category: "Festival", source: "posh", external_url: "https://dmwhq.com/tour" },
+  { id: 1408, title: "Davido — Five Alive Tour (Coachella Weekend 2)", host: "DMW / DMWHQ", date: "Fri, Apr 18 · TBD", venue: "Empire Polo Club, Indio, CA", city: "losangeles", distance: "", image: eventDavidoFiveAlive, attending: 50000, free: false, price: "Tickets", category: "Festival", source: "posh", external_url: "https://dmwhq.com/tour" },
+  { id: 1409, title: "Davido — Five Alive Tour (Lusaka)", host: "DMW / DMWHQ", date: "Fri, May 2 · 8:00 PM", venue: "Lusaka, Zambia", city: "lusaka", distance: "", image: eventDavidoFiveAlive, attending: 15000, free: false, price: "Tickets", category: "Afrobeats", source: "posh", external_url: "https://dmwhq.com/tour" },
 ];
