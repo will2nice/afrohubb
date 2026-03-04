@@ -190,6 +190,8 @@ export const cities: City[] = [
   { id: "portlouis", name: "Port Louis, Mauritius", flag: "🇲🇺" },
 ];
 
+export type FeedCategory = "post" | "local-news" | "community-update";
+
 export interface FeedPost {
   id: number;
   author: string | null;
@@ -201,11 +203,14 @@ export interface FeedPost {
   likes: number;
   comments: number;
   type: "post" | "event";
+  feedCategory?: FeedCategory;
   eventTitle?: string;
   eventDate?: string;
   eventVenue?: string;
   attending?: number;
   city: string;
+  newsSource?: string;
+  isUrgent?: boolean;
 }
 
 export interface EventItem {
@@ -449,6 +454,147 @@ export const feedPosts: FeedPost[] = [
     id: 507, author: "NWE", avatar: null, location: "Global", time: "3d ago",
     text: "Nkrumah's vision of Pan-African unity and sovereignty was interrupted, but not erased. His ideas continue to shape political thought across Africa and the diaspora. ✊🏾",
     image: nweNkrumahLegacy, likes: 6789, comments: 456, type: "post", city: "_global",
+  },
+
+  // ─── Local News ───
+  {
+    id: 600, author: "Austin Black Press", avatar: null, location: "Austin, TX", time: "2h ago",
+    text: "🚨 Austin City Council votes to increase funding for East Austin community centers by $4.2M. The new budget will support after-school programs in historically Black neighborhoods.",
+    image: null, likes: 312, comments: 67, type: "post", feedCategory: "local-news", city: "austin", newsSource: "Austin Chronicle",
+  },
+  {
+    id: 601, author: "NYC Diaspora News", avatar: null, location: "New York City, NY", time: "1h ago",
+    text: "🗽 Harlem Renaissance 2.0: New $15M cultural center announced on 125th Street. The space will feature African art galleries, coworking spaces, and a Pan-African library.",
+    image: null, likes: 1245, comments: 234, type: "post", feedCategory: "local-news", city: "nyc", newsSource: "Amsterdam News",
+  },
+  {
+    id: 602, author: "London Community Wire", avatar: null, location: "London, England", time: "3h ago",
+    text: "🇬🇧 Brixton Market faces rent hike threat — local Black-owned businesses rally for affordable lease extensions. Community petition reaches 12,000 signatures.",
+    image: null, likes: 2341, comments: 456, type: "post", feedCategory: "local-news", city: "london", newsSource: "The Voice UK",
+  },
+  {
+    id: 603, author: "ATL Black News", avatar: null, location: "Atlanta, GA", time: "4h ago",
+    text: "📢 Atlanta Public Schools launches new African Studies curriculum for all high schools starting Fall 2026. The program includes West African history, Swahili language, and diaspora studies.",
+    image: null, likes: 890, comments: 123, type: "post", feedCategory: "local-news", city: "atlanta", newsSource: "Atlanta Black Star",
+  },
+  {
+    id: 604, author: "Paris Afro News", avatar: null, location: "Paris, France", time: "5h ago",
+    text: "🇫🇷 Seine-Saint-Denis lance un programme d'aide aux entrepreneurs de la diaspora africaine — 500 bourses de €10,000 disponibles pour les startups fondées par des jeunes d'origine africaine.",
+    image: null, likes: 678, comments: 89, type: "post", feedCategory: "local-news", city: "paris", newsSource: "Le Monde Afrique",
+  },
+  {
+    id: 605, author: "Houston Black Press", avatar: null, location: "Houston, TX", time: "2h ago",
+    text: "🏥 Third Ward Health Initiative: New community clinic opens offering free health screenings and mental health services for underserved communities.",
+    image: null, likes: 567, comments: 78, type: "post", feedCategory: "local-news", city: "houston", newsSource: "Houston Forward Times",
+  },
+  {
+    id: 606, author: "Toronto Diaspora Wire", avatar: null, location: "Toronto, Canada", time: "1h ago",
+    text: "🇨🇦 Jane & Finch community center receives $8M provincial grant for youth mentorship and job training programs targeting Caribbean and African diaspora youth.",
+    image: null, likes: 456, comments: 67, type: "post", feedCategory: "local-news", city: "toronto", newsSource: "Toronto Star",
+  },
+  {
+    id: 607, author: "Dallas Urban News", avatar: null, location: "Dallas, TX", time: "3h ago",
+    text: "💼 South Dallas economic corridor project approved — 200+ new jobs expected in Black-owned business district. Construction begins this summer.",
+    image: null, likes: 345, comments: 45, type: "post", feedCategory: "local-news", city: "dallas", newsSource: "Dallas Weekly",
+  },
+  {
+    id: 608, author: "Chicago Defender", avatar: null, location: "Chicago, IL", time: "4h ago",
+    text: "🎓 South Side schools report record graduation rates among Black students for 3rd consecutive year. Community mentorship programs credited for the surge.",
+    image: null, likes: 1890, comments: 234, type: "post", feedCategory: "local-news", city: "chicago", newsSource: "Chicago Defender",
+  },
+  {
+    id: 609, author: "Miami Community News", avatar: null, location: "Miami, FL", time: "2h ago",
+    text: "🇭🇹 Little Haiti Cultural Complex expansion announced — new performing arts theater and Haitian heritage museum to open by 2027.",
+    image: null, likes: 789, comments: 112, type: "post", feedCategory: "local-news", city: "miami", newsSource: "Miami Times",
+  },
+  // Global news shown everywhere
+  {
+    id: 620, author: "NWE News", avatar: null, location: "Khartoum, Sudan", time: "1h ago",
+    text: "🚨 BREAKING: Ceasefire talks resume in Jeddah as humanitarian corridors open for aid delivery to Darfur. Over 10 million displaced since conflict began. The diaspora continues to mobilize relief efforts worldwide.",
+    image: null, likes: 4567, comments: 890, type: "post", feedCategory: "local-news", city: "_global", newsSource: "NWE", isUrgent: true,
+  },
+  {
+    id: 621, author: "NWE News", avatar: null, location: "Kinshasa, DRC", time: "3h ago",
+    text: "🇨🇩 Eastern Congo: M23 conflict intensifies near Goma. Youth-led peace organizations are calling for international attention. Over 7 million internally displaced.",
+    image: null, likes: 3456, comments: 678, type: "post", feedCategory: "local-news", city: "_global", newsSource: "NWE", isUrgent: true,
+  },
+  {
+    id: 622, author: "NWE News", avatar: null, location: "Lagos, Nigeria", time: "5h ago",
+    text: "🇳🇬 Nigerian youth unemployment hits 53% — Gen Z entrepreneurs are fighting back with tech startups. Lagos alone has seen 2,000 new startups founded by under-25s this year.",
+    image: null, likes: 2345, comments: 456, type: "post", feedCategory: "local-news", city: "_global", newsSource: "NWE",
+  },
+  {
+    id: 623, author: "NWE News", avatar: null, location: "Nairobi, Kenya", time: "6h ago",
+    text: "🇰🇪 Kenya's Gen Z protests continue to reshape politics. Youth voter registration up 340% ahead of 2027 elections. A new generation demands accountability.",
+    image: null, likes: 5678, comments: 890, type: "post", feedCategory: "local-news", city: "_global", newsSource: "NWE",
+  },
+
+  // ─── Community Updates ───
+  {
+    id: 700, author: "AfroHub Austin", avatar: null, location: "Austin, TX", time: "1h ago",
+    text: "📣 COMMUNITY UPDATE: We're organizing a neighborhood clean-up in East Austin this Saturday! Volunteers needed — free food, music, and good vibes. Sign up in the comments 👇🏾",
+    image: null, likes: 156, comments: 34, type: "post", feedCategory: "community-update", city: "austin",
+  },
+  {
+    id: 701, author: "Diaspora Connect NYC", avatar: null, location: "New York City, NY", time: "2h ago",
+    text: "🤝 MUTUAL AID: Our Harlem food drive collected 3,200 lbs of food last weekend! Next distribution is this Thursday at Schomburg Center. Volunteers still needed.",
+    image: null, likes: 890, comments: 123, type: "post", feedCategory: "community-update", city: "nyc",
+  },
+  {
+    id: 702, author: "AfroHub London", avatar: null, location: "London, England", time: "3h ago",
+    text: "📚 FREE coding bootcamp for young people of African descent in Peckham! 12-week program starts April 1st. Applications close March 15th. Spread the word! 💻",
+    image: null, likes: 1567, comments: 234, type: "post", feedCategory: "community-update", city: "london",
+  },
+  {
+    id: 703, author: "Black Professionals ATL", avatar: null, location: "Atlanta, GA", time: "4h ago",
+    text: "💼 JOB ALERT: 15 Black-owned companies in Atlanta are hiring NOW — tech, marketing, healthcare, and finance. Drop your resume in our community portal 🔗",
+    image: null, likes: 2345, comments: 456, type: "post", feedCategory: "community-update", city: "atlanta",
+  },
+  {
+    id: 704, author: "AfroHub Paris", avatar: null, location: "Paris, France", time: "2h ago",
+    text: "🏠 HOUSING HELP: Nouveau programme d'aide au logement pour les jeunes de la diaspora à Paris. Inscriptions ouvertes pour les 18-30 ans. Partagez avec vos proches !",
+    image: null, likes: 456, comments: 67, type: "post", feedCategory: "community-update", city: "paris",
+  },
+  {
+    id: 705, author: "Houston Diaspora Network", avatar: null, location: "Houston, TX", time: "5h ago",
+    text: "🩺 FREE health fair this weekend at Third Ward Community Center. Blood pressure checks, mental health resources, and nutrition workshops. Bring your family! ❤️",
+    image: null, likes: 345, comments: 45, type: "post", feedCategory: "community-update", city: "houston",
+  },
+  {
+    id: 706, author: "Toronto Pan-African Alliance", avatar: null, location: "Toronto, Canada", time: "1h ago",
+    text: "✊🏾 RALLY: March for Congo — this Sunday at Nathan Phillips Square, 2 PM. Stand with the Congolese community against the ongoing crisis in Eastern DRC. 🇨🇩",
+    image: null, likes: 2341, comments: 345, type: "post", feedCategory: "community-update", city: "toronto", isUrgent: true,
+  },
+  {
+    id: 707, author: "Minneapolis Somali Hub", avatar: null, location: "Minneapolis, MN", time: "3h ago",
+    text: "🎓 SCHOLARSHIP ALERT: 20 full scholarships for Somali-American students at University of Minnesota. Applications open now — deadline March 30th. Share widely! 🇸🇴",
+    image: null, likes: 567, comments: 89, type: "post", feedCategory: "community-update", city: "minneapolis",
+  },
+  {
+    id: 708, author: "Chicago Community Board", avatar: null, location: "Chicago, IL", time: "6h ago",
+    text: "🏗️ South Side community garden project is LIVE! We need volunteers to help build raised beds and plant this spring. Family-friendly event. All welcome! 🌱",
+    image: null, likes: 234, comments: 34, type: "post", feedCategory: "community-update", city: "chicago",
+  },
+  {
+    id: 709, author: "AfroHub Dallas", avatar: null, location: "Dallas, TX", time: "2h ago",
+    text: "🚨 SAFETY ALERT: Community watch meeting this Wednesday at MLK Community Center, 7 PM. Let's discuss neighborhood safety and support each other. All welcome.",
+    image: null, likes: 189, comments: 23, type: "post", feedCategory: "community-update", city: "dallas",
+  },
+  // Global community updates
+  {
+    id: 720, author: "NWE Community", avatar: null, location: "Global", time: "1h ago",
+    text: "🌍 DIASPORA TOPIC: What can the diaspora do to support Sudan right now? Drop your ideas, resources, and organizations below. Let's build a concrete action plan together. ✊🏾💬",
+    image: null, likes: 3456, comments: 890, type: "post", feedCategory: "community-update", city: "_global",
+  },
+  {
+    id: 721, author: "NWE Community", avatar: null, location: "Global", time: "3h ago",
+    text: "💬 COMMUNITY QUESTION: Should African nations create a unified digital currency? Weigh in below — this conversation matters for our economic future. 🌍💰",
+    image: null, likes: 2345, comments: 567, type: "post", feedCategory: "community-update", city: "_global",
+  },
+  {
+    id: 722, author: "NWE Community", avatar: null, location: "Global", time: "5h ago",
+    text: "📢 YOUTH VOICES: We want to hear from Gen Z across the diaspora — what issues matter most to you? Education? Jobs? Mental health? Safety? Comment below and we'll feature your stories. 🗣️",
+    image: null, likes: 4567, comments: 1234, type: "post", feedCategory: "community-update", city: "_global",
   },
 ];
 
