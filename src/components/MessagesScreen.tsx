@@ -1,10 +1,15 @@
 import { useState } from "react";
-import { Search, Users, MessageSquarePlus, Loader2, BadgeCheck } from "lucide-react";
+import { Search, Users, MessageSquarePlus, Loader2, BadgeCheck, Heart, Check, X, ChevronDown, ChevronRight, Calendar } from "lucide-react";
 import { useMessages, type ConversationWithDetails } from "@/hooks/useMessages";
+import { useLikeRequests } from "@/hooks/useLikeRequests";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import DMChatScreen from "@/components/DMChatScreen";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { useToast } from "@/hooks/use-toast";
 import founderWilly from "@/assets/founder-willy.jpg";
 import founderDaniel from "@/assets/founder-tom.jpg";
+import { useQuery } from "@tanstack/react-query";
 
 const founderProfiles = [
   {
@@ -25,23 +30,70 @@ const founderProfiles = [
 
 const MessagesScreen = () => {
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
+  const [activeChatContact, setActiveChatContact] = useState<{ name: string; photo: string; age?: number; vibe?: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const { conversations, loadingConversations } = useMessages();
+  const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
+  const { conversations, loadingConversations, startConversation } = useMessages();
+  const { pendingReceived, respondToRequest, isLoading: loadingRequests } = useLikeRequests();
   const { user } = useAuth();
+  const { toast } = useToast();
 
-  // Find the active conversation details
+  // Fetch profiles for pending request senders
+  const senderIds = pendingReceived.map(r => r.sender_id);
+  const { data: senderProfiles = [] } = useQuery({
+    queryKey: ["profiles", senderIds],
+    queryFn: async () => {
+      if (!senderIds.length) return [];
+      const { data } = await supabase
+        .from("profiles")
+        .select("id, display_name, avatar_url, vibe, age, city")
+        .in("id", senderIds);
+      return data || [];
+    },
+    enabled: senderIds.length > 0,
+  });
+
+  // Fetch events the user RSVPed to for grouping
+  const { data: userRsvps = [] } = useQuery({
+    queryKey: ["user-rsvps", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const { data } = await supabase
+        .from("event_rsvps")
+        .select("event_id")
+        .eq("user_id", user.id);
+      return data || [];
+    },
+    enabled: !!user,
+  });
+
+  const rsvpEventIds = userRsvps.map(r => r.event_id);
+  const { data: rsvpEvents = [] } = useQuery({
+    queryKey: ["rsvp-events", rsvpEventIds],
+    queryFn: async () => {
+      if (!rsvpEventIds.length) return [];
+      const { data } = await supabase
+        .from("events")
+        .select("id, title, image_url, date")
+        .in("id", rsvpEventIds);
+      return data || [];
+    },
+    enabled: rsvpEventIds.length > 0,
+  });
+
+  // Find active conversation details
   const activeConv = conversations.find(c => c.id === activeConversationId);
 
-  if (activeConversationId && activeConv) {
+  if (activeConversationId && (activeConv || activeChatContact)) {
     return (
       <DMChatScreen
         conversationId={activeConversationId}
-        contactName={activeConv.other_user?.display_name || activeConv.title || "Chat"}
-        contactPhoto={activeConv.other_user?.avatar_url || ""}
-        contactAge={activeConv.other_user?.age || undefined}
-        contactVibe={activeConv.other_user?.vibe || ""}
+        contactName={activeChatContact?.name || activeConv?.other_user?.display_name || activeConv?.title || "Chat"}
+        contactPhoto={activeChatContact?.photo || activeConv?.other_user?.avatar_url || ""}
+        contactAge={activeChatContact?.age || activeConv?.other_user?.age || undefined}
+        contactVibe={activeChatContact?.vibe || activeConv?.other_user?.vibe || ""}
         isOnline={false}
-        onBack={() => setActiveConversationId(null)}
+        onBack={() => { setActiveConversationId(null); setActiveChatContact(null); }}
       />
     );
   }
@@ -51,6 +103,21 @@ const MessagesScreen = () => {
     const name = c.other_user?.display_name || c.title || "";
     return name.toLowerCase().includes(searchQuery.toLowerCase());
   });
+
+  // Group conversations: DMs (non-event) vs event-based
+  const dmConversations = filtered.filter(c => c.type === "dm" && !c.event_id);
+  const eventConversations = filtered.filter(c => c.event_id);
+
+  // Group event conversations by event
+  const eventGroups: Record<string, { event: { id: string; title: string; image_url: string | null }; convs: ConversationWithDetails[] }> = {};
+  for (const conv of eventConversations) {
+    const eid = conv.event_id!;
+    if (!eventGroups[eid]) {
+      const ev = rsvpEvents.find(e => e.id === eid);
+      eventGroups[eid] = { event: ev || { id: eid, title: "Event", image_url: null }, convs: [] };
+    }
+    eventGroups[eid].convs.push(conv);
+  }
 
   const formatTime = (dateStr: string | null) => {
     if (!dateStr) return "";
@@ -68,17 +135,90 @@ const MessagesScreen = () => {
 
   const totalUnread = conversations.reduce((sum, c) => sum + c.unread_count, 0);
 
+  const toggleEventExpand = (eventId: string) => {
+    setExpandedEvents(prev => {
+      const next = new Set(prev);
+      if (next.has(eventId)) next.delete(eventId);
+      else next.add(eventId);
+      return next;
+    });
+  };
+
+  const handleAcceptRequest = async (requestId: string, senderId: string) => {
+    respondToRequest.mutate({ requestId, status: "accepted" }, {
+      onSuccess: async () => {
+        try {
+          const convId = await startConversation(senderId);
+          const profile = senderProfiles.find(p => p.id === senderId);
+          setActiveChatContact(profile ? { name: profile.display_name, photo: profile.avatar_url || "", age: profile.age || undefined, vibe: profile.vibe || "" } : null);
+          setActiveConversationId(convId);
+        } catch {
+          toast({ title: "Matched! 🎉", description: "Chat will appear in your messages." });
+        }
+      },
+    });
+  };
+
+  const handleRejectRequest = (requestId: string) => {
+    respondToRequest.mutate({ requestId, status: "rejected" });
+  };
+
+  const renderConversationItem = (conv: ConversationWithDetails) => {
+    const name = conv.other_user?.display_name || conv.title || "Chat";
+    const avatar = conv.other_user?.avatar_url;
+    const isGroup = conv.type !== "dm";
+
+    return (
+      <button
+        key={conv.id}
+        onClick={() => setActiveConversationId(conv.id)}
+        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors border-b border-border/30"
+      >
+        <div className="relative">
+          {avatar ? (
+            <img src={avatar} alt={name} className="w-12 h-12 rounded-full object-cover ring-2 ring-border" />
+          ) : (
+            <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
+              {isGroup ? <Users size={20} className="text-muted-foreground" /> : <span className="text-lg font-bold text-muted-foreground">{name.charAt(0)}</span>}
+            </div>
+          )}
+        </div>
+        <div className="flex-1 min-w-0 text-left">
+          <div className="flex items-center justify-between">
+            <p className={`text-sm font-semibold text-foreground truncate ${conv.unread_count > 0 ? "font-bold" : ""}`}>{name}</p>
+            <span className="text-xs text-muted-foreground ml-2">{formatTime(conv.last_message_at)}</span>
+          </div>
+          <p className={`text-xs truncate mt-0.5 ${conv.unread_count > 0 ? "text-foreground font-medium" : "text-muted-foreground"}`}>
+            {conv.last_message || "No messages yet"}
+          </p>
+        </div>
+        {conv.unread_count > 0 && (
+          <div className="w-5 h-5 rounded-full gradient-gold flex items-center justify-center flex-shrink-0">
+            <span className="text-[10px] font-bold text-primary-foreground">{conv.unread_count}</span>
+          </div>
+        )}
+      </button>
+    );
+  };
+
   return (
     <div className="min-h-screen pb-24">
       <header className="sticky top-0 z-40 glass border-b border-border px-4 py-3">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center justify-between mb-3">
             <h1 className="font-display text-xl font-bold text-gradient-gold">Messages</h1>
-            {totalUnread > 0 && (
-              <span className="px-2 py-0.5 rounded-full gradient-gold text-[10px] font-bold text-primary-foreground">
-                {totalUnread} unread
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {pendingReceived.length > 0 && (
+                <span className="px-2 py-0.5 rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">
+                  {pendingReceived.length} request{pendingReceived.length > 1 ? "s" : ""}
+                </span>
+              )}
+              {totalUnread > 0 && (
+                <span className="px-2 py-0.5 rounded-full gradient-gold text-[10px] font-bold text-primary-foreground">
+                  {totalUnread} unread
+                </span>
+              )}
+            </div>
           </div>
           <div className="relative">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -94,97 +234,211 @@ const MessagesScreen = () => {
       </header>
 
       <div className="max-w-lg mx-auto">
-        {/* Pinned Founder Messages */}
-        {founderProfiles.map((founder) => (
-          <div
-            key={founder.id}
-            className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors border-b border-border/30 cursor-pointer"
-          >
-            <div className="relative">
-              {founder.avatar ? (
-                <img src={founder.avatar} alt={founder.name} className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/40" />
-              ) : (
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/60 to-primary/30 flex items-center justify-center ring-2 ring-primary/40">
-                  <span className="text-lg font-bold text-primary-foreground">{founder.name.charAt(0)}</span>
-                </div>
+        <Tabs defaultValue="chats" className="w-full">
+          <TabsList className="w-full grid grid-cols-3 mx-0 rounded-none border-b border-border bg-transparent h-11">
+            <TabsTrigger value="chats" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-xs font-semibold">
+              Chats
+            </TabsTrigger>
+            <TabsTrigger value="events" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-xs font-semibold">
+              Events
+            </TabsTrigger>
+            <TabsTrigger value="requests" className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary data-[state=active]:bg-transparent data-[state=active]:shadow-none text-xs font-semibold relative">
+              Requests
+              {pendingReceived.length > 0 && (
+                <span className="absolute -top-0.5 -right-1 w-4 h-4 rounded-full bg-destructive text-[9px] font-bold text-destructive-foreground flex items-center justify-center">
+                  {pendingReceived.length}
+                </span>
               )}
-              <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full gradient-gold flex items-center justify-center">
-                <BadgeCheck size={10} className="text-primary-foreground" />
-              </div>
-            </div>
-            <div className="flex-1 min-w-0 text-left">
-              <div className="flex items-center gap-1.5">
-                <p className="text-sm font-bold text-foreground">{founder.name}</p>
-                <span className="px-1.5 py-0.5 rounded text-[9px] font-bold gradient-gold text-primary-foreground leading-none">{founder.role}</span>
-              </div>
-              <p className="text-xs text-muted-foreground truncate mt-0.5">{founder.message}</p>
-            </div>
-          </div>
-        ))}
+            </TabsTrigger>
+          </TabsList>
 
-        {loadingConversations ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 size={24} className="text-primary animate-spin" />
-          </div>
-        ) : filtered.length === 0 && !searchQuery ? (
-          <div className="text-center py-12 px-4">
-            <div className="w-16 h-16 rounded-full bg-secondary mx-auto flex items-center justify-center mb-4">
-              <MessageSquarePlus size={28} className="text-muted-foreground" />
-            </div>
-            <h3 className="font-display text-lg font-bold text-foreground mb-1">No messages yet</h3>
-            <p className="text-sm text-muted-foreground">
-              Start connecting! Match with someone or message an event attendee to start a conversation.
-            </p>
-          </div>
-        ) : filtered.length === 0 && searchQuery ? (
-          <div className="text-center py-12 px-4">
-            <p className="text-sm text-muted-foreground">No conversations match your search</p>
-          </div>
-        ) : (
-          filtered.map((conv) => {
-            const name = conv.other_user?.display_name || conv.title || "Chat";
-            const avatar = conv.other_user?.avatar_url;
-            const isGroup = conv.type !== "dm";
-
-            return (
-              <button
-                key={conv.id}
-                onClick={() => setActiveConversationId(conv.id)}
-                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors border-b border-border/30"
+          {/* === CHATS TAB === */}
+          <TabsContent value="chats" className="mt-0">
+            {/* Pinned Founder Messages */}
+            {founderProfiles.map((founder) => (
+              <div
+                key={founder.id}
+                className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors border-b border-border/30 cursor-pointer"
               >
                 <div className="relative">
-                  {avatar ? (
-                    <img src={avatar} alt={name} className="w-12 h-12 rounded-full object-cover ring-2 ring-border" />
-                  ) : (
-                    <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
-                      {isGroup ? (
-                        <Users size={20} className="text-muted-foreground" />
-                      ) : (
-                        <span className="text-lg font-bold text-muted-foreground">{name.charAt(0)}</span>
-                      )}
-                    </div>
-                  )}
+                  <img src={founder.avatar} alt={founder.name} className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/40" />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full gradient-gold flex items-center justify-center">
+                    <BadgeCheck size={10} className="text-primary-foreground" />
+                  </div>
                 </div>
                 <div className="flex-1 min-w-0 text-left">
-                  <div className="flex items-center justify-between">
-                    <p className={`text-sm font-semibold text-foreground truncate ${conv.unread_count > 0 ? "font-bold" : ""}`}>
-                      {name}
-                    </p>
-                    <span className="text-xs text-muted-foreground ml-2">{formatTime(conv.last_message_at)}</span>
+                  <div className="flex items-center gap-1.5">
+                    <p className="text-sm font-bold text-foreground">{founder.name}</p>
+                    <span className="px-1.5 py-0.5 rounded text-[9px] font-bold gradient-gold text-primary-foreground leading-none">{founder.role}</span>
                   </div>
-                  <p className={`text-xs truncate mt-0.5 ${conv.unread_count > 0 ? "text-foreground font-medium" : "text-muted-foreground"}`}>
-                    {conv.last_message || "No messages yet"}
-                  </p>
+                  <p className="text-xs text-muted-foreground truncate mt-0.5">{founder.message}</p>
                 </div>
-                {conv.unread_count > 0 && (
-                  <div className="w-5 h-5 rounded-full gradient-gold flex items-center justify-center flex-shrink-0">
-                    <span className="text-[10px] font-bold text-primary-foreground">{conv.unread_count}</span>
+              </div>
+            ))}
+
+            {loadingConversations ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 size={24} className="text-primary animate-spin" />
+              </div>
+            ) : dmConversations.length === 0 ? (
+              <div className="text-center py-12 px-4">
+                <div className="w-16 h-16 rounded-full bg-secondary mx-auto flex items-center justify-center mb-4">
+                  <MessageSquarePlus size={28} className="text-muted-foreground" />
+                </div>
+                <h3 className="font-display text-lg font-bold text-foreground mb-1">No messages yet</h3>
+                <p className="text-sm text-muted-foreground">Match with someone to start chatting!</p>
+              </div>
+            ) : (
+              dmConversations.map(renderConversationItem)
+            )}
+          </TabsContent>
+
+          {/* === EVENTS TAB === */}
+          <TabsContent value="events" className="mt-0">
+            {rsvpEvents.length === 0 && Object.keys(eventGroups).length === 0 ? (
+              <div className="text-center py-12 px-4">
+                <div className="w-16 h-16 rounded-full bg-secondary mx-auto flex items-center justify-center mb-4">
+                  <Calendar size={28} className="text-muted-foreground" />
+                </div>
+                <h3 className="font-display text-lg font-bold text-foreground mb-1">No event chats</h3>
+                <p className="text-sm text-muted-foreground">RSVP to events and match with attendees to start chatting!</p>
+              </div>
+            ) : (
+              <>
+                {/* Show events user is attending as expandable groups */}
+                {rsvpEvents.map(event => {
+                  const group = eventGroups[event.id];
+                  const convs = group?.convs || [];
+                  const isExpanded = expandedEvents.has(event.id);
+
+                  return (
+                    <div key={event.id} className="border-b border-border/30">
+                      <button
+                        onClick={() => toggleEventExpand(event.id)}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors"
+                      >
+                        {event.image_url ? (
+                          <img src={event.image_url} alt={event.title} className="w-10 h-10 rounded-lg object-cover" />
+                        ) : (
+                          <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
+                            <Calendar size={18} className="text-muted-foreground" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0 text-left">
+                          <p className="text-sm font-semibold text-foreground truncate">{event.title}</p>
+                          <p className="text-[11px] text-muted-foreground">
+                            {convs.length} chat{convs.length !== 1 ? "s" : ""} · {new Date(event.date).toLocaleDateString()}
+                          </p>
+                        </div>
+                        {isExpanded ? (
+                          <ChevronDown size={16} className="text-muted-foreground" />
+                        ) : (
+                          <ChevronRight size={16} className="text-muted-foreground" />
+                        )}
+                      </button>
+                      {isExpanded && convs.length > 0 && (
+                        <div className="pl-4 bg-secondary/20">
+                          {convs.map(renderConversationItem)}
+                        </div>
+                      )}
+                      {isExpanded && convs.length === 0 && (
+                        <div className="pl-4 pr-4 py-4 bg-secondary/20">
+                          <p className="text-xs text-muted-foreground text-center">No chats yet for this event. Match with attendees!</p>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+
+                {/* Show event convs that don't match user's RSVPs */}
+                {Object.entries(eventGroups)
+                  .filter(([eid]) => !rsvpEvents.some(e => e.id === eid))
+                  .map(([eid, group]) => (
+                    <div key={eid} className="border-b border-border/30">
+                      <button
+                        onClick={() => toggleEventExpand(eid)}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors"
+                      >
+                        <div className="w-10 h-10 rounded-lg bg-secondary flex items-center justify-center">
+                          <Calendar size={18} className="text-muted-foreground" />
+                        </div>
+                        <div className="flex-1 min-w-0 text-left">
+                          <p className="text-sm font-semibold text-foreground truncate">{group.event.title}</p>
+                          <p className="text-[11px] text-muted-foreground">{group.convs.length} chat{group.convs.length !== 1 ? "s" : ""}</p>
+                        </div>
+                        {expandedEvents.has(eid) ? <ChevronDown size={16} className="text-muted-foreground" /> : <ChevronRight size={16} className="text-muted-foreground" />}
+                      </button>
+                      {expandedEvents.has(eid) && (
+                        <div className="pl-4 bg-secondary/20">{group.convs.map(renderConversationItem)}</div>
+                      )}
+                    </div>
+                  ))}
+              </>
+            )}
+          </TabsContent>
+
+          {/* === REQUESTS TAB === */}
+          <TabsContent value="requests" className="mt-0">
+            {loadingRequests ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 size={24} className="text-primary animate-spin" />
+              </div>
+            ) : pendingReceived.length === 0 ? (
+              <div className="text-center py-12 px-4">
+                <div className="w-16 h-16 rounded-full bg-secondary mx-auto flex items-center justify-center mb-4">
+                  <Heart size={28} className="text-muted-foreground" />
+                </div>
+                <h3 className="font-display text-lg font-bold text-foreground mb-1">No pending requests</h3>
+                <p className="text-sm text-muted-foreground">When someone likes you, their request will appear here.</p>
+              </div>
+            ) : (
+              pendingReceived.map((req) => {
+                const profile = senderProfiles.find(p => p.id === req.sender_id);
+                if (!profile) return null;
+
+                return (
+                  <div key={req.id} className="flex items-center gap-3 px-4 py-3 border-b border-border/30">
+                    <div className="relative">
+                      {profile.avatar_url ? (
+                        <img src={profile.avatar_url} alt={profile.display_name} className="w-14 h-14 rounded-full object-cover ring-2 ring-primary/40" />
+                      ) : (
+                        <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center ring-2 ring-primary/40">
+                          <span className="text-xl font-bold text-muted-foreground">{profile.display_name.charAt(0)}</span>
+                        </div>
+                      )}
+                      <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-destructive flex items-center justify-center">
+                        <Heart size={10} className="text-destructive-foreground fill-current" />
+                      </div>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-foreground">
+                        {profile.display_name}{profile.age ? `, ${profile.age}` : ""}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground truncate">
+                        {profile.vibe || profile.city || "Wants to connect"} · {formatTime(req.created_at)}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleRejectRequest(req.id)}
+                        className="w-9 h-9 rounded-full bg-secondary border border-border flex items-center justify-center hover:bg-destructive/10 transition-colors"
+                      >
+                        <X size={16} className="text-muted-foreground" />
+                      </button>
+                      <button
+                        onClick={() => handleAcceptRequest(req.id, req.sender_id)}
+                        disabled={respondToRequest.isPending}
+                        className="w-9 h-9 rounded-full gradient-gold flex items-center justify-center shadow-gold hover:opacity-90 transition-opacity"
+                      >
+                        <Check size={16} className="text-primary-foreground" />
+                      </button>
+                    </div>
                   </div>
-                )}
-              </button>
-            );
-          })
-        )}
+                );
+              })
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
