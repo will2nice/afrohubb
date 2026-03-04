@@ -1,10 +1,14 @@
 import { useState, useRef } from "react";
-import { Search, Bell, Heart, MessageCircle, Share2, Bookmark, Users, Play, Volume2, VolumeX, Maximize2, Newspaper, Megaphone, Film, LayoutGrid, AlertTriangle, Send, BookOpen } from "lucide-react";
+import { Search, Bell, Heart, MessageCircle, Share2, Bookmark, Users, Play, Volume2, VolumeX, Maximize2, Newspaper, Megaphone, Film, LayoutGrid, AlertTriangle, Send, BookOpen, PenSquare } from "lucide-react";
 import { feedPosts, type City, type FeedCategory } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
 import FeedStories from "@/components/FeedStories";
 import FullScreenReelViewer from "@/components/FullScreenReelViewer";
 import CultureLearnScreen from "@/components/CultureLearnScreen";
+import CreatePostSheet from "@/components/CreatePostSheet";
+import CommentSheet from "@/components/CommentSheet";
+import { usePosts, type PostComment } from "@/hooks/usePosts";
+import { useAuth } from "@/contexts/AuthContext";
 
 // ─── Feed content-type tabs ───
 const feedTabs = [
@@ -18,7 +22,7 @@ const feedTabs = [
 
 type FeedTab = typeof feedTabs[number]["id"];
 
-const chips = ["For You", "Nearby", "Diaspora", "Culture", "Business", "Dating Tips", "New Here"];
+const chips = ["For You", "Nearby", "Diaspora", "Culture", "Business", "New Here"];
 
 const chipTagMap: Record<string, (post: typeof feedPosts[0]) => boolean> = {
   "For You": () => true,
@@ -26,7 +30,6 @@ const chipTagMap: Record<string, (post: typeof feedPosts[0]) => boolean> = {
   "Diaspora": (p) => (p.text?.toLowerCase().includes("diaspora") || p.text?.toLowerCase().includes("moved") || p.text?.toLowerCase().includes("new") || p.text?.toLowerCase().includes("community")) ?? false,
   "Culture": (p) => (p.text?.toLowerCase().includes("art") || p.text?.toLowerCase().includes("fashion") || p.text?.toLowerCase().includes("culture") || p.text?.toLowerCase().includes("music") || p.type === "event") ?? false,
   "Business": (p) => (p.text?.toLowerCase().includes("tech") || p.text?.toLowerCase().includes("build") || p.text?.toLowerCase().includes("business") || p.text?.toLowerCase().includes("network") || p.text?.toLowerCase().includes("professional")) ?? false,
-  "Dating Tips": (p) => (p.text?.toLowerCase().includes("love") || p.text?.toLowerCase().includes("date") || p.text?.toLowerCase().includes("vibe") || p.text?.toLowerCase().includes("looking")) ?? false,
   "New Here": (p) => (p.text?.toLowerCase().includes("moved") || p.text?.toLowerCase().includes("new") || p.text?.toLowerCase().includes("just") || p.text?.toLowerCase().includes("first")) ?? false,
 };
 
@@ -121,16 +124,12 @@ const NewsPostCard = ({ post, liked, saved, onLike, onSave }: {
         <p className="text-xs text-muted-foreground">{post.location} · {post.time}</p>
       </div>
       <div className="flex items-center gap-1.5">
-        {post.isUrgent && (
-          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-destructive text-destructive-foreground uppercase">Urgent</span>
-        )}
+        {post.isUrgent && <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-destructive text-destructive-foreground uppercase">Urgent</span>}
         <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-destructive/10 text-destructive uppercase tracking-wider">News</span>
       </div>
     </div>
     {post.text && <p className="px-4 pb-3 text-sm text-foreground leading-relaxed">{post.text}</p>}
-    {post.newsSource && (
-      <p className="px-4 pb-2 text-[11px] text-muted-foreground">Source: {post.newsSource}</p>
-    )}
+    {post.newsSource && <p className="px-4 pb-2 text-[11px] text-muted-foreground">Source: {post.newsSource}</p>}
     <div className="flex items-center gap-1 px-3 py-3 border-t border-border">
       <button onClick={onLike} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-secondary transition-colors">
         <Heart size={18} className={liked ? "text-red-500" : "text-muted-foreground"} fill={liked ? "currentColor" : "none"} />
@@ -140,9 +139,7 @@ const NewsPostCard = ({ post, liked, saved, onLike, onSave }: {
         <MessageCircle size={18} className="text-muted-foreground" />
         <span className="text-xs text-muted-foreground">{post.comments}</span>
       </button>
-      <button className="p-1.5 rounded-full hover:bg-secondary transition-colors">
-        <Share2 size={18} className="text-muted-foreground" />
-      </button>
+      <button className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
       <div className="flex-1" />
       <button onClick={onSave} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
         <Bookmark size={18} className={saved ? "text-primary" : "text-muted-foreground"} fill={saved ? "currentColor" : "none"} />
@@ -176,9 +173,7 @@ const CommunityUpdateCard = ({ post, liked, saved, onLike, onSave }: {
         <MessageCircle size={18} className="text-muted-foreground" />
         <span className="text-xs text-muted-foreground">{post.comments}</span>
       </button>
-      <button className="p-1.5 rounded-full hover:bg-secondary transition-colors">
-        <Share2 size={18} className="text-muted-foreground" />
-      </button>
+      <button className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
       <div className="flex-1" />
       <button onClick={onSave} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
         <Bookmark size={18} className={saved ? "text-primary" : "text-muted-foreground"} fill={saved ? "currentColor" : "none"} />
@@ -201,32 +196,70 @@ const SuggestTopicCard = () => {
           </div>
           <p className="text-sm font-semibold text-foreground">Suggest a Topic</p>
         </div>
-        <p className="text-xs text-muted-foreground mb-3">What issues matter to your community? Suggest topics for discussion.</p>
+        <p className="text-xs text-muted-foreground mb-3">What issues matter to your community?</p>
       </div>
       {submitted ? (
         <div className="px-4 pb-4">
           <div className="bg-primary/10 rounded-xl p-3 text-center">
             <p className="text-sm font-semibold text-primary">Thanks for your voice! ✊🏾</p>
-            <p className="text-xs text-muted-foreground mt-1">Your topic has been submitted for community review.</p>
           </div>
         </div>
       ) : (
         <div className="px-4 pb-4 flex gap-2">
-          <input
-            value={topic}
-            onChange={(e) => setTopic(e.target.value)}
-            placeholder="e.g. Youth mental health resources..."
-            className="flex-1 bg-secondary rounded-full px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/30"
-          />
-          <button
-            onClick={() => { if (topic.trim()) setSubmitted(true); }}
-            disabled={!topic.trim()}
-            className="p-2.5 rounded-full gradient-gold text-primary-foreground disabled:opacity-40 transition-transform hover:scale-105 active:scale-95"
-          >
+          <input value={topic} onChange={(e) => setTopic(e.target.value)} placeholder="e.g. Youth mental health..." className="flex-1 bg-secondary rounded-full px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:ring-2 focus:ring-primary/30" />
+          <button onClick={() => { if (topic.trim()) setSubmitted(true); }} disabled={!topic.trim()} className="p-2.5 rounded-full gradient-gold text-primary-foreground disabled:opacity-40">
             <Send size={16} />
           </button>
         </div>
       )}
+    </article>
+  );
+};
+
+// ─── DB Post Card ───
+const DbPostCard = ({ post, onLike, onComment }: {
+  post: import("@/hooks/usePosts").Post;
+  onLike: () => void;
+  onComment: () => void;
+}) => {
+  const [saved, setSaved] = useState(false);
+
+  return (
+    <article className="bg-card rounded-2xl border border-border overflow-hidden shadow-card animate-slide-up">
+      <div className="flex items-center gap-3 px-4 pt-4 pb-2">
+        {post.profile?.avatar_url ? (
+          <img src={post.profile.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover ring-2 ring-border" />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center">
+            <Users size={18} className="text-muted-foreground" />
+          </div>
+        )}
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-foreground truncate">{post.profile?.display_name || "User"}</p>
+          <p className="text-xs text-muted-foreground">
+            {post.profile?.city || "Earth"} · {new Date(post.created_at).toLocaleDateString()}
+          </p>
+        </div>
+      </div>
+      {post.content && <p className="px-4 pb-3 text-sm text-foreground leading-relaxed">{post.content}</p>}
+      {post.image_url && (
+        <img src={post.image_url} alt="" className="w-full aspect-[4/3] object-cover" loading="lazy" />
+      )}
+      <div className="flex items-center gap-1 px-3 py-3 border-t border-border">
+        <button onClick={onLike} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-secondary transition-colors">
+          <Heart size={18} className={post.user_liked ? "text-red-500" : "text-muted-foreground"} fill={post.user_liked ? "currentColor" : "none"} />
+          <span className="text-xs text-muted-foreground">{post.likes_count}</span>
+        </button>
+        <button onClick={onComment} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full hover:bg-secondary transition-colors">
+          <MessageCircle size={18} className="text-muted-foreground" />
+          <span className="text-xs text-muted-foreground">{post.comments_count}</span>
+        </button>
+        <button className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
+        <div className="flex-1" />
+        <button onClick={() => setSaved(!saved)} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
+          <Bookmark size={18} className={saved ? "text-primary" : "text-muted-foreground"} fill={saved ? "currentColor" : "none"} />
+        </button>
+      </div>
     </article>
   );
 };
@@ -238,6 +271,12 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
   const [savedPosts, setSavedPosts] = useState<Set<number>>(new Set());
   const [fullScreenReelIndex, setFullScreenReelIndex] = useState<number | null>(null);
+  const [showCreatePost, setShowCreatePost] = useState(false);
+  const [commentingPost, setCommentingPost] = useState<string | null>(null);
+  const [comments, setComments] = useState<PostComment[]>([]);
+  const { user } = useAuth();
+
+  const { posts: dbPosts, toggleLike: dbToggleLike, addComment, fetchComments, refetch: refetchPosts } = usePosts(selectedCity.id);
 
   const nwePosts = feedPosts.filter((p) => p.city === "_global");
   const cityPosts = feedPosts.filter((p) => p.city === selectedCity.id);
@@ -245,10 +284,9 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
   const filteredCity = activeChip === "For You" ? cityPosts : cityPosts.filter(filterFn);
   const allPosts = [...nwePosts, ...filteredCity];
 
-  // Filter by feed tab
   const getFilteredPosts = () => {
     switch (activeFeedTab) {
-      case "reels": return []; // reels shown separately
+      case "reels": return [];
       case "posts": return allPosts.filter(p => !p.feedCategory);
       case "local-news": return allPosts.filter(p => p.feedCategory === "local-news");
       case "community": return allPosts.filter(p => p.feedCategory === "community-update");
@@ -265,7 +303,12 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
     setSavedPosts(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
   };
 
-  // Interleave reels into "all" feed
+  const openComments = async (postId: string) => {
+    setCommentingPost(postId);
+    const data = await fetchComments(postId);
+    setComments(data);
+  };
+
   const buildFeed = () => {
     if (activeFeedTab === "reels") return [];
     const result: ({ type: "post"; data: typeof posts[0] } | { type: "reel"; data: typeof reelItems[0] } | { type: "suggest-topic" })[] = [];
@@ -273,11 +316,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
     const showReels = activeFeedTab === "all";
 
     posts.forEach((post, i) => {
-      // Pin urgent news to top
-      if (i === 0 && post.isUrgent) {
-        result.push({ type: "post", data: post });
-        return;
-      }
+      if (i === 0 && post.isUrgent) { result.push({ type: "post", data: post }); return; }
       result.push({ type: "post", data: post });
       if (showReels && (i + 1) % 3 === 0 && reelIdx < reelItems.length) {
         result.push({ type: "reel", data: reelItems[reelIdx] });
@@ -285,12 +324,8 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
       }
     });
 
-    // Add "suggest a topic" card after every 6 items for community tab, or near end for others
-    if (activeFeedTab === "community" && result.length > 3) {
-      result.splice(3, 0, { type: "suggest-topic" });
-    } else if (result.length > 5) {
-      result.splice(5, 0, { type: "suggest-topic" });
-    }
+    if (activeFeedTab === "community" && result.length > 3) result.splice(3, 0, { type: "suggest-topic" });
+    else if (result.length > 5) result.splice(5, 0, { type: "suggest-topic" });
 
     return result;
   };
@@ -308,7 +343,6 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
       return <CommunityUpdateCard key={post.id} post={post} liked={isLiked} saved={isSaved} onLike={() => toggleLike(post.id)} onSave={() => toggleSave(post.id)} />;
     }
 
-    // Standard post/event card
     return (
       <article key={post.id} className="bg-card rounded-2xl border border-border overflow-hidden shadow-card animate-slide-up">
         {post.author && (
@@ -355,9 +389,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
             <MessageCircle size={18} className="text-muted-foreground" />
             <span className="text-xs text-muted-foreground">{post.comments}</span>
           </button>
-          <button className="p-1.5 rounded-full hover:bg-secondary transition-colors">
-            <Share2 size={18} className="text-muted-foreground" />
-          </button>
+          <button className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
           <div className="flex-1" />
           <button onClick={() => toggleSave(post.id)} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
             <Bookmark size={18} className={savedPosts.has(post.id) ? "text-primary" : "text-muted-foreground"} fill={savedPosts.has(post.id) ? "currentColor" : "none"} />
@@ -395,9 +427,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
               <button
                 key={tab.id}
                 onClick={() => setActiveFeedTab(tab.id)}
-                className={`flex-1 flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-all relative ${
-                  isActive ? "text-primary" : "text-muted-foreground"
-                }`}
+                className={`flex-1 flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-all relative ${isActive ? "text-primary" : "text-muted-foreground"}`}
               >
                 <Icon size={18} />
                 <span>{tab.label}</span>
@@ -408,10 +438,10 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
         </div>
       </div>
 
-      {/* Stories (only on All and Posts tabs) */}
+      {/* Stories */}
       {(activeFeedTab === "all" || activeFeedTab === "posts") && <FeedStories />}
 
-      {/* Sub-chips (only on All and Posts tabs) */}
+      {/* Sub-chips */}
       {(activeFeedTab === "all" || activeFeedTab === "posts") && (
         <div className="px-4 pb-3 overflow-x-auto scrollbar-hide max-w-lg mx-auto">
           <div className="flex gap-2 w-max">
@@ -420,9 +450,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
                 key={chip}
                 onClick={() => setActiveChip(chip)}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                  activeChip === chip
-                    ? "gradient-gold text-primary-foreground shadow-gold"
-                    : "bg-secondary text-secondary-foreground hover:bg-muted"
+                  activeChip === chip ? "gradient-gold text-primary-foreground shadow-gold" : "bg-secondary text-secondary-foreground hover:bg-muted"
                 }`}
               >
                 {chip}
@@ -447,7 +475,6 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
       {/* Feed */}
       {activeFeedTab !== "reels" && activeFeedTab !== "learn" && (
         <div className="px-4 space-y-4 max-w-lg mx-auto">
-          {/* Urgent banner for news tab */}
           {activeFeedTab === "local-news" && (
             <div className="bg-destructive/10 border border-destructive/30 rounded-2xl p-4 flex items-start gap-3 animate-slide-up">
               <AlertTriangle size={20} className="text-destructive mt-0.5 shrink-0" />
@@ -458,7 +485,17 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
             </div>
           )}
 
-          {feedItems.length === 0 ? (
+          {/* DB posts from real users */}
+          {dbPosts.map((dbPost) => (
+            <DbPostCard
+              key={dbPost.id}
+              post={dbPost}
+              onLike={() => dbToggleLike(dbPost.id)}
+              onComment={() => openComments(dbPost.id)}
+            />
+          ))}
+
+          {feedItems.length === 0 && dbPosts.length === 0 ? (
             <div className="text-center py-16">
               <p className="text-muted-foreground text-sm">No posts match this filter yet</p>
               <button onClick={() => { setActiveChip("For You"); setActiveFeedTab("all"); }} className="mt-3 text-sm text-primary font-semibold">Show all posts</button>
@@ -472,6 +509,38 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
             return renderPostCard(item.data);
           })}
         </div>
+      )}
+
+      {/* FAB to create post */}
+      {user && activeFeedTab !== "learn" && (
+        <button
+          onClick={() => setShowCreatePost(true)}
+          className="fixed bottom-24 right-4 z-30 w-14 h-14 rounded-full gradient-gold shadow-gold flex items-center justify-center hover:scale-110 active:scale-95 transition-transform"
+        >
+          <PenSquare size={22} className="text-primary-foreground" />
+        </button>
+      )}
+
+      {showCreatePost && (
+        <CreatePostSheet
+          cityId={selectedCity.id}
+          cityName={selectedCity.name}
+          onClose={() => setShowCreatePost(false)}
+          onPostCreated={refetchPosts}
+        />
+      )}
+
+      {commentingPost && (
+        <CommentSheet
+          postId={commentingPost}
+          comments={comments}
+          onClose={() => setCommentingPost(null)}
+          onSubmit={async (content) => {
+            await addComment(commentingPost, content);
+            const updated = await fetchComments(commentingPost);
+            setComments(updated);
+          }}
+        />
       )}
 
       {fullScreenReelIndex !== null && (
