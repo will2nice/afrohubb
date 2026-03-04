@@ -226,6 +226,8 @@ export interface EventItem {
   free: boolean;
   price?: string;
   category?: string;
+  source?: string;
+  external_url?: string;
 }
 
 export const feedPosts: FeedPost[] = [
@@ -606,7 +608,7 @@ export const events: EventItem[] = [
     id: SOUNDCLASH_EVENT_ID, title: "SOUNDCLASH VOL. 7: Afrobeats vs Dancehall", host: "JRIPSET",
     date: "Sat, Feb 28 · 10:00 PM", venue: "The One ATX", city: "austin",
     distance: "1.0 mi", image: "https://posh-images-alts-production.s3.amazonaws.com/698bc2fc3b2fdfed43f050c3/1400x1750.webp", attending: 328, free: false,
-    price: "$20+", category: "Afrobeats",
+    price: "$20+", category: "Afrobeats", source: "posh", external_url: "https://posh.vip/e/soundclash-vol-7-afrobeats-vs-dancehall",
   },
   // Austin
   {
