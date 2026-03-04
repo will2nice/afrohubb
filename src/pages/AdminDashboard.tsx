@@ -4,8 +4,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Users, LogOut, ArrowLeft, Search, UserCheck, UserX, Trash2,
-  TrendingUp, Gift, Clock, RefreshCw
+  Users, LogOut, ArrowLeft, Search, Trash2,
+  TrendingUp, Gift, Clock, RefreshCw, Instagram, MapPin, Filter
 } from "lucide-react";
 
 interface WaitlistEntry {
@@ -18,6 +18,12 @@ interface WaitlistEntry {
   referral_count: number;
   position: number;
   created_at: string;
+  avatar_url: string | null;
+  age: number | null;
+  city: string | null;
+  country: string | null;
+  bio: string | null;
+  instagram_handle: string | null;
 }
 
 const AdminDashboard = () => {
@@ -28,6 +34,8 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"position" | "referrals" | "date">("position");
+  const [countryFilter, setCountryFilter] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
 
   const fetchEntries = async () => {
     setLoading(true);
@@ -47,9 +55,7 @@ const AdminDashboard = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchEntries();
-  }, [sortBy]);
+  useEffect(() => { fetchEntries(); }, [sortBy]);
 
   const handleDelete = async (id: string) => {
     const { error } = await supabase.from("waitlist_signups").delete().eq("id", id);
@@ -61,12 +67,17 @@ const AdminDashboard = () => {
     }
   };
 
-  const filtered = entries.filter(
-    (e) =>
+  const uniqueCountries = [...new Set(entries.map((e) => e.country).filter(Boolean))] as string[];
+
+  const filtered = entries.filter((e) => {
+    const matchesSearch =
       e.name.toLowerCase().includes(search.toLowerCase()) ||
       e.email.toLowerCase().includes(search.toLowerCase()) ||
-      (e.phone && e.phone.includes(search))
-  );
+      (e.phone && e.phone.includes(search)) ||
+      (e.city && e.city.toLowerCase().includes(search.toLowerCase()));
+    const matchesCountry = !countryFilter || e.country === countryFilter;
+    return matchesSearch && matchesCountry;
+  });
 
   const totalReferrals = entries.reduce((sum, e) => sum + e.referral_count, 0);
 
@@ -114,27 +125,54 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Search + Sort */}
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search by name, email, phone..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm"
-            />
+        {/* Search + Sort + Filters */}
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search name, email, city..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/40 text-sm"
+              />
+            </div>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+              className="px-3 py-2.5 rounded-xl bg-secondary text-foreground border border-border text-sm focus:outline-none"
+            >
+              <option value="position">Position</option>
+              <option value="referrals">Top Referrers</option>
+              <option value="date">Newest</option>
+            </select>
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className={`p-2.5 rounded-xl border transition-colors ${showFilters ? "bg-primary/10 border-primary/30 text-primary" : "bg-secondary border-border text-muted-foreground"}`}
+            >
+              <Filter size={18} />
+            </button>
           </div>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
-            className="px-3 py-2.5 rounded-xl bg-secondary text-foreground border border-border text-sm focus:outline-none"
-          >
-            <option value="position">Position</option>
-            <option value="referrals">Top Referrers</option>
-            <option value="date">Newest</option>
-          </select>
+          {showFilters && uniqueCountries.length > 0 && (
+            <div className="flex gap-2 flex-wrap">
+              <button
+                onClick={() => setCountryFilter("")}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${!countryFilter ? "gradient-gold text-primary-foreground" : "bg-secondary text-muted-foreground"}`}
+              >
+                All Countries
+              </button>
+              {uniqueCountries.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setCountryFilter(c === countryFilter ? "" : c)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${countryFilter === c ? "gradient-gold text-primary-foreground" : "bg-secondary text-muted-foreground"}`}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* List */}
@@ -145,28 +183,51 @@ const AdminDashboard = () => {
             <div className="text-center py-12 text-muted-foreground text-sm">No signups found</div>
           ) : (
             filtered.map((entry) => (
-              <div
-                key={entry.id}
-                className="bg-card border border-border rounded-xl p-4 flex items-start gap-3"
-              >
-                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <span className="text-sm font-bold text-primary">#{entry.position}</span>
-                </div>
+              <div key={entry.id} className="bg-card border border-border rounded-xl p-4 flex items-start gap-3">
+                {/* Avatar or position badge */}
+                {entry.avatar_url ? (
+                  <div className="relative shrink-0">
+                    <img
+                      src={entry.avatar_url}
+                      alt={entry.name}
+                      className="w-14 h-14 rounded-xl object-cover ring-2 ring-border"
+                    />
+                    <span className="absolute -top-1.5 -left-1.5 bg-primary text-primary-foreground text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                      #{entry.position}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <span className="text-sm font-bold text-primary">#{entry.position}</span>
+                  </div>
+                )}
+
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-foreground text-sm truncate">{entry.name}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="font-semibold text-foreground text-sm truncate">{entry.name}</p>
+                    {entry.age && (
+                      <span className="text-xs text-muted-foreground">{entry.age}y</span>
+                    )}
+                  </div>
                   <p className="text-xs text-muted-foreground truncate">{entry.email}</p>
-                  {entry.phone && (
-                    <p className="text-xs text-muted-foreground">{entry.phone}</p>
+                  {entry.bio && (
+                    <p className="text-xs text-foreground/70 mt-1 line-clamp-2">{entry.bio}</p>
                   )}
-                  <div className="flex items-center gap-3 mt-1.5">
+                  <div className="flex items-center gap-3 mt-1.5 flex-wrap">
+                    {(entry.city || entry.country) && (
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <MapPin size={12} />
+                        {[entry.city, entry.country].filter(Boolean).join(", ")}
+                      </span>
+                    )}
+                    {entry.instagram_handle && (
+                      <span className="text-xs text-muted-foreground flex items-center gap-1">
+                        <Instagram size={12} /> @{entry.instagram_handle.replace("@", "")}
+                      </span>
+                    )}
                     <span className="text-xs text-primary font-medium flex items-center gap-1">
                       <Gift size={12} /> {entry.referral_count} referrals
                     </span>
-                    {entry.referred_by && (
-                      <span className="text-xs text-muted-foreground flex items-center gap-1">
-                        <UserCheck size={12} /> via {entry.referred_by}
-                      </span>
-                    )}
                     <span className="text-xs text-muted-foreground flex items-center gap-1">
                       <Clock size={12} /> {new Date(entry.created_at).toLocaleDateString()}
                     </span>

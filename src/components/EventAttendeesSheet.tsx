@@ -1,11 +1,14 @@
-import { useState } from "react";
-import { X, Heart, MessageCircle, Users, Sparkles, Lock, Crown } from "lucide-react";
+import { useState, useEffect } from "react";
+import { X, Heart, MessageCircle, Users, Sparkles, Lock, Crown, Megaphone, Send } from "lucide-react";
 import { type EventItem } from "@/data/cityData";
 import { getEventAttendees, type Attendee, ON_APP_WOMEN, ON_APP_MEN, ON_APP_TOTAL, TOTAL_ATTENDING, FREE_ATTENDEE_LIMIT } from "@/data/eventAttendees";
 import DMChatScreen, { type ChatContact } from "@/components/DMChatScreen";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useToast } from "@/hooks/use-toast";
 import SubscriptionModal from "@/components/SubscriptionModal";
+import { useEventPromoters } from "@/hooks/useEventPromoters";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface EventAttendeesSheetProps {
   event: EventItem;
@@ -16,11 +19,56 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   const [filter, setFilter] = useState<"women" | "men" | "all">("women");
   const [chatContact, setChatContact] = useState<ChatContact | null>(null);
   const [showSubscription, setShowSubscription] = useState(false);
+  const [broadcastMsg, setBroadcastMsg] = useState("");
+  const [sendingBroadcast, setSendingBroadcast] = useState(false);
+  const [broadcasts, setBroadcasts] = useState<{ id: string; message: string; created_at: string }[]>([]);
   const { females, males } = getEventAttendees(event.id);
   const userRole = useUserRole();
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { isPromoter } = useEventPromoters(String(event.id));
 
-  const isPaid = userRole === "admin"; // admins = paid subscribers for now
+  const isPaid = userRole === "admin";
+
+  // Fetch broadcasts for this event
+  useEffect(() => {
+    const fetchBroadcasts = async () => {
+      const { data } = await supabase
+        .from("event_broadcasts" as any)
+        .select("id, message, created_at")
+        .eq("event_id", String(event.id))
+        .order("created_at", { ascending: false })
+        .limit(5);
+      if (data) setBroadcasts(data as any);
+    };
+    fetchBroadcasts();
+
+    const channel = supabase
+      .channel(`broadcasts-${event.id}`)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "event_broadcasts", filter: `event_id=eq.${event.id}` }, (payload) => {
+        setBroadcasts((prev) => [payload.new as any, ...prev].slice(0, 5));
+      })
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [event.id]);
+
+  const sendBroadcast = async () => {
+    if (!broadcastMsg.trim() || !user) return;
+    setSendingBroadcast(true);
+    const { error } = await supabase.from("event_broadcasts" as any).insert({
+      event_id: String(event.id),
+      sender_id: user.id,
+      message: broadcastMsg.trim(),
+    } as any);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      setBroadcastMsg("");
+      toast({ title: "Broadcast sent! 📢" });
+    }
+    setSendingBroadcast(false);
+  };
 
   const allAttendees =
     filter === "women" ? females :
@@ -120,6 +168,39 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
             ))}
           </div>
         </div>
+
+        {/* Broadcast messages banner */}
+        {broadcasts.length > 0 && (
+          <div className="px-4 py-2 space-y-1.5">
+            {broadcasts.slice(0, 2).map((b) => (
+              <div key={b.id} className="flex items-start gap-2 bg-primary/10 rounded-xl px-3 py-2">
+                <Megaphone size={14} className="text-primary mt-0.5 shrink-0" />
+                <p className="text-xs text-foreground flex-1">{b.message}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Promoter broadcast input */}
+        {isPromoter && (
+          <div className="px-4 py-2 border-b border-border">
+            <div className="flex gap-2">
+              <input
+                value={broadcastMsg}
+                onChange={(e) => setBroadcastMsg(e.target.value)}
+                placeholder="Broadcast to all attendees..."
+                className="flex-1 px-3 py-2 rounded-xl bg-secondary text-foreground text-sm placeholder:text-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/40"
+              />
+              <button
+                onClick={sendBroadcast}
+                disabled={sendingBroadcast || !broadcastMsg.trim()}
+                className="p-2.5 rounded-xl gradient-gold text-primary-foreground disabled:opacity-50"
+              >
+                <Send size={16} />
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Attendees list */}
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 pb-24">
