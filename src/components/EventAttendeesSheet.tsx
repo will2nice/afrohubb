@@ -19,6 +19,8 @@ interface EventAttendeesSheetProps {
   onClose: () => void;
 }
 
+const isUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
 const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   const [filter, setFilter] = useState<"women" | "men" | "all">("women");
   const [activeChatConvId, setActiveChatConvId] = useState<string | null>(null);
@@ -28,6 +30,9 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   const [sendingBroadcast, setSendingBroadcast] = useState(false);
   const [broadcasts, setBroadcasts] = useState<{ id: string; message: string; created_at: string }[]>([]);
   const [viewingProfile, setViewingProfile] = useState<(Attendee | SoundclashAttendee) | null>(null);
+  // Local like state for mock (non-UUID) demo profiles
+  const [localLikes, setLocalLikes] = useState<Set<string>>(new Set());
+  const [localMatches, setLocalMatches] = useState<Set<string>>(new Set());
   const userRole = useUserRole();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -100,6 +105,12 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
     : totalAttending;
 
   const getLikeStatus = (personId: string): "none" | "sent" | "received" | "matched" => {
+    if (!isUuid(personId)) {
+      // Mock profile — use local state
+      if (localMatches.has(personId)) return "matched";
+      if (localLikes.has(personId)) return "sent";
+      return "none";
+    }
     if (isMutualMatch(personId)) return "matched";
     if (hasLiked(personId)) return "sent";
     if (hasReceivedFrom(personId)) return "received";
@@ -111,10 +122,23 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
     if (!user) { toast({ title: "Sign in to like", variant: "destructive" }); return; }
 
     const personId = String(person.id);
-    const status = getLikeStatus(personId);
 
+    if (!isUuid(personId)) {
+      // Mock profile — simulate like → after a moment auto-match for demo
+      if (localLikes.has(personId) || localMatches.has(personId)) return;
+      setLocalLikes((prev) => new Set(prev).add(personId));
+      toast({ title: "Like sent! 💛", description: "They'll be notified of your interest." });
+      // Simulate them liking back after 1.5s for demo
+      setTimeout(() => {
+        setLocalLikes((prev) => { const n = new Set(prev); n.delete(personId); return n; });
+        setLocalMatches((prev) => new Set(prev).add(personId));
+        toast({ title: "It's a match! 🎉", description: `${person.name} liked you back! You can now message them.` });
+      }, 1500);
+      return;
+    }
+
+    const status = getLikeStatus(personId);
     if (status === "received") {
-      // They liked us, accept = mutual match
       const req = getReceivedRequest(personId);
       if (req) respondToRequest.mutate({ requestId: req.id, status: "accepted" });
     } else if (status === "none") {
@@ -127,8 +151,17 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
     if (!user) { toast({ title: "Sign in first", variant: "destructive" }); return; }
 
     const personId = String(person.id);
-    if (!isMutualMatch(personId)) {
+    const matched = !isUuid(personId) ? localMatches.has(personId) : isMutualMatch(personId);
+
+    if (!matched) {
       toast({ title: "Match first 💛", description: "You both need to like each other before messaging." });
+      return;
+    }
+
+    if (!isUuid(personId)) {
+      // Mock profile — open demo chat without DB
+      setActiveChatContact({ name: person.name, photo: person.photo, age: person.age, vibe: person.vibe });
+      setActiveChatConvId("demo");
       return;
     }
 
