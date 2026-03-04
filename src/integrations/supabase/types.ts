@@ -75,6 +75,70 @@ export type Database = {
           },
         ]
       }
+      event_broadcasts: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          message: string
+          sender_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          message: string
+          sender_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          message?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_broadcasts_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_promoters: {
+        Row: {
+          created_at: string
+          event_id: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          id?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_promoters_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       event_rsvps: {
         Row: {
           created_at: string
@@ -416,9 +480,15 @@ export type Database = {
       }
       waitlist_signups: {
         Row: {
+          age: number | null
+          avatar_url: string | null
+          bio: string | null
+          city: string | null
+          country: string | null
           created_at: string
           email: string
           id: string
+          instagram_handle: string | null
           name: string
           phone: string | null
           position: number
@@ -427,9 +497,15 @@ export type Database = {
           referred_by: string | null
         }
         Insert: {
+          age?: number | null
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           email: string
           id?: string
+          instagram_handle?: string | null
           name: string
           phone?: string | null
           position?: number
@@ -438,9 +514,15 @@ export type Database = {
           referred_by?: string | null
         }
         Update: {
+          age?: number | null
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          country?: string | null
           created_at?: string
           email?: string
           id?: string
+          instagram_handle?: string | null
           name?: string
           phone?: string | null
           position?: number
