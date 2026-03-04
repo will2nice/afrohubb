@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
-import { X, Heart, MessageCircle, Users, Sparkles, Lock, Crown, Megaphone, Send } from "lucide-react";
+import { X, Heart, MessageCircle, Users, Sparkles, Lock, Crown, Megaphone, Send, Clock, Check } from "lucide-react";
 import { type EventItem, SOUNDCLASH_EVENT_ID } from "@/data/cityData";
 import { getEventAttendees, type Attendee, ON_APP_WOMEN, ON_APP_MEN, ON_APP_TOTAL, TOTAL_ATTENDING, FREE_ATTENDEE_LIMIT } from "@/data/eventAttendees";
 import { getSoundclashAttendees, SOUNDCLASH_TOTAL, SOUNDCLASH_ON_APP, SOUNDCLASH_WOMEN, SOUNDCLASH_MEN, type SoundclashAttendee } from "@/data/soundclashAttendees";
-import DMChatScreen, { type ChatContact } from "@/components/DMChatScreen";
+import DMChatScreen from "@/components/DMChatScreen";
+import ProfileViewModal from "@/components/ProfileViewModal";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useToast } from "@/hooks/use-toast";
 import SubscriptionModal from "@/components/SubscriptionModal";
 import { useEventPromoters } from "@/hooks/useEventPromoters";
+import { useLikeRequests } from "@/hooks/useLikeRequests";
+import { useMessages } from "@/hooks/useMessages";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -18,25 +21,26 @@ interface EventAttendeesSheetProps {
 
 const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   const [filter, setFilter] = useState<"women" | "men" | "all">("women");
-  const [chatContact, setChatContact] = useState<ChatContact | null>(null);
+  const [activeChatConvId, setActiveChatConvId] = useState<string | null>(null);
+  const [activeChatContact, setActiveChatContact] = useState<{ name: string; photo: string; age?: number; vibe?: string } | null>(null);
   const [showSubscription, setShowSubscription] = useState(false);
   const [broadcastMsg, setBroadcastMsg] = useState("");
   const [sendingBroadcast, setSendingBroadcast] = useState(false);
   const [broadcasts, setBroadcasts] = useState<{ id: string; message: string; created_at: string }[]>([]);
+  const [viewingProfile, setViewingProfile] = useState<(Attendee | SoundclashAttendee) | null>(null);
   const userRole = useUserRole();
   const { toast } = useToast();
   const { user } = useAuth();
   const { isPromoter } = useEventPromoters(String(event.id));
+  const { sendLike, hasLiked, hasReceivedFrom, isMutualMatch, respondToRequest, getReceivedRequest } = useLikeRequests();
+  const { startConversation } = useMessages();
 
   const isSoundclash = event.id === SOUNDCLASH_EVENT_ID;
-
-  // Get attendees based on event type
   const standardAttendees = !isSoundclash ? getEventAttendees(event.id) : { females: [], males: [] };
   const soundclashData = isSoundclash ? getSoundclashAttendees() : null;
-
   const isPaid = userRole === "admin";
 
-  // Fetch broadcasts for this event
+  // Fetch broadcasts
   useEffect(() => {
     const fetchBroadcasts = async () => {
       const { data } = await supabase
@@ -76,7 +80,6 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
     setSendingBroadcast(false);
   };
 
-  // Resolve attendee lists
   const females = isSoundclash ? (soundclashData?.females ?? []) : standardAttendees.females;
   const males = isSoundclash ? (soundclashData?.males ?? []) : standardAttendees.males;
   const totalAttending = isSoundclash ? SOUNDCLASH_TOTAL : TOTAL_ATTENDING;
@@ -89,7 +92,6 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
     filter === "men" ? males :
     [...females, ...males].sort((a: any, b: any) => (b.mutualFriends || 0) - (a.mutualFriends || 0));
 
-  // Free users see only FREE_ATTENDEE_LIMIT
   const visibleAttendees = isPaid ? allAttendees : allAttendees.slice(0, FREE_ATTENDEE_LIMIT);
   const hiddenCount = isPaid ? 0 : Math.max(0, allAttendees.length - FREE_ATTENDEE_LIMIT);
 
@@ -97,32 +99,60 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
     ? `${(totalAttending / 1000).toFixed(1)}K`
     : totalAttending;
 
-  const openChat = (person: Attendee | SoundclashAttendee) => {
-    if (!isPaid) {
-      setShowSubscription(true);
-      return;
-    }
-    setChatContact({
-      id: person.id,
-      name: person.name,
-      age: person.age,
-      photo: person.photo,
-      vibe: person.vibe,
-      online: true,
-    });
+  const getLikeStatus = (personId: string): "none" | "sent" | "received" | "matched" => {
+    if (isMutualMatch(personId)) return "matched";
+    if (hasLiked(personId)) return "sent";
+    if (hasReceivedFrom(personId)) return "received";
+    return "none";
   };
 
-  if (chatContact) {
+  const handleLike = (person: Attendee | SoundclashAttendee) => {
+    if (!isPaid) { setShowSubscription(true); return; }
+    if (!user) { toast({ title: "Sign in to like", variant: "destructive" }); return; }
+
+    const personId = String(person.id);
+    const status = getLikeStatus(personId);
+
+    if (status === "received") {
+      // They liked us, accept = mutual match
+      const req = getReceivedRequest(personId);
+      if (req) respondToRequest.mutate({ requestId: req.id, status: "accepted" });
+    } else if (status === "none") {
+      sendLike.mutate(personId);
+    }
+  };
+
+  const handleMessage = async (person: Attendee | SoundclashAttendee) => {
+    if (!isPaid) { setShowSubscription(true); return; }
+    if (!user) { toast({ title: "Sign in first", variant: "destructive" }); return; }
+
+    const personId = String(person.id);
+    if (!isMutualMatch(personId)) {
+      toast({ title: "Match first 💛", description: "You both need to like each other before messaging." });
+      return;
+    }
+
+    try {
+      const convId = await startConversation(personId);
+      setActiveChatContact({ name: person.name, photo: person.photo, age: person.age, vibe: person.vibe });
+      setActiveChatConvId(convId);
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    }
+  };
+
+  // DM chat view
+  if (activeChatConvId && activeChatContact) {
     return (
       <DMChatScreen
-        conversationId=""
-        contactName={chatContact.name}
-        contactPhoto={chatContact.photo}
-        contactAge={chatContact.age}
-        contactVibe={chatContact.vibe}
+        conversationId={activeChatConvId}
+        contactName={activeChatContact.name}
+        contactPhoto={activeChatContact.photo}
+        contactAge={activeChatContact.age}
+        contactVibe={activeChatContact.vibe}
         isOnline={true}
         eventContext={event.title}
-        onBack={() => setChatContact(null)}
+        onBack={() => { setActiveChatConvId(null); setActiveChatContact(null); }}
       />
     );
   }
@@ -148,7 +178,6 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
             </button>
           </div>
 
-          {/* Stats */}
           <div className="flex items-center gap-3 mb-3">
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary">
               <Users size={14} className="text-primary" />
@@ -160,7 +189,6 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
             </div>
           </div>
 
-          {/* Gender filter */}
           <div className="flex gap-2">
             {([
               { key: "women" as const, label: `Women (${onAppWomen})`, emoji: "👩🏾" },
@@ -183,7 +211,7 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
           </div>
         </div>
 
-        {/* Broadcast messages banner */}
+        {/* Broadcasts */}
         {broadcasts.length > 0 && (
           <div className="px-4 py-2 space-y-1.5">
             {broadcasts.slice(0, 2).map((b) => (
@@ -218,28 +246,32 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
 
         {/* Attendees list */}
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 pb-24">
-          {visibleAttendees.map((person) => (
-            <AttendeeCard
-              key={person.id}
-              person={person}
-              isPaid={isPaid}
-              onMessage={() => openChat(person)}
-              onLikeBlocked={() => {
-                if (!isPaid) setShowSubscription(true);
-              }}
-            />
-          ))}
+          {visibleAttendees.map((person) => {
+            const personId = String(person.id);
+            const status = getLikeStatus(personId);
 
-          {/* Paywall blur wall */}
+            return (
+              <AttendeeCard
+                key={person.id}
+                person={person}
+                isPaid={isPaid}
+                likeStatus={status}
+                onPhotoClick={() => setViewingProfile(person)}
+                onLike={() => handleLike(person)}
+                onMessage={() => handleMessage(person)}
+                onLikeBlocked={() => { if (!isPaid) setShowSubscription(true); }}
+              />
+            );
+          })}
+
+          {/* Paywall */}
           {hiddenCount > 0 && (
             <div className="relative mt-4">
-              {/* Blurred preview cards */}
               <div className="space-y-3 blur-md pointer-events-none select-none">
                 {allAttendees.slice(FREE_ATTENDEE_LIMIT, FREE_ATTENDEE_LIMIT + 3).map((person) => (
-                  <AttendeeCard key={person.id} person={person} isPaid={true} onMessage={() => {}} onLikeBlocked={() => {}} />
+                  <AttendeeCard key={person.id} person={person} isPaid={true} likeStatus="none" onPhotoClick={() => {}} onLike={() => {}} onMessage={() => {}} onLikeBlocked={() => {}} />
                 ))}
               </div>
-              {/* Upgrade overlay */}
               <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/60 backdrop-blur-sm rounded-2xl">
                 <Crown size={32} className="text-primary mb-2" />
                 <p className="font-display font-bold text-foreground text-base">+{hiddenCount.toLocaleString()} more people</p>
@@ -263,21 +295,51 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
           )}
         </div>
       </div>
+
+      {/* Profile modal */}
+      {viewingProfile && (
+        <ProfileViewModal
+          person={viewingProfile}
+          onClose={() => setViewingProfile(null)}
+          onLike={() => { handleLike(viewingProfile); }}
+          onMessage={() => { handleMessage(viewingProfile); setViewingProfile(null); }}
+          liked={hasLiked(String(viewingProfile.id))}
+          likeStatus={getLikeStatus(String(viewingProfile.id))}
+        />
+      )}
+
       <SubscriptionModal open={showSubscription} onOpenChange={setShowSubscription} />
     </div>
   );
 };
 
-const AttendeeCard = ({ person, isPaid, onMessage, onLikeBlocked }: { person: Attendee | SoundclashAttendee; isPaid: boolean; onMessage: () => void; onLikeBlocked: () => void }) => {
-  const [liked, setLiked] = useState(false);
-
+const AttendeeCard = ({
+  person,
+  isPaid,
+  likeStatus,
+  onPhotoClick,
+  onLike,
+  onMessage,
+  onLikeBlocked,
+}: {
+  person: Attendee | SoundclashAttendee;
+  isPaid: boolean;
+  likeStatus: "none" | "sent" | "received" | "matched";
+  onPhotoClick: () => void;
+  onLike: () => void;
+  onMessage: () => void;
+  onLikeBlocked: () => void;
+}) => {
   return (
     <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-2xl border border-border">
-      <img
-        src={person.photo}
-        alt="Attendee"
-        className="w-16 h-16 rounded-xl object-cover ring-2 ring-border"
-      />
+      {/* Clickable photo */}
+      <button onClick={onPhotoClick} className="shrink-0 focus:outline-none">
+        <img
+          src={person.photo}
+          alt={person.name}
+          className="w-16 h-16 rounded-xl object-cover ring-2 ring-border hover:ring-primary transition-all cursor-pointer active:scale-95"
+        />
+      </button>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
           {isPaid ? (
@@ -304,25 +366,49 @@ const AttendeeCard = ({ person, isPaid, onMessage, onLikeBlocked }: { person: At
           {isPaid && person.mutualFriends > 0 && (
             <span className="text-[10px] text-primary font-medium">👥 {person.mutualFriends} mutual</span>
           )}
+          {/* Like status indicator */}
+          {isPaid && likeStatus === "sent" && (
+            <span className="text-[10px] text-primary font-medium flex items-center gap-0.5">
+              <Clock size={10} /> Pending
+            </span>
+          )}
+          {isPaid && likeStatus === "received" && (
+            <span className="text-[10px] text-primary font-medium flex items-center gap-0.5">
+              <Heart size={10} className="fill-primary" /> Likes you!
+            </span>
+          )}
+          {isPaid && likeStatus === "matched" && (
+            <span className="text-[10px] font-medium flex items-center gap-0.5 text-green-500">
+              <Check size={10} /> Matched
+            </span>
+          )}
         </div>
       </div>
       <div className="flex flex-col gap-2">
         <button
           onClick={() => {
             if (!isPaid) { onLikeBlocked(); return; }
-            setLiked(!liked);
+            onLike();
           }}
           className={`p-2 rounded-full transition-all ${
-            liked ? "bg-red-500/20" : "hover:bg-secondary"
+            likeStatus === "matched" || likeStatus === "sent" ? "bg-red-500/20" : "hover:bg-secondary"
           }`}
         >
           <Heart
             size={18}
-            className={liked ? "text-red-500 fill-red-500" : "text-muted-foreground"}
+            className={likeStatus !== "none" ? "text-red-500 fill-red-500" : "text-muted-foreground"}
           />
         </button>
-        <button onClick={onMessage} className="p-2 rounded-full hover:bg-secondary transition-colors">
-          <MessageCircle size={18} className="text-primary" />
+        <button
+          onClick={() => {
+            if (!isPaid) { onLikeBlocked(); return; }
+            onMessage();
+          }}
+          className={`p-2 rounded-full transition-colors ${
+            likeStatus === "matched" ? "hover:bg-primary/20" : "hover:bg-secondary opacity-50"
+          }`}
+        >
+          <MessageCircle size={18} className={likeStatus === "matched" ? "text-primary" : "text-muted-foreground"} />
         </button>
       </div>
     </div>
