@@ -241,6 +241,46 @@ const groupIcon = new L.DivIcon({
   iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40],
 });
 
+// Map community category to country flag
+const categoryFlagMap: Record<string, string> = {
+  "Nigerian Community": "🇳🇬",
+  "Ghanaian Community": "🇬🇭",
+  "Ethiopian Community": "🇪🇹",
+  "Habesha Community": "🇪🇹🇪🇷",
+  "Eritrean Community": "🇪🇷",
+  "Somali Community": "🇸🇴",
+  "Sudanese Community": "🇸🇩",
+  "South Sudanese Community": "🇸🇸",
+  "Congolese Community": "🇨🇩",
+  "Kenyan Community": "🇰🇪",
+  "Haitian Community": "🇭🇹",
+};
+
+const createResourceIcon = (category: string, type: string) => {
+  const flag = categoryFlagMap[category];
+  if (flag && type === "nonprofit") {
+    return new L.DivIcon({
+      className: "custom-marker",
+      html: `<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,hsl(150,70%,40%),hsl(170,60%,45%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);position:relative;">
+        <span style="font-size:20px;line-height:1;">${flag.length > 4 ? flag.slice(0, 2) : flag}</span>
+      </div>`,
+      iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40],
+    });
+  }
+  // Default nonprofit icon (no diaspora flag)
+  if (type === "nonprofit") {
+    return new L.DivIcon({
+      className: "custom-marker",
+      html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(150,70%,40%),hsl(170,60%,45%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+      </div>`,
+      iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
+    });
+  }
+  // Hiring icon
+  return hiringIcon;
+};
+
 const nonprofitIcon = new L.DivIcon({
   className: "custom-marker",
   html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(150,70%,40%),hsl(170,60%,45%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
@@ -609,7 +649,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {showResources && allResources.map((resource) => (
-          <Marker key={`resource-${resource.id}`} position={[resource.lat, resource.lng]} icon={resource.type === "nonprofit" ? nonprofitIcon : hiringIcon}>
+          <Marker key={`resource-${resource.id}`} position={[resource.lat, resource.lng]} icon={createResourceIcon(resource.category, resource.type)}>
             <Popup className="afro-popup" maxWidth={300}>
               <div className="p-2">
                 {/* Type & Category badges */}
