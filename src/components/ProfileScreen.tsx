@@ -7,12 +7,7 @@ import { useToast } from "@/hooks/use-toast";
 import SubscriptionModal from "@/components/SubscriptionModal";
 import profileMan1 from "@/assets/profile-man-1.jpg";
 
-// Dating mode photos - best portraits & attractive pics
-import datingPortrait1 from "@/assets/dating-portrait-1.jpg";
-import datingPortrait2 from "@/assets/dating-portrait-2.jpg";
-import datingPortrait3 from "@/assets/dating-portrait-3.jpg";
-import datingPortrait4 from "@/assets/dating-portrait-4.jpg";
-import datingPortrait5 from "@/assets/dating-portrait-5.jpg";
+// Dating mode removed - keeping imports for potential future use
 
 // Community mode photos - activities, sports, hangouts
 import communityBasketball from "@/assets/community-basketball.jpg";
@@ -36,7 +31,7 @@ const stats = [
 
 const menuItems = [
   { icon: Edit3, label: "Edit Profile", desc: "Photos, bio, prompts" },
-  { icon: Heart, label: "Preferences", desc: "Dating, matching, filters" },
+  { icon: Heart, label: "Preferences", desc: "Matching, filters" },
   { icon: Shield, label: "Safety & Privacy", desc: "Blocking, visibility" },
   { icon: Crown, label: "AfroHub Plus", desc: "Premium features", gold: true, action: "subscription" },
   { icon: Settings, label: "Settings", desc: "Account, notifications" },
@@ -57,13 +52,6 @@ interface FeedPost {
 }
 
 const modeFeedPosts: Record<string, FeedPost[]> = {
-  dating: [
-    { id: 1, photo: datingPortrait1, caption: "Golden hour hits different when you're feeling yourself ✨😏", location: "Houston, TX", likes: 347, comments: 42, timeAgo: "2h" },
-    { id: 2, photo: datingPortrait2, caption: "Rooftop dinner vibes. The city looks beautiful from up here 🌆🍷", location: "Austin, TX", likes: 289, comments: 31, timeAgo: "8h" },
-    { id: 3, photo: datingPortrait3, caption: "Beach day. Salt water and good energy only 🌊☀️", location: "Galveston, TX", likes: 412, comments: 54, timeAgo: "1d" },
-    { id: 4, photo: datingPortrait4, caption: "Cultural vibes at the art showcase tonight. Ankara never misses 🎨🇬🇭", location: "Houston, TX", likes: 521, comments: 67, timeAgo: "2d" },
-    { id: 5, photo: datingPortrait5, caption: "Cozy Sunday. Good music, good coffee, good vibes ☕🎶", location: "Dallas, TX", likes: 256, comments: 22, timeAgo: "3d" },
-  ],
   community: [
     { id: 1, photo: communityBasketball, caption: "Pickup game with the boys. We don't lose 😤🏀 Who's pulling up next weekend?", location: "San Antonio, TX", likes: 378, comments: 48, timeAgo: "3h" },
     { id: 2, photo: communityGamenight, caption: "Game night got intense! Football on the screen, wings on the table 🏈🍗", location: "Houston, TX", likes: 298, comments: 37, timeAgo: "6h" },
@@ -80,16 +68,14 @@ const modeFeedPosts: Record<string, FeedPost[]> = {
   ],
 };
 
-type ProfileMode = "dating" | "community" | "networking";
+type ProfileMode = "community" | "networking";
 
 const modeBios: Record<ProfileMode, string> = {
-  dating: "Building startups & community. Living my best diaspora life ✨🌍",
   community: "Looking for pickup basketball, soccer, and guys to hang with. Brotherhood first 🏀⚽🤝",
   networking: "Entrepreneur & startup founder. Looking to connect with mentors, investors & ambitious minds 💼🚀",
 };
 
 const modeInterests: Record<ProfileMode, string[]> = {
-  dating: ["Afrobeats", "Tech", "Soccer", "Travel", "Fashion", "Cooking", "Entrepreneurship"],
   community: ["Basketball", "Soccer", "Gym", "Hiking", "Game Nights", "Pickup Sports", "Brotherhood"],
   networking: ["Startups", "Tech", "Investing", "Mentorship", "Real Estate", "Marketing", "Leadership"],
 };
@@ -97,7 +83,7 @@ const modeInterests: Record<ProfileMode, string[]> = {
 const ProfileScreen = () => {
   // ProfileMode type is defined above the component
   const [showSettings, setShowSettings] = useState(false);
-  const [profileMode, setProfileMode] = useState<ProfileMode>("dating");
+  const [profileMode, setProfileMode] = useState<ProfileMode>("community");
   const [viewMode, setViewMode] = useState<"feed" | "grid">("feed");
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
   const [showEditProfile, setShowEditProfile] = useState(false);
@@ -166,7 +152,6 @@ const ProfileScreen = () => {
   const avatarUrl = profile?.avatar_url || profileMan1;
 
   const profileModes: { key: ProfileMode; icon: React.ReactNode; label: string; desc: string; color: string }[] = [
-    { key: "dating", icon: <Heart size={18} />, label: "Dating", desc: "Looking for relationships", color: "from-red-500 to-pink-500" },
     { key: "community", icon: <Trophy size={18} />, label: "Community", desc: "Friends, sports, hangouts", color: "from-emerald-500 to-teal-500" },
     { key: "networking", icon: <Briefcase size={18} />, label: "Networking", desc: "Mentors & professionals", color: "from-blue-500 to-indigo-500" },
   ];
