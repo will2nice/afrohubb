@@ -2,8 +2,9 @@ import { useEffect, useState, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping } from "lucide-react";
-import { events as allEvents, cities, type City } from "@/data/cityData";
+import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping, Music } from "lucide-react";
+import { events as allEvents, cities, type City, AFRO_NATION_EVENT_ID } from "@/data/cityData";
+import afroNationIcon from "@/assets/afro-nation-icon.webp";
 import CityPicker from "@/components/CityPicker";
 import { cityResources, type CityResource } from "@/data/resourceData";
 import { diasporaHubs, type DiasporaHub } from "@/data/diasporaHubs";
@@ -227,6 +228,14 @@ const billettoIcon = new L.DivIcon({
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>
   </div>`,
   iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
+});
+
+const afroNationMapIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:44px;height:44px;border-radius:50%;background:#f5f0e1;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px hsl(320,70%,45%),0 4px 16px rgba(0,0,0,0.5);border:2px solid hsl(0,0%,7%);overflow:hidden;">
+    <img src="${afroNationIcon}" style="width:38px;height:38px;object-fit:cover;border-radius:50%;" />
+  </div>`,
+  iconSize: [44, 44], iconAnchor: [22, 44], popupAnchor: [0, -44],
 });
 
 const personIcon = new L.DivIcon({
@@ -492,6 +501,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [showEventbrite, setShowEventbrite] = useState(true);
   const [showPosh, setShowPosh] = useState(true);
   const [showPlaces, setShowPlaces] = useState(true);
+  const [showAfroNation, setShowAfroNation] = useState(true);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [zoomTarget, setZoomTarget] = useState<string | null>(selectedCity.id);
   const [nearbyCollapsed, setNearbyCollapsed] = useState(false);
@@ -595,6 +605,9 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           <button onClick={() => setShowPlaces(!showPlaces)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showPlaces ? "bg-[hsl(25,90%,50%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
             <UtensilsCrossed size={14} /> Places
           </button>
+          <button onClick={() => setShowAfroNation(!showAfroNation)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showAfroNation ? "bg-[hsl(310,60%,45%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
+            <img src={afroNationIcon} alt="Afro Nation" className="w-4 h-4 rounded-full object-cover" /> Afro Nation
+          </button>
         </div>
       </div>
 
@@ -606,7 +619,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           <Popup className="afro-popup"><div className="text-sm font-semibold">📍 You are here</div></Popup>
         </Marker>
 
-        {showEvents && allEventPositions.map((event) => (
+        {showEvents && allEventPositions.filter(e => !e.host?.toLowerCase().includes("afro nation")).map((event) => (
           <Marker key={`event-${event.id}`} position={[event.lat, event.lng]} icon={eventIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
@@ -618,6 +631,29 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-xs text-gray-500">{event.attending >= 1000 ? `${(event.attending / 1000).toFixed(1)}K` : event.attending} attending</span>
                   {event.price && <span className="text-xs font-bold text-amber-600">{event.price}</span>}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* Afro Nation events with custom icon */}
+        {showAfroNation && allEventPositions.filter(e => e.host?.toLowerCase().includes("afro nation")).map((event) => (
+          <Marker key={`an-${event.id}`} position={[event.lat, event.lng]} icon={afroNationMapIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
+            <Popup className="afro-popup" maxWidth={280}>
+              <div className="p-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <img src={afroNationIcon} alt="Afro Nation" className="w-8 h-8 rounded-full object-cover" />
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700">Afro Nation</span>
+                </div>
+                <img src={event.image} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />
+                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
+                <p className="text-xs text-gray-500 mt-1">{event.host}</p>
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500"><span>{event.date}</span></div>
+                <div className="flex items-center gap-2 mt-1 text-xs text-gray-500"><span>{event.venue}</span></div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs text-gray-500">{event.attending >= 1000 ? `${(event.attending / 1000).toFixed(1)}K` : event.attending} attending</span>
+                  {event.price && <span className="text-xs font-bold text-purple-600">{event.price}</span>}
                 </div>
               </div>
             </Popup>
