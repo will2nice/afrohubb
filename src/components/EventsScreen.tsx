@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, UserCheck, Plus, Download, Loader2, ExternalLink, X, CheckCircle, XCircle } from "lucide-react";
-import { events as allEvents, cities, type City, type EventItem } from "@/data/cityData";
+import { events as allEvents, cities, type City, type EventItem, SOUNDCLASH_EVENT_ID } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
 import EventAttendeesSheet from "@/components/EventAttendeesSheet";
 import CreateEventSheet from "@/components/CreateEventSheet";
 import { useEvents } from "@/hooks/useEvents";
 import { useEventbriteImport } from "@/hooks/useEventbriteImport";
 import { TOTAL_ATTENDING, ON_APP_TOTAL } from "@/data/eventAttendees";
+import { SOUNDCLASH_TOTAL, SOUNDCLASH_ON_APP } from "@/data/soundclashAttendees";
 
 const filters = ["All", "Today", "This Weekend", "Concerts", "Festivals", "Sports", "Art", "Networking"];
 
@@ -152,7 +153,9 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
           const isNotGoing = notGoingEvents.has(event.id);
           const isEventbrite = (event as any).source === "eventbrite";
           const isPosh = (event as any).source === "posh";
-          const displayAttending = TOTAL_ATTENDING;
+          const isSoundclash = event.id === SOUNDCLASH_EVENT_ID;
+          const displayAttending = isSoundclash ? SOUNDCLASH_TOTAL : TOTAL_ATTENDING;
+          const displayOnApp = isSoundclash ? SOUNDCLASH_ON_APP : ON_APP_TOTAL;
 
           return (
             <article key={event.id} className="bg-card rounded-2xl border border-border overflow-hidden shadow-card animate-slide-up">
@@ -221,7 +224,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                     <Eye size={12} className="text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
                   </button>
                   <span className="text-[10px] text-primary font-medium px-2 py-0.5 rounded-full bg-primary/10">
-                    {ON_APP_TOTAL.toLocaleString()} on app
+                    {displayOnApp.toLocaleString()} on app
                   </span>
                 </div>
 

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { X, Heart, MessageCircle, Users, Sparkles, Lock, Crown, Megaphone, Send } from "lucide-react";
-import { type EventItem } from "@/data/cityData";
+import { type EventItem, SOUNDCLASH_EVENT_ID } from "@/data/cityData";
 import { getEventAttendees, type Attendee, ON_APP_WOMEN, ON_APP_MEN, ON_APP_TOTAL, TOTAL_ATTENDING, FREE_ATTENDEE_LIMIT } from "@/data/eventAttendees";
+import { getSoundclashAttendees, SOUNDCLASH_TOTAL, SOUNDCLASH_ON_APP, SOUNDCLASH_WOMEN, SOUNDCLASH_MEN, type SoundclashAttendee } from "@/data/soundclashAttendees";
 import DMChatScreen, { type ChatContact } from "@/components/DMChatScreen";
 import { useUserRole } from "@/hooks/useUserRole";
 import { useToast } from "@/hooks/use-toast";
@@ -22,11 +23,16 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   const [broadcastMsg, setBroadcastMsg] = useState("");
   const [sendingBroadcast, setSendingBroadcast] = useState(false);
   const [broadcasts, setBroadcasts] = useState<{ id: string; message: string; created_at: string }[]>([]);
-  const { females, males } = getEventAttendees(event.id);
   const userRole = useUserRole();
   const { toast } = useToast();
   const { user } = useAuth();
   const { isPromoter } = useEventPromoters(String(event.id));
+
+  const isSoundclash = event.id === SOUNDCLASH_EVENT_ID;
+
+  // Get attendees based on event type
+  const standardAttendees = !isSoundclash ? getEventAttendees(event.id) : { females: [], males: [] };
+  const soundclashData = isSoundclash ? getSoundclashAttendees() : null;
 
   const isPaid = userRole === "admin";
 
@@ -70,20 +76,28 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
     setSendingBroadcast(false);
   };
 
+  // Resolve attendee lists
+  const females = isSoundclash ? (soundclashData?.females ?? []) : standardAttendees.females;
+  const males = isSoundclash ? (soundclashData?.males ?? []) : standardAttendees.males;
+  const totalAttending = isSoundclash ? SOUNDCLASH_TOTAL : TOTAL_ATTENDING;
+  const onAppTotal = isSoundclash ? SOUNDCLASH_ON_APP : ON_APP_TOTAL;
+  const onAppWomen = isSoundclash ? SOUNDCLASH_WOMEN : ON_APP_WOMEN;
+  const onAppMen = isSoundclash ? SOUNDCLASH_MEN : ON_APP_MEN;
+
   const allAttendees =
     filter === "women" ? females :
     filter === "men" ? males :
-    [...females, ...males].sort((a, b) => b.mutualFriends - a.mutualFriends);
+    [...females, ...males].sort((a: any, b: any) => (b.mutualFriends || 0) - (a.mutualFriends || 0));
 
   // Free users see only FREE_ATTENDEE_LIMIT
   const visibleAttendees = isPaid ? allAttendees : allAttendees.slice(0, FREE_ATTENDEE_LIMIT);
   const hiddenCount = isPaid ? 0 : Math.max(0, allAttendees.length - FREE_ATTENDEE_LIMIT);
 
-  const formattedAttending = TOTAL_ATTENDING >= 1000
-    ? `${(TOTAL_ATTENDING / 1000).toFixed(1)}K`
-    : TOTAL_ATTENDING;
+  const formattedAttending = totalAttending >= 1000
+    ? `${(totalAttending / 1000).toFixed(1)}K`
+    : totalAttending;
 
-  const openChat = (person: Attendee) => {
+  const openChat = (person: Attendee | SoundclashAttendee) => {
     if (!isPaid) {
       setShowSubscription(true);
       return;
@@ -142,15 +156,15 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full gradient-gold">
               <Sparkles size={14} className="text-primary-foreground" />
-              <span className="text-xs font-semibold text-primary-foreground">{ON_APP_TOTAL.toLocaleString()} on the app</span>
+              <span className="text-xs font-semibold text-primary-foreground">{onAppTotal.toLocaleString()} on the app</span>
             </div>
           </div>
 
           {/* Gender filter */}
           <div className="flex gap-2">
             {([
-              { key: "women" as const, label: `Women (${ON_APP_WOMEN})`, emoji: "👩🏾" },
-              { key: "men" as const, label: `Men (${ON_APP_MEN})`, emoji: "👨🏾" },
+              { key: "women" as const, label: `Women (${onAppWomen})`, emoji: "👩🏾" },
+              { key: "men" as const, label: `Men (${onAppMen})`, emoji: "👨🏾" },
               { key: "all" as const, label: "All", emoji: "👥" },
             ]).map((f) => (
               <button
@@ -254,7 +268,7 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   );
 };
 
-const AttendeeCard = ({ person, isPaid, onMessage, onLikeBlocked }: { person: Attendee; isPaid: boolean; onMessage: () => void; onLikeBlocked: () => void }) => {
+const AttendeeCard = ({ person, isPaid, onMessage, onLikeBlocked }: { person: Attendee | SoundclashAttendee; isPaid: boolean; onMessage: () => void; onLikeBlocked: () => void }) => {
   const [liked, setLiked] = useState(false);
 
   return (
