@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Users, MessageSquarePlus, Loader2, BadgeCheck, Heart, Check, X, ChevronDown, ChevronRight, Calendar, MapPin, Sparkles } from "lucide-react";
+import { Search, Users, MessageSquarePlus, Loader2, BadgeCheck, Heart, Check, X, ChevronDown, ChevronRight, Calendar, MapPin, Sparkles, Crown } from "lucide-react";
 import { useMessages, type ConversationWithDetails } from "@/hooks/useMessages";
 import { useLikeRequests } from "@/hooks/useLikeRequests";
 import { useAuth } from "@/contexts/AuthContext";
@@ -9,7 +9,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import founderWilly from "@/assets/founder-willy.jpg";
 import founderDaniel from "@/assets/founder-tom.jpg";
-import { useQuery } from "@tanstack/react-query";
+import eventAfroNationLogo from "@/assets/event-afro-nation-logo.webp";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const founderProfiles = [
   {
@@ -82,6 +83,52 @@ const MessagesScreen = () => {
     enabled: rsvpEventIds.length > 0,
   });
 
+  // Group conversations: DMs (non-event) vs event-based
+  const filtered = conversations.filter(c => {
+    if (!searchQuery) return true;
+    const name = c.other_user?.display_name || c.title || "";
+    return name.toLowerCase().includes(searchQuery.toLowerCase());
+  });
+  const dmConversations = filtered.filter(c => c.type === "dm" && !c.event_id);
+  const eventConversations = filtered.filter(c => c.event_id);
+  const eventGroupChats = filtered.filter(c => c.type === "event_group");
+
+  // Fetch member counts for event group chats
+  const eventGroupIds = eventGroupChats.map(c => c.id);
+  const { data: groupMemberCounts = [] } = useQuery({
+    queryKey: ["event-group-member-counts", eventGroupIds],
+    queryFn: async () => {
+      if (!eventGroupIds.length) return [];
+      const results: { conversation_id: string; count: number }[] = [];
+      for (const cid of eventGroupIds) {
+        const { count } = await supabase
+          .from("conversation_members")
+          .select("id", { count: "exact", head: true })
+          .eq("conversation_id", cid);
+        results.push({ conversation_id: cid, count: count ?? 0 });
+      }
+      return results;
+    },
+    enabled: eventGroupIds.length > 0,
+  });
+
+  // Group event conversations by event (DMs within events + group chats)
+  const eventGroups: Record<string, { event: { id: string; title: string; image_url: string | null }; convs: ConversationWithDetails[]; groupChat?: ConversationWithDetails; memberCount?: number }> = {};
+  for (const conv of eventConversations) {
+    const eid = conv.event_id!;
+    if (!eventGroups[eid]) {
+      const ev = rsvpEvents.find(e => e.id === eid);
+      eventGroups[eid] = { event: ev || { id: eid, title: "Event", image_url: null }, convs: [] };
+    }
+    if (conv.type === "event_group") {
+      eventGroups[eid].groupChat = conv;
+      const mc = groupMemberCounts.find(m => m.conversation_id === conv.id);
+      eventGroups[eid].memberCount = mc?.count || 0;
+    } else {
+      eventGroups[eid].convs.push(conv);
+    }
+  }
+
   // Find active conversation details
   const activeConv = conversations.find(c => c.id === activeConversationId);
 
@@ -97,27 +144,6 @@ const MessagesScreen = () => {
         onBack={() => { setActiveConversationId(null); setActiveChatContact(null); }}
       />
     );
-  }
-
-  const filtered = conversations.filter(c => {
-    if (!searchQuery) return true;
-    const name = c.other_user?.display_name || c.title || "";
-    return name.toLowerCase().includes(searchQuery.toLowerCase());
-  });
-
-  // Group conversations: DMs (non-event) vs event-based
-  const dmConversations = filtered.filter(c => c.type === "dm" && !c.event_id);
-  const eventConversations = filtered.filter(c => c.event_id);
-
-  // Group event conversations by event
-  const eventGroups: Record<string, { event: { id: string; title: string; image_url: string | null }; convs: ConversationWithDetails[] }> = {};
-  for (const conv of eventConversations) {
-    const eid = conv.event_id!;
-    if (!eventGroups[eid]) {
-      const ev = rsvpEvents.find(e => e.id === eid);
-      eventGroups[eid] = { event: ev || { id: eid, title: "Event", image_url: null }, convs: [] };
-    }
-    eventGroups[eid].convs.push(conv);
   }
 
   const formatTime = (dateStr: string | null) => {
@@ -306,11 +332,64 @@ const MessagesScreen = () => {
               </div>
             ) : (
               <>
+                {/* Featured: Afro Nation Group Chat */}
+                <div className="border-b border-border/30">
+                  <div className="px-4 py-3 bg-gradient-to-r from-[hsl(300,60%,20%)]/30 to-[hsl(45,80%,40%)]/20">
+                    <div className="flex items-center gap-3">
+                      <div className="relative">
+                        <img src={eventAfroNationLogo} alt="Afro Nation" className="w-14 h-14 rounded-2xl object-cover ring-2 ring-primary/40" />
+                        <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full gradient-gold flex items-center justify-center">
+                          <Crown size={10} className="text-primary-foreground" />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-bold text-foreground">AFRO NATION PORTUGAL 2025</p>
+                          <span className="px-1.5 py-0.5 rounded text-[8px] font-bold gradient-gold text-primary-foreground leading-none">FEATURED</span>
+                        </div>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">Jun 25–28 · Portimão, Portugal</p>
+                        <p className="text-[11px] text-primary mt-0.5 flex items-center gap-1">
+                          <Users size={10} /> 8,500+ attendees on app · Group Chat
+                        </p>
+                      </div>
+                    </div>
+                    {/* Check if user has an Afro Nation group chat */}
+                    {(() => {
+                      const afroNationGroup = eventGroupChats.find(c => {
+                        const ev = rsvpEvents.find(e => e.id === c.event_id);
+                        return ev?.title?.includes("AFRO NATION");
+                      });
+                      if (afroNationGroup) {
+                        return (
+                          <button
+                            onClick={() => {
+                              setActiveChatContact({ name: "AFRO NATION PORTUGAL 2025", photo: eventAfroNationLogo });
+                              setActiveConversationId(afroNationGroup.id);
+                            }}
+                            className="mt-2 w-full py-2 rounded-xl gradient-gold text-sm font-bold text-primary-foreground shadow-gold hover:opacity-90 transition-opacity"
+                          >
+                            Open Group Chat
+                          </button>
+                        );
+                      }
+                      return (
+                        <p className="mt-2 text-[11px] text-muted-foreground text-center py-1.5 rounded-xl bg-secondary/50">
+                          RSVP to Afro Nation to join the group chat
+                        </p>
+                      );
+                    })()}
+                  </div>
+                </div>
+
                 {/* Show events user is attending as expandable groups */}
                 {rsvpEvents.map(event => {
                   const group = eventGroups[event.id];
                   const convs = group?.convs || [];
+                  const groupChat = group?.groupChat;
+                  const memberCount = group?.memberCount || 0;
                   const isExpanded = expandedEvents.has(event.id);
+                  // Skip Afro Nation from regular list (shown above)
+                  if (event.title?.includes("AFRO NATION")) return null;
 
                   return (
                     <div key={event.id} className="border-b border-border/30">
@@ -328,7 +407,7 @@ const MessagesScreen = () => {
                         <div className="flex-1 min-w-0 text-left">
                           <p className="text-sm font-semibold text-foreground truncate">{event.title}</p>
                           <p className="text-[11px] text-muted-foreground">
-                            {convs.length} chat{convs.length !== 1 ? "s" : ""} · {new Date(event.date).toLocaleDateString()}
+                            {groupChat ? `${memberCount} in group chat · ` : ""}{convs.length} DM{convs.length !== 1 ? "s" : ""} · {new Date(event.date).toLocaleDateString()}
                           </p>
                         </div>
                         {isExpanded ? (
@@ -337,14 +416,32 @@ const MessagesScreen = () => {
                           <ChevronRight size={16} className="text-muted-foreground" />
                         )}
                       </button>
-                      {isExpanded && convs.length > 0 && (
+                      {isExpanded && (
                         <div className="pl-4 bg-secondary/20">
+                          {/* Group chat entry */}
+                          {groupChat && (
+                            <button
+                              onClick={() => {
+                                setActiveChatContact({ name: event.title, photo: event.image_url || "" });
+                                setActiveConversationId(groupChat.id);
+                              }}
+                              className="w-full flex items-center gap-3 px-4 py-3 hover:bg-secondary/50 transition-colors border-b border-border/30"
+                            >
+                              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                                <Users size={18} className="text-primary" />
+                              </div>
+                              <div className="flex-1 min-w-0 text-left">
+                                <p className="text-sm font-semibold text-foreground">Group Chat</p>
+                                <p className="text-[11px] text-muted-foreground">{memberCount} members · {groupChat.last_message || "Say hello! 👋"}</p>
+                              </div>
+                            </button>
+                          )}
                           {convs.map(renderConversationItem)}
-                        </div>
-                      )}
-                      {isExpanded && convs.length === 0 && (
-                        <div className="pl-4 pr-4 py-4 bg-secondary/20">
-                          <p className="text-xs text-muted-foreground text-center">No chats yet for this event. Match with attendees!</p>
+                          {!groupChat && convs.length === 0 && (
+                            <div className="pr-4 py-4">
+                              <p className="text-xs text-muted-foreground text-center">No chats yet for this event. Match with attendees!</p>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>

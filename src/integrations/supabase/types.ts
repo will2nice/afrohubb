@@ -700,6 +700,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      join_event_chat: { Args: { p_event_id: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
