@@ -1,17 +1,19 @@
 import { useState, useRef } from "react";
-import { Search, Bell, Heart, MessageCircle, Share2, Bookmark, Users, Play, Volume2, VolumeX, Maximize2, Newspaper, Megaphone, Film, LayoutGrid, AlertTriangle, Send } from "lucide-react";
+import { Search, Bell, Heart, MessageCircle, Share2, Bookmark, Users, Play, Volume2, VolumeX, Maximize2, Newspaper, Megaphone, Film, LayoutGrid, AlertTriangle, Send, BookOpen } from "lucide-react";
 import { feedPosts, type City, type FeedCategory } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
 import FeedStories from "@/components/FeedStories";
 import FullScreenReelViewer from "@/components/FullScreenReelViewer";
+import CultureLearnScreen from "@/components/CultureLearnScreen";
 
 // ─── Feed content-type tabs ───
 const feedTabs = [
   { id: "all", label: "All", icon: LayoutGrid },
   { id: "reels", label: "Reels", icon: Film },
   { id: "posts", label: "Posts", icon: Users },
-  { id: "local-news", label: "Local News", icon: Newspaper },
+  { id: "local-news", label: "News", icon: Newspaper },
   { id: "community", label: "Updates", icon: Megaphone },
+  { id: "learn", label: "Learn", icon: BookOpen },
 ] as const;
 
 type FeedTab = typeof feedTabs[number]["id"];
@@ -430,6 +432,9 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
         </div>
       )}
 
+      {/* Learn tab */}
+      {activeFeedTab === "learn" && <CultureLearnScreen />}
+
       {/* Reels-only view */}
       {activeFeedTab === "reels" && (
         <div className="px-4 space-y-4 max-w-lg mx-auto pt-3">
@@ -440,7 +445,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
       )}
 
       {/* Feed */}
-      {activeFeedTab !== "reels" && (
+      {activeFeedTab !== "reels" && activeFeedTab !== "learn" && (
         <div className="px-4 space-y-4 max-w-lg mx-auto">
           {/* Urgent banner for news tab */}
           {activeFeedTab === "local-news" && (
