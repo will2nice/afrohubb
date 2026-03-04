@@ -2,10 +2,8 @@ import { useState } from "react";
 import BottomNav, { type Tab } from "@/components/BottomNav";
 import FeedScreen from "@/components/FeedScreen";
 import MapScreen from "@/components/MapScreen";
-import MatchScreen from "@/components/MatchScreen";
 import ExploreScreen from "@/components/ExploreScreen";
 import MessagesScreen from "@/components/MessagesScreen";
-import CultureLearnScreen from "@/components/CultureLearnScreen";
 import CampusScreen from "@/components/CampusScreen";
 import AskForHelpScreen from "@/components/AskForHelpScreen";
 import ProfileScreen from "@/components/ProfileScreen";
@@ -22,10 +20,8 @@ const Index = () => {
     <div className="max-w-lg mx-auto min-h-screen bg-background relative">
       {activeTab === "feed" && <FeedScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "map" && <MapScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
-      {activeTab === "match" && <MatchScreen selectedCity={selectedCity} />}
       {activeTab === "explore" && <ExploreScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "messages" && <MessagesScreen />}
-      {activeTab === "culture" && <CultureLearnScreen />}
       {activeTab === "campus" && <CampusScreen />}
       {activeTab === "help" && <AskForHelpScreen onOpenDM={() => setActiveTab("messages")} />}
       {activeTab === "profile" && <ProfileScreen />}
