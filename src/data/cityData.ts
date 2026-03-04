@@ -24,6 +24,7 @@ import nweLagosLondon from "@/assets/nwe-lagos-london.jpg";
 import nweElegance from "@/assets/nwe-elegance.jpg";
 import nweNkrumahLegacy from "@/assets/nwe-nkrumah-legacy.jpg";
 import eventDavidoFiveAlive from "@/assets/event-davido-five-alive.jpg";
+import eventAfroNationLogo from "@/assets/event-afro-nation-logo.webp";
 
 export interface City {
   id: string;
@@ -96,6 +97,8 @@ export const cities: City[] = [
   { id: "antwerp", name: "Antwerp, Belgium", flag: "🇧🇪" },
   { id: "barcelona", name: "Barcelona, Spain", flag: "🇪🇸" },
   { id: "madrid", name: "Madrid, Spain", flag: "🇪🇸" },
+  { id: "portimao", name: "Portimão, Portugal", flag: "🇵🇹" },
+  { id: "lisbon", name: "Lisbon, Portugal", flag: "🇵🇹" },
   { id: "bordeaux", name: "Bordeaux, France", flag: "🇫🇷" },
   { id: "stockholm", name: "Stockholm, Sweden", flag: "🇸🇪" },
   { id: "rome", name: "Rome, Italy", flag: "🇮🇹" },
@@ -604,6 +607,7 @@ export const feedPosts: FeedPost[] = [
 ];
 
 export const SOUNDCLASH_EVENT_ID = 9999;
+export const AFRO_NATION_EVENT_ID = 8888;
 
 export const events: EventItem[] = [
   // Austin — Soundclash Vol. 7 (pinned)
@@ -1306,4 +1310,33 @@ export const events: EventItem[] = [
   { id: 1407, title: "Davido — Five Alive Tour (Coachella Weekend 1)", host: "DMW / DMWHQ", date: "Fri, Apr 11 · TBD", venue: "Empire Polo Club, Indio, CA", city: "losangeles", distance: "", image: eventDavidoFiveAlive, attending: 50000, free: false, price: "Tickets", category: "Festival", source: "posh", external_url: "https://dmwhq.com/tour" },
   { id: 1408, title: "Davido — Five Alive Tour (Coachella Weekend 2)", host: "DMW / DMWHQ", date: "Fri, Apr 18 · TBD", venue: "Empire Polo Club, Indio, CA", city: "losangeles", distance: "", image: eventDavidoFiveAlive, attending: 50000, free: false, price: "Tickets", category: "Festival", source: "posh", external_url: "https://dmwhq.com/tour" },
   { id: 1409, title: "Davido — Five Alive Tour (Lusaka)", host: "DMW / DMWHQ", date: "Fri, May 2 · 8:00 PM", venue: "Lusaka, Zambia", city: "lusaka", distance: "", image: eventDavidoFiveAlive, attending: 15000, free: false, price: "Tickets", category: "Afrobeats", source: "posh", external_url: "https://dmwhq.com/tour" },
+
+  // ========== AFRO NATION — PORTIMÃO, PORTUGAL ==========
+  // Main Festival (pinned at top)
+  {
+    id: AFRO_NATION_EVENT_ID, title: "AFRO NATION PORTUGAL 2025", host: "Afro Nation",
+    date: "Jun 25–28 · All Day", venue: "Praia da Rocha, Portimão", city: "portimao",
+    distance: "", image: eventAfroNationLogo, attending: 45000, free: false,
+    price: "€149+", category: "Festival", source: "posh", external_url: "https://afronation.com"
+  },
+
+  // After Parties & Side Events
+  { id: 1500, title: "Afro Nation Official Pre-Party", host: "Afro Nation", date: "Tue, Jun 24 · 10:00 PM", venue: "NoSoloÁgua Portimão", city: "portimao", distance: "0.5 km", image: eventParty, attending: 2000, free: false, price: "€25", category: "Party", source: "posh", external_url: "https://afronation.com" },
+  { id: 1501, title: "Amapiano Pool Party", host: "Vibes Algarve", date: "Wed, Jun 25 · 2:00 PM", venue: "Algarve Casino Rooftop", city: "portimao", distance: "1.0 km", image: eventParty, attending: 800, free: false, price: "€30", category: "Party" },
+  { id: 1502, title: "Afrobeats vs Dancehall — Late Night", host: "Soundclash EU", date: "Wed, Jun 25 · 11:30 PM", venue: "Katedral Club Portimão", city: "portimao", distance: "1.2 km", image: eventParty, attending: 1200, free: false, price: "€20", category: "Party" },
+  { id: 1503, title: "R&B Beach Sunset Session", host: "Soulful Algarve", date: "Thu, Jun 26 · 5:00 PM", venue: "Praia da Rocha Beach Bar", city: "portimao", distance: "0.3 km", image: eventConcert, attending: 600, free: false, price: "€15", category: "Concert" },
+  { id: 1504, title: "Davido After Party", host: "DMW / 30BG", date: "Thu, Jun 26 · 11:00 PM", venue: "NoSoloÁgua Portimão", city: "portimao", distance: "0.5 km", image: eventDavidoFiveAlive, attending: 3000, free: false, price: "€40", category: "Party", source: "posh" },
+  { id: 1505, title: "Wizkid Late Night Set", host: "Starboy Ent.", date: "Fri, Jun 27 · 12:00 AM", venue: "Katedral Club Portimão", city: "portimao", distance: "1.2 km", image: eventConcert, attending: 2500, free: false, price: "€45", category: "Afrobeats" },
+  { id: 1506, title: "Afro Nation Day Party — Poolside", host: "Afro Nation x Hennessy", date: "Fri, Jun 27 · 1:00 PM", venue: "Jupiter Algarve Hotel Pool", city: "portimao", distance: "0.8 km", image: eventParty, attending: 1500, free: false, price: "€35", category: "Party" },
+  { id: 1507, title: "Burna Boy Official After Party", host: "Spaceship Ent.", date: "Fri, Jun 27 · 11:30 PM", venue: "NoSoloÁgua Portimão", city: "portimao", distance: "0.5 km", image: eventRapConcert, attending: 3500, free: false, price: "€50", category: "Afrobeats" },
+  { id: 1508, title: "Gospel Brunch — Algarve", host: "Spirit & Soul EU", date: "Sat, Jun 28 · 10:00 AM", venue: "Hotel & Spa Jupiter", city: "portimao", distance: "0.8 km", image: eventBrunch, attending: 200, free: false, price: "€30", category: "Party" },
+  { id: 1509, title: "Closing Party — Afro Nation Weekend", host: "Afro Nation", date: "Sat, Jun 28 · 11:00 PM", venue: "Praia da Rocha Open Air", city: "portimao", distance: "0.2 km", image: eventAfroNationLogo, attending: 5000, free: false, price: "€35", category: "Party", source: "posh", external_url: "https://afronation.com" },
+
+  // Food & Culture in Portimão
+  { id: 1520, title: "Afro Food Festival Portimão", host: "Diaspora Eats EU", date: "Jun 25–28 · 11:00 AM", venue: "Largo 1º de Dezembro", city: "portimao", distance: "0.6 km", image: eventBrunch, attending: 4000, free: true, category: "Food" },
+  { id: 1521, title: "Jollof Wars — Portugal Edition", host: "Jollof Wars", date: "Thu, Jun 26 · 12:00 PM", venue: "Mercado Municipal de Portimão", city: "portimao", distance: "0.4 km", image: eventBrunch, attending: 1000, free: false, price: "€10", category: "Food" },
+  { id: 1522, title: "Suya & Beats Pop-Up", host: "Lagos Grill Co.", date: "Fri, Jun 27 · 12:00 PM", venue: "Marina de Portimão", city: "portimao", distance: "0.7 km", image: eventBrunch, attending: 800, free: true, category: "Food" },
+  { id: 1523, title: "Afro-Portuguese Wine & Dine", host: "Algarve Culture Club", date: "Wed, Jun 25 · 7:00 PM", venue: "Restaurante Forte & Feio", city: "portimao", distance: "0.3 km", image: eventBrunch, attending: 120, free: false, price: "€55", category: "Food" },
+  { id: 1524, title: "African Art Market — Algarve", host: "Diaspora Arts Collective", date: "Jun 25–28 · 10:00 AM", venue: "Museu de Portimão", city: "portimao", distance: "0.5 km", image: eventAfricanArt, attending: 1500, free: true, category: "Culture" },
+  { id: 1525, title: "Diaspora Networking Mixer", host: "AfroTech EU", date: "Thu, Jun 26 · 6:00 PM", venue: "Hotel & Spa Jupiter", city: "portimao", distance: "0.8 km", image: networkingConference, attending: 250, free: false, price: "€20", category: "Networking" },
 ];
