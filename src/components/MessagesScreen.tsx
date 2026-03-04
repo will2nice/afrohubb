@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, Users, MessageSquarePlus, Loader2, BadgeCheck, Heart, Check, X, ChevronDown, ChevronRight, Calendar } from "lucide-react";
+import { Search, Users, MessageSquarePlus, Loader2, BadgeCheck, Heart, Check, X, ChevronDown, ChevronRight, Calendar, MapPin, Sparkles } from "lucide-react";
 import { useMessages, type ConversationWithDetails } from "@/hooks/useMessages";
 import { useLikeRequests } from "@/hooks/useLikeRequests";
 import { useAuth } from "@/contexts/AuthContext";
@@ -33,6 +33,7 @@ const MessagesScreen = () => {
   const [activeChatContact, setActiveChatContact] = useState<{ name: string; photo: string; age?: number; vibe?: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedEvents, setExpandedEvents] = useState<Set<string>>(new Set());
+  const [previewProfile, setPreviewProfile] = useState<string | null>(null);
   const { conversations, loadingConversations, startConversation } = useMessages();
   const { pendingReceived, respondToRequest, isLoading: loadingRequests } = useLikeRequests();
   const { user } = useAuth();
@@ -398,7 +399,7 @@ const MessagesScreen = () => {
 
                 return (
                   <div key={req.id} className="flex items-center gap-3 px-4 py-3 border-b border-border/30">
-                    <div className="relative">
+                    <button onClick={() => setPreviewProfile(profile.id)} className="relative flex-shrink-0">
                       {profile.avatar_url ? (
                         <img src={profile.avatar_url} alt={profile.display_name} className="w-14 h-14 rounded-full object-cover ring-2 ring-primary/40" />
                       ) : (
@@ -409,15 +410,16 @@ const MessagesScreen = () => {
                       <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-destructive flex items-center justify-center">
                         <Heart size={10} className="text-destructive-foreground fill-current" />
                       </div>
-                    </div>
-                    <div className="flex-1 min-w-0">
+                    </button>
+                    <button onClick={() => setPreviewProfile(profile.id)} className="flex-1 min-w-0 text-left">
                       <p className="text-sm font-bold text-foreground">
                         {profile.display_name}{profile.age ? `, ${profile.age}` : ""}
                       </p>
                       <p className="text-[11px] text-muted-foreground truncate">
                         {profile.vibe || profile.city || "Wants to connect"} · {formatTime(req.created_at)}
                       </p>
-                    </div>
+                      <p className="text-[10px] text-primary mt-0.5">Tap to view profile</p>
+                    </button>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleRejectRequest(req.id)}
@@ -437,6 +439,65 @@ const MessagesScreen = () => {
                 );
               })
             )}
+
+            {/* Profile Preview Modal */}
+            {previewProfile && (() => {
+              const profile = senderProfiles.find(p => p.id === previewProfile);
+              const req = pendingReceived.find(r => r.sender_id === previewProfile);
+              if (!profile || !req) return null;
+              return (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center">
+                  <div className="absolute inset-0 bg-background/90 backdrop-blur-md" onClick={() => setPreviewProfile(null)} />
+                  <div className="relative w-full max-w-sm mx-4 bg-card rounded-3xl border border-border shadow-2xl overflow-hidden animate-slide-up">
+                    <div className="relative">
+                      {profile.avatar_url ? (
+                        <img src={profile.avatar_url} alt={profile.display_name} className="w-full aspect-[3/4] object-cover" />
+                      ) : (
+                        <div className="w-full aspect-[3/4] bg-secondary flex items-center justify-center">
+                          <span className="text-6xl font-bold text-muted-foreground">{profile.display_name.charAt(0)}</span>
+                        </div>
+                      )}
+                      <button onClick={() => setPreviewProfile(null)} className="absolute top-4 right-4 w-8 h-8 rounded-full bg-background/60 backdrop-blur-sm flex items-center justify-center">
+                        <X size={18} className="text-foreground" />
+                      </button>
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/95 via-background/60 to-transparent p-4 pt-16">
+                        <h2 className="text-2xl font-display font-bold text-foreground">
+                          {profile.display_name}{profile.age ? `, ${profile.age}` : ""}
+                        </h2>
+                        {profile.city && (
+                          <p className="text-sm text-muted-foreground flex items-center gap-1 mt-1">
+                            <MapPin size={14} /> {profile.city}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <div className="p-4 space-y-3">
+                      {profile.vibe && (
+                        <div className="flex items-center gap-2">
+                          <Sparkles size={14} className="text-primary" />
+                          <span className="text-sm text-muted-foreground">{profile.vibe}</span>
+                        </div>
+                      )}
+                      <div className="flex gap-3 pt-2">
+                        <button
+                          onClick={() => { handleRejectRequest(req.id); setPreviewProfile(null); }}
+                          className="flex-1 py-3 rounded-xl bg-secondary border border-border text-sm font-semibold text-foreground hover:bg-destructive/10 transition-colors"
+                        >
+                          Decline
+                        </button>
+                        <button
+                          onClick={() => { handleAcceptRequest(req.id, req.sender_id); setPreviewProfile(null); }}
+                          disabled={respondToRequest.isPending}
+                          className="flex-1 py-3 rounded-xl gradient-gold text-sm font-bold text-primary-foreground shadow-gold hover:opacity-90 transition-opacity"
+                        >
+                          Accept & Chat
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
           </TabsContent>
         </Tabs>
       </div>
