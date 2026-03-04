@@ -1,6 +1,6 @@
-import { Newspaper, MapPinned, MessageCircle, User, GraduationCap, HandHelping, Compass } from "lucide-react";
+import { Newspaper, MapPinned, MessageCircle, User, GraduationCap, Compass } from "lucide-react";
 
-type Tab = "feed" | "map" | "explore" | "messages" | "campus" | "help" | "profile";
+type Tab = "feed" | "map" | "explore" | "messages" | "campus" | "profile";
 
 interface BottomNavProps {
   activeTab: Tab;
@@ -14,7 +14,6 @@ const tabs: { id: Tab; label: string; icon: typeof Newspaper }[] = [
   { id: "explore", label: "Explore", icon: Compass },
   { id: "messages", label: "Chat", icon: MessageCircle },
   { id: "campus", label: "Campus", icon: GraduationCap },
-  { id: "help", label: "Help", icon: HandHelping },
   { id: "profile", label: "Profile", icon: User },
 ];
 
