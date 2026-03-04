@@ -6,7 +6,6 @@ import MatchScreen from "@/components/MatchScreen";
 import ExploreScreen from "@/components/ExploreScreen";
 import MessagesScreen from "@/components/MessagesScreen";
 import CultureLearnScreen from "@/components/CultureLearnScreen";
-import NewsScreen from "@/components/NewsScreen";
 import CampusScreen from "@/components/CampusScreen";
 import AskForHelpScreen from "@/components/AskForHelpScreen";
 import ProfileScreen from "@/components/ProfileScreen";
@@ -26,7 +25,6 @@ const Index = () => {
       {activeTab === "match" && <MatchScreen selectedCity={selectedCity} />}
       {activeTab === "explore" && <ExploreScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "messages" && <MessagesScreen />}
-      {activeTab === "news" && <NewsScreen />}
       {activeTab === "culture" && <CultureLearnScreen />}
       {activeTab === "campus" && <CampusScreen />}
       {activeTab === "help" && <AskForHelpScreen onOpenDM={() => setActiveTab("messages")} />}
