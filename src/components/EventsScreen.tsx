@@ -60,7 +60,9 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const poshEvents = dbMapped.filter((e) => e.source === "posh");
   const otherDbEvents = dbMapped.filter((e) => e.source !== "posh");
   const mockEvents = allEvents.filter((e) => e.city === selectedCity.id);
-  const cityEvents = [...poshEvents, ...otherDbEvents, ...mockEvents];
+  const pinnedMock = mockEvents.filter((e) => e.source === "posh");
+  const unpinnedMock = mockEvents.filter((e) => e.source !== "posh");
+  const cityEvents = [...pinnedMock, ...poshEvents, ...otherDbEvents, ...unpinnedMock];
   const filterFn = filterMap[activeFilter] || (() => true);
   const filteredEvents = cityEvents.filter(filterFn).filter(e =>
     searchQuery === "" || e.title.toLowerCase().includes(searchQuery.toLowerCase()) || e.host.toLowerCase().includes(searchQuery.toLowerCase())
@@ -151,8 +153,8 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
         ) : filteredEvents.map((event) => {
           const isGoing = rsvpEvents.has(event.id);
           const isNotGoing = notGoingEvents.has(event.id);
-          const isEventbrite = (event as any).source === "eventbrite";
-          const isPosh = (event as any).source === "posh";
+          const isEventbrite = event.source === "eventbrite" || (event as any).source === "eventbrite";
+          const isPosh = event.source === "posh" || (event as any).source === "posh";
           const isSoundclash = event.id === SOUNDCLASH_EVENT_ID;
           const displayAttending = isSoundclash ? SOUNDCLASH_TOTAL : TOTAL_ATTENDING;
           const displayOnApp = isSoundclash ? SOUNDCLASH_ON_APP : ON_APP_TOTAL;
