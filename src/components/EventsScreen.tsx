@@ -250,21 +250,26 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                       >
                         <UserCheck size={14} /> I'm Going
                       </button>
+                    ) : event.free ? (
+                      <button
+                        onClick={() => setRsvpDialogEvent(event)}
+                        className="px-5 py-2 rounded-full text-sm font-semibold gradient-gold text-primary-foreground shadow-gold hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5"
+                      >
+                        <Ticket size={14} /> RSVP
+                      </button>
+                    ) : (event as any).dbId ? (
+                      <button
+                        onClick={() => setTicketEvent({ id: (event as any).dbId, title: event.title })}
+                        className="px-5 py-2 rounded-full text-sm font-semibold gradient-gold text-primary-foreground shadow-gold hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5"
+                      >
+                        <Ticket size={14} /> Get Tickets
+                      </button>
                     ) : (
                       <button
                         onClick={() => setRsvpDialogEvent(event)}
                         className="px-5 py-2 rounded-full text-sm font-semibold gradient-gold text-primary-foreground shadow-gold hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5"
                       >
-                        <Ticket size={14} />
-                        {event.free ? "RSVP" : "Get Tickets"}
-                      </button>
-                    )}
-                    {!event.free && (event as any).dbId && (
-                      <button
-                        onClick={() => setTicketEvent({ id: (event as any).dbId, title: event.title })}
-                        className="px-4 py-2 rounded-full text-sm font-semibold bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 transition-all flex items-center gap-1.5"
-                      >
-                        <Ticket size={14} /> Buy
+                        <Ticket size={14} /> RSVP
                       </button>
                     )}
                   </div>
@@ -309,11 +314,9 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                 </div>
               </button>
 
-              {!rsvpDialogEvent.free && (rsvpDialogEvent as any).external_url && (
-                <a
-                  href={(rsvpDialogEvent as any).external_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+              {!rsvpDialogEvent.free && (rsvpDialogEvent as any).dbId && (
+                <button
+                  onClick={() => { setRsvpDialogEvent(null); setTicketEvent({ id: (rsvpDialogEvent as any).dbId, title: rsvpDialogEvent.title }); }}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-xl gradient-gold text-primary-foreground transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <Ticket size={20} />
@@ -321,7 +324,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                     <p className="text-sm font-semibold">Buy Tickets</p>
                     <p className="text-[11px] opacity-80">{rsvpDialogEvent.price || "View pricing"}</p>
                   </div>
-                </a>
+                </button>
               )}
             </div>
           </div>

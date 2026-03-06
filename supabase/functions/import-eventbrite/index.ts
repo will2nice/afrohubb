@@ -236,7 +236,7 @@ Deno.serve(async (req) => {
 
       const externalId = ev.url || `eb-${city}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-      const { error: insertError } = await supabase.from("events").insert({
+      const { data: inserted, error: insertError } = await supabase.from("events").insert({
         title: ev.title,
         description: "",
         date: parsedDate,
@@ -250,12 +250,25 @@ Deno.serve(async (req) => {
         external_id: externalId,
         external_url: ev.url || null,
         is_approved: true,
-      });
+      }).select("id").single();
 
       if (insertError) {
         errors.push(`"${ev.title}": ${insertError.message}`);
       } else {
         totalImported++;
+        // Auto-create a default ticket type from the scraped price
+        if (inserted) {
+          const priceStr = (ev.price || "").replace(/[^0-9.]/g, "");
+          const priceCents = priceStr ? Math.round(parseFloat(priceStr) * 100) : 0;
+          await supabase.from("ticket_types").insert({
+            event_id: inserted.id,
+            name: "General Admission",
+            price_cents: priceCents,
+            currency: "usd",
+            quantity_total: 100,
+            quantity_sold: 0,
+          });
+        }
       }
     }
 
