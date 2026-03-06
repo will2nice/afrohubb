@@ -11,6 +11,7 @@ import { cities, type City } from "@/data/cityData";
 import { useMessages } from "@/hooks/useMessages";
 
 const Index = () => {
+  useSessionDuration();
   const [activeTab, setActiveTab] = useState<Tab>("feed");
   const [selectedCity, setSelectedCity] = useState<City>(cities[0]);
   const { conversations } = useMessages();
