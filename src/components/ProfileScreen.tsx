@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase, Sun, Moon } from "lucide-react";
+import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase, Sun, Moon, Ticket } from "lucide-react";
+import PromoterDashboard from "@/components/PromoterDashboard";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
@@ -31,6 +32,7 @@ const stats = [
 
 const menuItems = [
   { icon: Edit3, label: "Edit Profile", desc: "Photos, bio, prompts" },
+  { icon: Ticket, label: "Promoter Dashboard", desc: "Tickets, sales, payouts", action: "promoter" },
   { icon: Heart, label: "Preferences", desc: "Matching, filters" },
   { icon: Shield, label: "Safety & Privacy", desc: "Blocking, visibility" },
   { icon: Crown, label: "AfroHub Plus", desc: "Premium features", gold: true, action: "subscription" },
@@ -135,6 +137,7 @@ const ProfileScreen = () => {
   const { theme, toggleTheme } = useTheme();
 
   const [showSubscription, setShowSubscription] = useState(false);
+  const [showPromoter, setShowPromoter] = useState(false);
 
   const handleMenuAction = async (action?: string) => {
     if (action === "logout") {
@@ -143,8 +146,14 @@ const ProfileScreen = () => {
       toggleTheme();
     } else if (action === "subscription") {
       setShowSubscription(true);
+    } else if (action === "promoter") {
+      setShowPromoter(true);
     }
   };
+
+  if (showPromoter) {
+    return <PromoterDashboard onBack={() => setShowPromoter(false)} />;
+  }
 
   const displayName = profile?.display_name || "Your Name";
   const displayCity = profile?.city || "Set your city";
