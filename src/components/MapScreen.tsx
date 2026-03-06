@@ -108,6 +108,7 @@ const cityCoords: Record<string, [number, number]> = {
   saopaulo: [-23.5505, -46.6333],
   salvador: [-12.9714, -38.5124],
   // Caribbean & Latin America
+  sanjuan: [18.4655, -66.1057],
   kingston: [18.0179, -76.8099],
   santodomingo: [18.4861, -69.9312],
   havana: [23.1136, -82.3666],
