@@ -111,6 +111,7 @@ const Auth = () => {
           title: "Check your email ✉️",
           description: "We sent you a verification link. Click it to activate your account.",
         });
+        trackSignUp("email");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
