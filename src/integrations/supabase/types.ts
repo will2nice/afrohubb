@@ -370,6 +370,63 @@ export type Database = {
           },
         ]
       }
+      orders: {
+        Row: {
+          application_fee_cents: number
+          created_at: string
+          event_id: string
+          id: string
+          quantity: number
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          ticket_type_id: string
+          total_cents: number
+          user_id: string
+        }
+        Insert: {
+          application_fee_cents?: number
+          created_at?: string
+          event_id: string
+          id?: string
+          quantity?: number
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          ticket_type_id: string
+          total_cents: number
+          user_id: string
+        }
+        Update: {
+          application_fee_cents?: number
+          created_at?: string
+          event_id?: string
+          id?: string
+          quantity?: number
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          ticket_type_id?: string
+          total_cents?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "orders_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orders_ticket_type_id_fkey"
+            columns: ["ticket_type_id"]
+            isOneToOne: false
+            referencedRelation: "ticket_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       places: {
         Row: {
           address: string | null
@@ -581,6 +638,33 @@ export type Database = {
         }
         Relationships: []
       }
+      promoter_stripe_accounts: {
+        Row: {
+          created_at: string
+          id: string
+          onboarding_complete: boolean
+          stripe_account_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          onboarding_complete?: boolean
+          stripe_account_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          onboarding_complete?: boolean
+          stripe_account_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       stories: {
         Row: {
           created_at: string
@@ -604,6 +688,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      ticket_types: {
+        Row: {
+          created_at: string
+          currency: string
+          event_id: string
+          id: string
+          name: string
+          price_cents: number
+          quantity_sold: number
+          quantity_total: number
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          event_id: string
+          id?: string
+          name?: string
+          price_cents?: number
+          quantity_sold?: number
+          quantity_total?: number
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          event_id?: string
+          id?: string
+          name?: string
+          price_cents?: number
+          quantity_sold?: number
+          quantity_total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_types_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {

@@ -6,6 +6,7 @@ import { events as allEvents, cities, type City, type EventItem, SOUNDCLASH_EVEN
 import CityPicker from "@/components/CityPicker";
 import EventAttendeesSheet from "@/components/EventAttendeesSheet";
 import CreateEventSheet from "@/components/CreateEventSheet";
+import TicketPurchaseSheet from "@/components/TicketPurchaseSheet";
 import { useEvents } from "@/hooks/useEvents";
 import { useEventbriteImport } from "@/hooks/useEventbriteImport";
 import { TOTAL_ATTENDING, ON_APP_TOTAL } from "@/data/eventAttendees";
@@ -40,11 +41,13 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [rsvpDialogEvent, setRsvpDialogEvent] = useState<EventItem | null>(null);
+  const [ticketEvent, setTicketEvent] = useState<{ id: string; title: string } | null>(null);
   const { events: dbEvents } = useEvents(selectedCity.id);
   const { importEvents, importing } = useEventbriteImport();
 
-  const dbMapped: (EventItem & { source?: string; external_url?: string })[] = dbEvents.map((e) => ({
+  const dbMapped: (EventItem & { source?: string; external_url?: string; dbId?: string })[] = dbEvents.map((e) => ({
     id: typeof e.id === "string" ? Math.abs(hashCode(e.id)) : 0,
+    dbId: e.id,
     title: e.title,
     host: (e as any).source === "eventbrite" ? "via Eventbrite" : (e as any).source === "posh" ? "via Posh" : "Community",
     date: new Date(e.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
@@ -256,6 +259,14 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                         {event.free ? "RSVP" : "Get Tickets"}
                       </button>
                     )}
+                    {!event.free && (event as any).dbId && (
+                      <button
+                        onClick={() => setTicketEvent({ id: (event as any).dbId, title: event.title })}
+                        className="px-4 py-2 rounded-full text-sm font-semibold bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 transition-all flex items-center gap-1.5"
+                      >
+                        <Ticket size={14} /> Buy
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -321,6 +332,14 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
         <EventAttendeesSheet event={selectedEvent} onClose={() => setSelectedEvent(null)} />
       )}
       <CreateEventSheet open={showCreateEvent} onClose={() => setShowCreateEvent(false)} defaultCity={selectedCity.name} />
+      {ticketEvent && (
+        <TicketPurchaseSheet
+          eventId={ticketEvent.id}
+          eventTitle={ticketEvent.title}
+          open={!!ticketEvent}
+          onClose={() => setTicketEvent(null)}
+        />
+      )}
     </div>
   );
 };
