@@ -137,6 +137,7 @@ const ProfileScreen = () => {
   const { theme, toggleTheme } = useTheme();
 
   const [showSubscription, setShowSubscription] = useState(false);
+  const [showPromoter, setShowPromoter] = useState(false);
 
   const handleMenuAction = async (action?: string) => {
     if (action === "logout") {
@@ -145,8 +146,14 @@ const ProfileScreen = () => {
       toggleTheme();
     } else if (action === "subscription") {
       setShowSubscription(true);
+    } else if (action === "promoter") {
+      setShowPromoter(true);
     }
   };
+
+  if (showPromoter) {
+    return <PromoterDashboard onBack={() => setShowPromoter(false)} />;
+  }
 
   const displayName = profile?.display_name || "Your Name";
   const displayCity = profile?.city || "Set your city";
