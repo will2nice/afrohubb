@@ -9,6 +9,7 @@ import CreatePostSheet from "@/components/CreatePostSheet";
 import CommentSheet from "@/components/CommentSheet";
 import { usePosts, type PostComment } from "@/hooks/usePosts";
 import { useAuth } from "@/contexts/AuthContext";
+import { useScreenView } from "@/hooks/useAnalytics";
 
 // ─── Feed content-type tabs ───
 const feedTabs = [
