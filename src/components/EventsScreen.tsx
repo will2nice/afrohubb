@@ -45,8 +45,9 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const { events: dbEvents } = useEvents(selectedCity.id);
   const { importEvents, importing } = useEventbriteImport();
 
-  const dbMapped: (EventItem & { source?: string; external_url?: string })[] = dbEvents.map((e) => ({
+  const dbMapped: (EventItem & { source?: string; external_url?: string; dbId?: string })[] = dbEvents.map((e) => ({
     id: typeof e.id === "string" ? Math.abs(hashCode(e.id)) : 0,
+    dbId: e.id,
     title: e.title,
     host: (e as any).source === "eventbrite" ? "via Eventbrite" : (e as any).source === "posh" ? "via Posh" : "Community",
     date: new Date(e.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
