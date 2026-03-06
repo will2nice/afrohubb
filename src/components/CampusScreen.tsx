@@ -9,6 +9,7 @@ type SchoolFilter = "all" | "hbcu" | "asa";
 type VerificationStatus = "none" | "pending" | "verified";
 
 const CampusScreen = () => {
+  useScreenView("campus");
   const [view, setView] = useState<CampusView>("list");
   const [selectedSchool, setSelectedSchool] = useState<CampusSchool | null>(null);
   const [schoolTab, setSchoolTab] = useState<SchoolTab>("events");

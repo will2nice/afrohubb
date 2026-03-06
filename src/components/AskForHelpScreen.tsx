@@ -38,6 +38,7 @@ interface AskForHelpScreenProps {
 }
 
 const AskForHelpScreen = ({ onOpenDM }: AskForHelpScreenProps) => {
+  useScreenView("help");
   const { user } = useAuth();
   const { startConversation, sendMessage } = useMessages();
   const [requests, setRequests] = useState<HelpRequest[]>([]);

@@ -383,6 +383,7 @@ const difficultyColor: Record<string, string> = {
 };
 
 const CultureLearnScreen = () => {
+  useScreenView("learn");
   const [expandedLang, setExpandedLang] = useState<string | null>(null);
   const [expandedDance, setExpandedDance] = useState<string | null>(null);
   const [expandedConn, setExpandedConn] = useState<string | null>(null);
