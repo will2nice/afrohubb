@@ -20,6 +20,7 @@ export const useScreenView = (screen: string, properties?: Record<string, any>) 
 export const useSessionDuration = () => {
   const start = useRef(Date.now());
   useEffect(() => {
+    ensurePostHog();
     return () => {
       const seconds = Math.round((Date.now() - start.current) / 1000);
       trackEvent("session_duration", { seconds });
