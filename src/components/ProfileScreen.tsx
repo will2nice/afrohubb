@@ -32,6 +32,7 @@ const stats = [
 
 const menuItems = [
   { icon: Edit3, label: "Edit Profile", desc: "Photos, bio, prompts" },
+  { icon: Ticket, label: "Promoter Dashboard", desc: "Tickets, sales, payouts", action: "promoter" },
   { icon: Heart, label: "Preferences", desc: "Matching, filters" },
   { icon: Shield, label: "Safety & Privacy", desc: "Blocking, visibility" },
   { icon: Crown, label: "AfroHub Plus", desc: "Premium features", gold: true, action: "subscription" },
