@@ -32,6 +32,7 @@ interface EventsScreenProps {
 const hashCode = (s: string) => s.split("").reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0);
 
 const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
+  useScreenView("events", { city: selectedCity.id });
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
   const [activeFilter, setActiveFilter] = useState("All");
   const [rsvpEvents, setRsvpEvents] = useState<Set<number>>(new Set());

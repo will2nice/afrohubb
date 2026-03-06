@@ -31,6 +31,7 @@ const founderProfiles = [
 ];
 
 const MessagesScreen = () => {
+  useScreenView("messages");
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [activeChatContact, setActiveChatContact] = useState<{ name: string; photo: string; age?: number; vibe?: string } | null>(null);
   const [searchQuery, setSearchQuery] = useState("");

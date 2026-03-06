@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useScreenView } from "@/hooks/useAnalytics";
 import { GraduationCap, Search, Users, Calendar, ChevronRight, ArrowLeft, MapPin, MessageCircle, UserPlus, Award, ShieldCheck, Upload, Lock, Briefcase, Building2 } from "lucide-react";
 import { campusSchools, campusEvents, campusPeers, campusAlumni, type CampusSchool, type SchoolType } from "@/data/campusData";
 

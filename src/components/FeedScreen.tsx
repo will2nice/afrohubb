@@ -267,6 +267,7 @@ const DbPostCard = ({ post, onLike, onComment }: {
 
 // ─── Main Feed Screen ───
 const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
+  useScreenView("feed", { city: selectedCity.id });
   const [activeFeedTab, setActiveFeedTab] = useState<FeedTab>("all");
   const [activeChip, setActiveChip] = useState("For You");
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());

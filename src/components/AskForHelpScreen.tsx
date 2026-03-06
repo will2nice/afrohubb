@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useScreenView } from "@/hooks/useAnalytics";
+import { trackEvent } from "@/lib/posthog";
 import { HandHelping, Plus, X, ChevronDown, MapPin, Clock, User, MessageCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";

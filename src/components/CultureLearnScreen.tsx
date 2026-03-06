@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useScreenView } from "@/hooks/useAnalytics";
 import { BookOpen, Music, Volume2, ChevronRight, Globe, Sparkles, Link2, MapPin } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { diasporaHubs } from "@/data/diasporaHubs";

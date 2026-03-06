@@ -495,6 +495,7 @@ interface MapScreenProps {
 }
 
 const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
+  useScreenView("map", { city: selectedCity.id });
   const [showEvents, setShowEvents] = useState(true);
   const [showPeople, setShowPeople] = useState(true);
   const [showGroups, setShowGroups] = useState(true);
