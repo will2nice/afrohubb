@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from "react";
+import { useScreenView } from "@/hooks/useAnalytics";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -494,6 +495,7 @@ interface MapScreenProps {
 }
 
 const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
+  useScreenView("map", { city: selectedCity.id });
   const [showEvents, setShowEvents] = useState(true);
   const [showPeople, setShowPeople] = useState(true);
   const [showGroups, setShowGroups] = useState(true);

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
+import { trackEvent } from "@/lib/posthog";
 
 export interface Message {
   id: string;
@@ -184,6 +185,7 @@ export const useMessages = (conversationId?: string) => {
       if (error) throw error;
     },
     onSuccess: (_, vars) => {
+      trackEvent("message_sent", { conversation_id: vars.conversationId });
       queryClient.invalidateQueries({ queryKey: ["messages", vars.conversationId] });
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
     },

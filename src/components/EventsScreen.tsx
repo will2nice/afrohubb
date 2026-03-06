@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useScreenView } from "@/hooks/useAnalytics";
+import { trackEvent } from "@/lib/posthog";
 import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, UserCheck, Plus, Download, Loader2, ExternalLink, X, CheckCircle, XCircle } from "lucide-react";
 import { events as allEvents, cities, type City, type EventItem, SOUNDCLASH_EVENT_ID, AFRO_NATION_EVENT_ID } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
@@ -30,6 +32,7 @@ interface EventsScreenProps {
 const hashCode = (s: string) => s.split("").reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0);
 
 const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
+  useScreenView("events", { city: selectedCity.id });
   const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
   const [activeFilter, setActiveFilter] = useState("All");
   const [rsvpEvents, setRsvpEvents] = useState<Set<number>>(new Set());
@@ -69,10 +72,11 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   );
 
   const handleRsvpAction = (event: EventItem, action: "going" | "not_going") => {
+    trackEvent("event_rsvp", { event_id: event.id, event_title: event.title, action, city: event.city });
     if (action === "going") {
       setRsvpEvents((prev) => new Set(prev).add(event.id));
       setNotGoingEvents((prev) => { const n = new Set(prev); n.delete(event.id); return n; });
-      setSelectedEvent(event); // show attendees
+      setSelectedEvent(event);
     } else {
       setNotGoingEvents((prev) => new Set(prev).add(event.id));
       setRsvpEvents((prev) => { const n = new Set(prev); n.delete(event.id); return n; });

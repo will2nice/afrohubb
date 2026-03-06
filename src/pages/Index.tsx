@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSessionDuration } from "@/hooks/useAnalytics";
 import BottomNav, { type Tab } from "@/components/BottomNav";
 import FeedScreen from "@/components/FeedScreen";
 import MapScreen from "@/components/MapScreen";
@@ -10,6 +11,7 @@ import { cities, type City } from "@/data/cityData";
 import { useMessages } from "@/hooks/useMessages";
 
 const Index = () => {
+  useSessionDuration();
   const [activeTab, setActiveTab] = useState<Tab>("feed");
   const [selectedCity, setSelectedCity] = useState<City>(cities[0]);
   const { conversations } = useMessages();

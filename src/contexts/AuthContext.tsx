@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
+import { identifyUser, resetUser } from "@/lib/posthog";
 
 interface AuthContextType {
   user: User | null;
@@ -28,6 +29,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+      if (session?.user) {
+        identifyUser(session.user.id, {
+          email: session.user.email,
+          name: session.user.user_metadata?.full_name,
+        });
+      }
     });
 
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -41,6 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signOut = async () => {
     await supabase.auth.signOut();
+    resetUser();
   };
 
   return (

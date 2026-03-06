@@ -6,6 +6,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 import { Mail, Lock, User, ArrowRight, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { trackSignUp, trackLogin } from "@/lib/posthog";
 
 const Auth = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
@@ -110,9 +111,11 @@ const Auth = () => {
           title: "Check your email ✉️",
           description: "We sent you a verification link. Click it to activate your account.",
         });
+        trackSignUp("email");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        trackLogin("email");
 
         // If admin code provided, activate admin role
         if (adminCode.trim()) {

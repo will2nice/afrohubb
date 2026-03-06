@@ -9,6 +9,7 @@ import CreatePostSheet from "@/components/CreatePostSheet";
 import CommentSheet from "@/components/CommentSheet";
 import { usePosts, type PostComment } from "@/hooks/usePosts";
 import { useAuth } from "@/contexts/AuthContext";
+import { useScreenView } from "@/hooks/useAnalytics";
 
 // ─── Feed content-type tabs ───
 const feedTabs = [
@@ -266,6 +267,7 @@ const DbPostCard = ({ post, onLike, onComment }: {
 
 // ─── Main Feed Screen ───
 const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
+  useScreenView("feed", { city: selectedCity.id });
   const [activeFeedTab, setActiveFeedTab] = useState<FeedTab>("all");
   const [activeChip, setActiveChip] = useState("For You");
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
