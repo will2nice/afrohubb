@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { trackScreenView, trackEvent } from "@/lib/posthog";
+import { trackScreenView, trackEvent, ensurePostHog } from "@/lib/posthog";
 
 /**
  * Track screen views automatically when a component mounts.

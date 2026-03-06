@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User, Session } from "@supabase/supabase-js";
-import { identifyUser, resetUser } from "@/lib/posthog";
+import { identifyUser, resetUser, ensurePostHog } from "@/lib/posthog";
 
 interface AuthContextType {
   user: User | null;
