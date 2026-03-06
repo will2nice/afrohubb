@@ -6,6 +6,7 @@ import { events as allEvents, cities, type City, type EventItem, SOUNDCLASH_EVEN
 import CityPicker from "@/components/CityPicker";
 import EventAttendeesSheet from "@/components/EventAttendeesSheet";
 import CreateEventSheet from "@/components/CreateEventSheet";
+import TicketPurchaseSheet from "@/components/TicketPurchaseSheet";
 import { useEvents } from "@/hooks/useEvents";
 import { useEventbriteImport } from "@/hooks/useEventbriteImport";
 import { TOTAL_ATTENDING, ON_APP_TOTAL } from "@/data/eventAttendees";
