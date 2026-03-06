@@ -118,7 +118,7 @@ export const useMyOrders = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("orders")
-        .select("*, ticket_types(*), events(*)")
+        .select("*, ticket_types(*), events!orders_event_id_fkey(*)")
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data || [];
