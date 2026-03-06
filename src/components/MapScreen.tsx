@@ -546,29 +546,32 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
     setShowCityPicker(false);
   };
 
-  // Prioritize Posh/Eventbrite DB events in "Nearby This Week"
-  const dbNearby = dbEventPositions
-    .filter(e => e.city === selectedCity.id)
-    .map(e => ({
-      id: Math.abs(e.id.split("").reduce((a: number, b: string) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0)),
-      title: e.title,
-      host: e.source === "posh" ? "via Posh" : e.source === "dice" ? "via DICE" : e.source === "shotgun" ? "via Shotgun" : e.source === "billetto" ? "via Billetto" : "via Eventbrite",
-      date: new Date(e.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
-      venue: e.location || "",
-      city: e.city,
-      distance: "",
-      image: e.image_url || "/placeholder.svg",
-      attending: 0,
-      free: e.price === "Free",
-      price: e.price || undefined,
-      category: e.category,
-      lat: e.lat,
-      lng: e.lng,
-      source: e.source,
-      external_url: e.external_url,
-    }));
+  // Match Explore Events page ordering: pinned Posh mock → DB Posh → other DB → unpinned mock
+  const mapDbToNearby = (e: typeof dbEventPositions[0]) => ({
+    id: Math.abs(e.id.split("").reduce((a: number, b: string) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0)),
+    title: e.title,
+    host: e.source === "posh" ? "via Posh" : e.source === "dice" ? "via DICE" : e.source === "shotgun" ? "via Shotgun" : e.source === "billetto" ? "via Billetto" : "via Eventbrite",
+    date: new Date(e.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
+    venue: e.location || "",
+    city: e.city,
+    distance: "",
+    image: e.image_url || "/placeholder.svg",
+    attending: 0,
+    free: e.price === "Free",
+    price: e.price || undefined,
+    category: e.category,
+    lat: e.lat,
+    lng: e.lng,
+    source: e.source,
+    external_url: e.external_url,
+  });
+  const cityDbEvents = dbEventPositions.filter(e => e.city === selectedCity.id);
+  const dbPoshNearby = cityDbEvents.filter(e => e.source === "posh").map(mapDbToNearby);
+  const dbOtherNearby = cityDbEvents.filter(e => e.source !== "posh").map(mapDbToNearby);
   const mockNearby = allEventPositions.filter(e => e.city === selectedCity.id);
-  const nearbyEvents = [...dbNearby, ...mockNearby].slice(0, 8);
+  const pinnedMockNearby = mockNearby.filter(e => (e as any).source === "posh");
+  const unpinnedMockNearby = mockNearby.filter(e => (e as any).source !== "posh");
+  const nearbyEvents = [...pinnedMockNearby, ...dbPoshNearby, ...dbOtherNearby, ...unpinnedMockNearby].slice(0, 8);
 
   return (
     <div className="fixed inset-0 bg-background">
