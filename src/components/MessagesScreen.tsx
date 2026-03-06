@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useScreenView } from "@/hooks/useAnalytics";
 import { Search, Users, MessageSquarePlus, Loader2, BadgeCheck, Heart, Check, X, ChevronDown, ChevronRight, Calendar, MapPin, Sparkles, Crown } from "lucide-react";
 import { useMessages, type ConversationWithDetails } from "@/hooks/useMessages";
 import { useLikeRequests } from "@/hooks/useLikeRequests";
