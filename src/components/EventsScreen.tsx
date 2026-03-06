@@ -332,6 +332,14 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
         <EventAttendeesSheet event={selectedEvent} onClose={() => setSelectedEvent(null)} />
       )}
       <CreateEventSheet open={showCreateEvent} onClose={() => setShowCreateEvent(false)} defaultCity={selectedCity.name} />
+      {ticketEvent && (
+        <TicketPurchaseSheet
+          eventId={ticketEvent.id}
+          eventTitle={ticketEvent.title}
+          open={!!ticketEvent}
+          onClose={() => setTicketEvent(null)}
+        />
+      )}
     </div>
   );
 };
