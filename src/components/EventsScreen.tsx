@@ -250,21 +250,26 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                       >
                         <UserCheck size={14} /> I'm Going
                       </button>
+                    ) : event.free ? (
+                      <button
+                        onClick={() => setRsvpDialogEvent(event)}
+                        className="px-5 py-2 rounded-full text-sm font-semibold gradient-gold text-primary-foreground shadow-gold hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5"
+                      >
+                        <Ticket size={14} /> RSVP
+                      </button>
+                    ) : (event as any).dbId ? (
+                      <button
+                        onClick={() => setTicketEvent({ id: (event as any).dbId, title: event.title })}
+                        className="px-5 py-2 rounded-full text-sm font-semibold gradient-gold text-primary-foreground shadow-gold hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5"
+                      >
+                        <Ticket size={14} /> Get Tickets
+                      </button>
                     ) : (
                       <button
                         onClick={() => setRsvpDialogEvent(event)}
                         className="px-5 py-2 rounded-full text-sm font-semibold gradient-gold text-primary-foreground shadow-gold hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5"
                       >
-                        <Ticket size={14} />
-                        {event.free ? "RSVP" : "Get Tickets"}
-                      </button>
-                    )}
-                    {!event.free && (event as any).dbId && (
-                      <button
-                        onClick={() => setTicketEvent({ id: (event as any).dbId, title: event.title })}
-                        className="px-4 py-2 rounded-full text-sm font-semibold bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 transition-all flex items-center gap-1.5"
-                      >
-                        <Ticket size={14} /> Buy
+                        <Ticket size={14} /> RSVP
                       </button>
                     )}
                   </div>
