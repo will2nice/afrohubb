@@ -115,6 +115,7 @@ const Auth = () => {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+        trackLogin("email");
 
         // If admin code provided, activate admin role
         if (adminCode.trim()) {
