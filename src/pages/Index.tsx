@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSessionDuration } from "@/hooks/useAnalytics";
 import BottomNav, { type Tab } from "@/components/BottomNav";
 import FeedScreen from "@/components/FeedScreen";
 import MapScreen from "@/components/MapScreen";
