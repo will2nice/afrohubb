@@ -123,6 +123,7 @@ export const cities: City[] = [
   { id: "saopaulo", name: "São Paulo, Brazil", flag: "🇧🇷" },
   { id: "salvador", name: "Salvador, Brazil", flag: "🇧🇷" },
   // Caribbean & Latin America
+  { id: "sanjuan", name: "San Juan, Puerto Rico", flag: "🇵🇷" },
   { id: "kingston", name: "Kingston, Jamaica", flag: "🇯🇲" },
   { id: "santodomingo", name: "Santo Domingo, Dominican Republic", flag: "🇩🇴" },
   { id: "havana", name: "Havana, Cuba", flag: "🇨🇺" },
