@@ -11,6 +11,7 @@ import { cityResources, type CityResource } from "@/data/resourceData";
 import { diasporaHubs, type DiasporaHub } from "@/data/diasporaHubs";
 import { useEvents } from "@/hooks/useEvents";
 import { usePlaces } from "@/hooks/usePlaces";
+import { getFlightRoutes } from "@/data/flightData";
 
 // City coordinates - includes Brazil
 const cityCoords: Record<string, [number, number]> = {
