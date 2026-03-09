@@ -32,6 +32,9 @@ const ExploreScreen = ({ selectedCity, onCityChange, onOpenDM }: ExploreScreenPr
       {view === "places" && (
         <PlacesScreen selectedCity={selectedCity} onCityChange={onCityChange} />
       )}
+      {view === "flights" && (
+        <FlightsScreen selectedCity={selectedCity} onCityChange={onCityChange} />
+      )}
       {view === "help" && (
         <AskForHelpScreen onOpenDM={onOpenDM || (() => {})} />
       )}
