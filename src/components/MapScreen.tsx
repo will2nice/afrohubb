@@ -535,6 +535,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   }, [dbEvents]);
 
   const center = cityCoords[selectedCity.id] || cityCoords.austin;
+  const flightRoutes = useMemo(() => getFlightRoutes(selectedCity.id), [selectedCity.id]);
 
   const handleEventClick = (cityId: string) => {
     setZoomTarget(cityId);
