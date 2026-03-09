@@ -20,6 +20,7 @@ const ExploreScreen = ({ selectedCity, onCityChange, onOpenDM }: ExploreScreenPr
   const toggleItems: { id: ExploreView; label: string; icon: typeof CalendarDays }[] = [
     { id: "events", label: "Events", icon: CalendarDays },
     { id: "places", label: "Places", icon: Store },
+    { id: "flights", label: "Flights", icon: Plane },
     { id: "help", label: "Help", icon: HandHelping },
   ];
 
