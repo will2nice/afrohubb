@@ -506,6 +506,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [showPosh, setShowPosh] = useState(true);
   const [showPlaces, setShowPlaces] = useState(true);
   const [showAfroNation, setShowAfroNation] = useState(true);
+  const [showFlights, setShowFlights] = useState(false);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [zoomTarget, setZoomTarget] = useState<string | null>(selectedCity.id);
   const [nearbyCollapsed, setNearbyCollapsed] = useState(false);
