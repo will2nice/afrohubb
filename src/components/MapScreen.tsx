@@ -631,7 +631,21 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           <Popup className="afro-popup"><div className="text-sm font-semibold">📍 You are here</div></Popup>
         </Marker>
 
-        {/* Flight routes */}
+        {/* Flight route lines */}
+        {showFlights && flightRoutes.map((route) => {
+          const mid: [number, number] = [
+            (center[0] + route.coords[0]) / 2 + Math.abs(center[1] - route.coords[1]) * 0.15,
+            (center[1] + route.coords[1]) / 2,
+          ];
+          return (
+            <Polyline
+              key={`flight-line-${route.destinationCity}`}
+              positions={[center, mid, route.coords]}
+              pathOptions={{ color: "hsl(210,90%,55%)", weight: 2, opacity: 0.6, dashArray: "8 6" }}
+            />
+          );
+        })}
+        {/* Flight price markers */}
         {showFlights && flightRoutes.map((route) => {
           const priceLabel = new L.DivIcon({
             className: "flight-price-marker",
@@ -639,26 +653,15 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             iconSize: [60, 24],
             iconAnchor: [30, 12],
           });
-          // Curved line via midpoint offset
-          const mid: [number, number] = [
-            (center[0] + route.coords[0]) / 2 + Math.abs(center[1] - route.coords[1]) * 0.15,
-            (center[1] + route.coords[1]) / 2,
-          ];
           return (
-            <span key={`flight-${route.destinationCity}`}>
-              <Polyline
-                positions={[center, mid, route.coords]}
-                pathOptions={{ color: "hsl(210,90%,55%)", weight: 2, opacity: 0.6, dashArray: "8 6" }}
-              />
-              <Marker position={route.coords} icon={priceLabel}>
-                <Popup className="afro-popup" maxWidth={240}>
-                  <div className="p-2">
-                    <p className="font-bold text-sm">{route.destinationFlag} {route.destinationName}</p>
-                    <p className="text-xs text-gray-500 mt-1">From <strong className="text-blue-600">${route.price}</strong> round trip</p>
-                  </div>
-                </Popup>
-              </Marker>
-            </span>
+            <Marker key={`flight-price-${route.destinationCity}`} position={route.coords} icon={priceLabel}>
+              <Popup className="afro-popup" maxWidth={240}>
+                <div className="p-2">
+                  <p className="font-bold text-sm">{route.destinationFlag} {route.destinationName}</p>
+                  <p className="text-xs text-gray-500 mt-1">From <strong>${route.price}</strong> round trip</p>
+                </div>
+              </Popup>
+            </Marker>
           );
         })}
 
