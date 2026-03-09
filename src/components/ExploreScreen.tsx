@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { CalendarDays, Store, HandHelping } from "lucide-react";
+import { CalendarDays, Store, HandHelping, Plane } from "lucide-react";
 import EventsScreen from "@/components/EventsScreen";
 import PlacesScreen from "@/components/PlacesScreen";
 import AskForHelpScreen from "@/components/AskForHelpScreen";
+import FlightsScreen from "@/components/FlightsScreen";
 import { type City } from "@/data/cityData";
 
-type ExploreView = "events" | "places" | "help";
+type ExploreView = "events" | "places" | "flights" | "help";
 
 interface ExploreScreenProps {
   selectedCity: City;
@@ -19,6 +20,7 @@ const ExploreScreen = ({ selectedCity, onCityChange, onOpenDM }: ExploreScreenPr
   const toggleItems: { id: ExploreView; label: string; icon: typeof CalendarDays }[] = [
     { id: "events", label: "Events", icon: CalendarDays },
     { id: "places", label: "Places", icon: Store },
+    { id: "flights", label: "Flights", icon: Plane },
     { id: "help", label: "Help", icon: HandHelping },
   ];
 
@@ -29,6 +31,9 @@ const ExploreScreen = ({ selectedCity, onCityChange, onOpenDM }: ExploreScreenPr
       )}
       {view === "places" && (
         <PlacesScreen selectedCity={selectedCity} onCityChange={onCityChange} />
+      )}
+      {view === "flights" && (
+        <FlightsScreen selectedCity={selectedCity} onCityChange={onCityChange} />
       )}
       {view === "help" && (
         <AskForHelpScreen onOpenDM={onOpenDM || (() => {})} />
