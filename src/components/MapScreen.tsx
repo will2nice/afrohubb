@@ -617,6 +617,9 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           <button onClick={() => setShowAfroNation(!showAfroNation)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showAfroNation ? "bg-[hsl(310,60%,45%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
             <img src={afroNationIcon} alt="Afro Nation" className="w-4 h-4 rounded-full object-cover" /> Afro Nation
           </button>
+          <button onClick={() => setShowFlights(!showFlights)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showFlights ? "bg-[hsl(210,90%,55%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
+            <Plane size={14} /> Flights
+          </button>
         </div>
       </div>
 
