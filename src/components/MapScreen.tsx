@@ -631,7 +631,38 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           <Popup className="afro-popup"><div className="text-sm font-semibold">📍 You are here</div></Popup>
         </Marker>
 
-        {showEvents && allEventPositions.filter(e => !e.host?.toLowerCase().includes("afro nation")).map((event) => (
+        {/* Flight routes */}
+        {showFlights && flightRoutes.map((route) => {
+          const priceLabel = new L.DivIcon({
+            className: "flight-price-marker",
+            html: `<div style="background:hsl(210,90%,55%);color:white;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.2);">$${route.price}</div>`,
+            iconSize: [60, 24],
+            iconAnchor: [30, 12],
+          });
+          // Curved line via midpoint offset
+          const mid: [number, number] = [
+            (center[0] + route.coords[0]) / 2 + Math.abs(center[1] - route.coords[1]) * 0.15,
+            (center[1] + route.coords[1]) / 2,
+          ];
+          return (
+            <span key={`flight-${route.destinationCity}`}>
+              <Polyline
+                positions={[center, mid, route.coords]}
+                pathOptions={{ color: "hsl(210,90%,55%)", weight: 2, opacity: 0.6, dashArray: "8 6" }}
+              />
+              <Marker position={route.coords} icon={priceLabel}>
+                <Popup className="afro-popup" maxWidth={240}>
+                  <div className="p-2">
+                    <p className="font-bold text-sm">{route.destinationFlag} {route.destinationName}</p>
+                    <p className="text-xs text-gray-500 mt-1">From <strong className="text-blue-600">${route.price}</strong> round trip</p>
+                  </div>
+                </Popup>
+              </Marker>
+            </span>
+          );
+        })}
+
+
           <Marker key={`event-${event.id}`} position={[event.lat, event.lng]} icon={eventIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
