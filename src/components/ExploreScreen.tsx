@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { CalendarDays, Store, HandHelping } from "lucide-react";
+import { CalendarDays, Store, HandHelping, Plane } from "lucide-react";
 import EventsScreen from "@/components/EventsScreen";
 import PlacesScreen from "@/components/PlacesScreen";
 import AskForHelpScreen from "@/components/AskForHelpScreen";
+import FlightsScreen from "@/components/FlightsScreen";
 import { type City } from "@/data/cityData";
 
-type ExploreView = "events" | "places" | "help";
+type ExploreView = "events" | "places" | "flights" | "help";
 
 interface ExploreScreenProps {
   selectedCity: City;
