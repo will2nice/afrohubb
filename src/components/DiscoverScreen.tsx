@@ -38,8 +38,13 @@ interface DiscoverScreenProps {
   onNavigate?: (tab: string) => void;
 }
 
-const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM }: DiscoverScreenProps) => {
+const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: DiscoverScreenProps) => {
   useScreenView("discover");
+  const { profile, loading: profileLoading } = useProfile();
+  const { events: nearbyEventsData, loading: nearbyLoading } = useEvents(profile?.city || undefined);
+  const { posts, loading: postsLoading } = usePosts(profile?.city || undefined);
+  const nearbyEvents = nearbyEventsData.slice(0, 4);
+  const trendingPosts = posts?.slice(0, 3) || [];
   const [view, setView] = useState<DiscoverView>("explore");
   const [tab, setTab] = useState<DiscoverTab>("people");
   const [searchQuery, setSearchQuery] = useState("");
