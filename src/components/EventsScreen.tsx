@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useScreenView } from "@/hooks/useAnalytics";
 import { trackEvent } from "@/lib/posthog";
+import { trackEventViewed } from "@/lib/analytics";
 import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, UserCheck, Plus, Download, Loader2, ExternalLink, X, CheckCircle, XCircle } from "lucide-react";
 import { events as allEvents, cities, type City, type EventItem, SOUNDCLASH_EVENT_ID, AFRO_NATION_EVENT_ID } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
