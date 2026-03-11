@@ -490,6 +490,43 @@ const MapController = ({ targetCity, onZoomDone }: { targetCity: string | null; 
   return null;
 };
 
+const userLocationIcon = new L.DivIcon({
+  html: `<div style="width:18px;height:18px;border-radius:50%;background:hsl(217,91%,60%);border:3px solid white;box-shadow:0 0 8px rgba(59,130,246,0.5);"></div>`,
+  className: "",
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
+});
+
+const NearMeButton = ({ onLocated }: { onLocated: (lat: number, lng: number) => void }) => {
+  const map = useMap();
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = useCallback(() => {
+    if (!navigator.geolocation) return;
+    setLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        map.setView([latitude, longitude], 14, { animate: true });
+        onLocated(latitude, longitude);
+        setLoading(false);
+      },
+      () => setLoading(false),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }, [map, onLocated]);
+
+  return (
+    <button
+      onClick={handleClick}
+      className="absolute bottom-36 right-3 z-[1000] p-2.5 rounded-full bg-card/95 backdrop-blur-lg border border-border shadow-lg text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+      title="Near me"
+    >
+      {loading ? <Loader2 size={18} className="animate-spin" /> : <Crosshair size={18} />}
+    </button>
+  );
+};
+
 interface MapScreenProps {
   selectedCity: City;
   onCityChange: (city: City) => void;
