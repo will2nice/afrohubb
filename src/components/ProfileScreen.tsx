@@ -264,7 +264,10 @@ const ProfileScreen = () => {
               </button>
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
             </div>
-            <h2 className="font-display text-xl font-bold text-foreground mt-3">{displayName}</h2>
+            <div className="flex items-center gap-1.5 mt-3">
+              <h2 className="font-display text-xl font-bold text-foreground">{displayName}</h2>
+              {profile?.is_verified && <VerifiedBadge size={18} />}
+            </div>
             <p className="text-sm text-muted-foreground mt-0.5">{displayCity}</p>
             <p className="text-sm text-foreground/70 mt-2 text-center max-w-[280px]">{displayBio}</p>
 
