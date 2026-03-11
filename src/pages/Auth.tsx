@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { Mail, Lock, User, ArrowRight, Eye, EyeOff, ShieldCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { trackSignUp, trackLogin } from "@/lib/posthog";
+import { trackUserSignup } from "@/lib/analytics";
 
 const Auth = () => {
   const [mode, setMode] = useState<"login" | "signup">("login");
