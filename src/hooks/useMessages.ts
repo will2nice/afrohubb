@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 import { trackEvent } from "@/lib/posthog";
+import { trackMessageSent } from "@/lib/analytics";
 
 export interface Message {
   id: string;
@@ -186,6 +187,7 @@ export const useMessages = (conversationId?: string) => {
     },
     onSuccess: (_, vars) => {
       trackEvent("message_sent", { conversation_id: vars.conversationId });
+      trackMessageSent(vars.conversationId);
       queryClient.invalidateQueries({ queryKey: ["messages", vars.conversationId] });
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
     },

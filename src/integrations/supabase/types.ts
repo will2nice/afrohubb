@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          event_name: string
+          id: string
+          properties: Json | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          event_name: string
+          id?: string
+          properties?: Json | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          event_name?: string
+          id?: string
+          properties?: Json | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       conversation_members: {
         Row: {
           conversation_id: string
@@ -893,6 +917,34 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_dau: {
+        Args: { days_back?: number }
+        Returns: {
+          count: number
+          day: string
+        }[]
+      }
+      get_event_counts: {
+        Args: { days_back?: number }
+        Returns: {
+          count: number
+          event_name: string
+        }[]
+      }
+      get_retention: {
+        Args: never
+        Returns: {
+          period: string
+          retention_pct: number
+        }[]
+      }
+      get_top_cities: {
+        Args: { lim?: number }
+        Returns: {
+          city: string
+          user_count: number
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

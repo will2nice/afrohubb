@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useScreenView } from "@/hooks/useAnalytics";
 import { trackEvent } from "@/lib/posthog";
+import { trackEventViewed } from "@/lib/analytics";
 import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, UserCheck, Plus, Download, Loader2, ExternalLink, X, CheckCircle, XCircle } from "lucide-react";
 import { events as allEvents, cities, type City, type EventItem, SOUNDCLASH_EVENT_ID, AFRO_NATION_EVENT_ID } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
@@ -76,6 +77,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
 
   const handleRsvpAction = (event: EventItem, action: "going" | "not_going") => {
     trackEvent("event_rsvp", { event_id: event.id, event_title: event.title, action, city: event.city });
+    trackEventViewed(String(event.id), event.title);
     if (action === "going") {
       setRsvpEvents((prev) => new Set(prev).add(event.id));
       setNotGoingEvents((prev) => { const n = new Set(prev); n.delete(event.id); return n; });
