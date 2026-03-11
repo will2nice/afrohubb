@@ -1,11 +1,14 @@
 import { useState, useRef } from "react";
-import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase, Sun, Moon, Ticket } from "lucide-react";
+import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase, Sun, Moon, Ticket, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import PromoterDashboard from "@/components/PromoterDashboard";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
 import SubscriptionModal from "@/components/SubscriptionModal";
+import VerifiedBadge from "@/components/VerifiedBadge";
+import ProfileCompleteness from "@/components/ProfileCompleteness";
 import profileMan1 from "@/assets/profile-man-1.jpg";
 
 // Dating mode removed - keeping imports for potential future use
@@ -35,6 +38,7 @@ const menuItems = [
   { icon: Ticket, label: "Promoter Dashboard", desc: "Tickets, sales, payouts", action: "promoter" },
   { icon: Heart, label: "Preferences", desc: "Matching, filters" },
   { icon: Shield, label: "Safety & Privacy", desc: "Blocking, visibility" },
+  { icon: BookOpen, label: "Community Guidelines", desc: "Our community standards", action: "guidelines" },
   { icon: Crown, label: "AfroHub Plus", desc: "Premium features", gold: true, action: "subscription" },
   { icon: Settings, label: "Settings", desc: "Account, notifications" },
   { icon: Sun, label: "Appearance", desc: "Light / Dark mode", action: "theme" },
@@ -90,6 +94,7 @@ const ProfileScreen = () => {
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
   const [showEditProfile, setShowEditProfile] = useState(false);
   const { signOut } = useAuth();
+  const navigate = useNavigate();
   const { profile, updateProfile, uploadAvatar } = useProfile();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -148,6 +153,8 @@ const ProfileScreen = () => {
       setShowSubscription(true);
     } else if (action === "promoter") {
       setShowPromoter(true);
+    } else if (action === "guidelines") {
+      navigate("/community-guidelines");
     }
   };
 
@@ -257,7 +264,10 @@ const ProfileScreen = () => {
               </button>
               <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
             </div>
-            <h2 className="font-display text-xl font-bold text-foreground mt-3">{displayName}</h2>
+            <div className="flex items-center gap-1.5 mt-3">
+              <h2 className="font-display text-xl font-bold text-foreground">{displayName}</h2>
+              {profile?.is_verified && <VerifiedBadge size={18} />}
+            </div>
             <p className="text-sm text-muted-foreground mt-0.5">{displayCity}</p>
             <p className="text-sm text-foreground/70 mt-2 text-center max-w-[280px]">{displayBio}</p>
 
@@ -271,8 +281,13 @@ const ProfileScreen = () => {
               ))}
             </div>
 
+            {/* Profile completeness */}
+            <div className="w-full mt-4 px-2">
+              <ProfileCompleteness profile={profile} compact onEditProfile={openEditProfile} />
+            </div>
+
             {/* Edit profile button */}
-            <button onClick={openEditProfile} className="mt-4 px-8 py-2 rounded-full border border-border bg-secondary text-sm font-semibold text-foreground hover:bg-secondary/80 transition-colors">
+            <button onClick={openEditProfile} className="mt-3 px-8 py-2 rounded-full border border-border bg-secondary text-sm font-semibold text-foreground hover:bg-secondary/80 transition-colors">
               Edit Profile
             </button>
           </div>

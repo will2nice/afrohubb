@@ -13,6 +13,7 @@ import Waitlist from "./pages/Waitlist";
 import PendingApproval from "./pages/PendingApproval";
 import AdminDashboard from "./pages/AdminDashboard";
 import Install from "./pages/Install";
+import CommunityGuidelines from "./pages/CommunityGuidelines";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="/install" element={<Install />} />
+            <Route path="/community-guidelines" element={<CommunityGuidelines />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
