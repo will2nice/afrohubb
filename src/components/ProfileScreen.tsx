@@ -94,6 +94,7 @@ const ProfileScreen = () => {
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
   const [showEditProfile, setShowEditProfile] = useState(false);
   const { signOut } = useAuth();
+  const navigate = useNavigate();
   const { profile, updateProfile, uploadAvatar } = useProfile();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
