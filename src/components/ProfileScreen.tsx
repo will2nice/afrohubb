@@ -281,8 +281,13 @@ const ProfileScreen = () => {
               ))}
             </div>
 
+            {/* Profile completeness */}
+            <div className="w-full mt-4 px-2">
+              <ProfileCompleteness profile={profile} compact onEditProfile={openEditProfile} />
+            </div>
+
             {/* Edit profile button */}
-            <button onClick={openEditProfile} className="mt-4 px-8 py-2 rounded-full border border-border bg-secondary text-sm font-semibold text-foreground hover:bg-secondary/80 transition-colors">
+            <button onClick={openEditProfile} className="mt-3 px-8 py-2 rounded-full border border-border bg-secondary text-sm font-semibold text-foreground hover:bg-secondary/80 transition-colors">
               Edit Profile
             </button>
           </div>

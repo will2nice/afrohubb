@@ -50,6 +50,7 @@ const App = () => (
             <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="/install" element={<Install />} />
+            <Route path="/community-guidelines" element={<CommunityGuidelines />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
