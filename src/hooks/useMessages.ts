@@ -187,6 +187,7 @@ export const useMessages = (conversationId?: string) => {
     },
     onSuccess: (_, vars) => {
       trackEvent("message_sent", { conversation_id: vars.conversationId });
+      trackMessageSent(vars.conversationId);
       queryClient.invalidateQueries({ queryKey: ["messages", vars.conversationId] });
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
     },
