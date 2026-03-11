@@ -8,7 +8,7 @@ interface BottomNavProps {
   unreadMessages?: number;
 }
 
-const tabs: { id: Tab; label: string; icon: typeof Home }[] = [
+const tabs: { id: Tab; label: string; icon: typeof Newspaper }[] = [
   { id: "home", label: "Feed", icon: Newspaper },
   { id: "discover", label: "Discover", icon: Compass },
   { id: "events", label: "Events", icon: CalendarDays },
