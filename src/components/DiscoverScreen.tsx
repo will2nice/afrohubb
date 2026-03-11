@@ -31,6 +31,7 @@ interface DiscoverScreenProps {
   selectedCity: City;
   onCityChange: (city: City) => void;
   onOpenDM?: () => void;
+  onNavigate?: (tab: string) => void;
 }
 
 const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM }: DiscoverScreenProps) => {

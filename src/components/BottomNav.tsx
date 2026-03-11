@@ -1,4 +1,4 @@
-import { Home, Compass, CalendarDays, MessageCircle, User } from "lucide-react";
+import { Newspaper, Compass, CalendarDays, MessageCircle, User } from "lucide-react";
 
 type Tab = "home" | "discover" | "events" | "messages" | "profile";
 
