@@ -1,4 +1,4 @@
-import { Home, Compass, CalendarDays, MessageCircle, User } from "lucide-react";
+import { Newspaper, Compass, CalendarDays, MessageCircle, User } from "lucide-react";
 
 type Tab = "home" | "discover" | "events" | "messages" | "profile";
 
@@ -8,8 +8,8 @@ interface BottomNavProps {
   unreadMessages?: number;
 }
 
-const tabs: { id: Tab; label: string; icon: typeof Home }[] = [
-  { id: "home", label: "Home", icon: Home },
+const tabs: { id: Tab; label: string; icon: typeof Newspaper }[] = [
+  { id: "home", label: "Feed", icon: Newspaper },
   { id: "discover", label: "Discover", icon: Compass },
   { id: "events", label: "Events", icon: CalendarDays },
   { id: "messages", label: "Chat", icon: MessageCircle },
