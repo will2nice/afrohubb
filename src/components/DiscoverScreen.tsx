@@ -129,6 +129,121 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
 
   return (
     <div className="min-h-screen pb-24">
+      {/* Hero & Quick Actions */}
+      <div className="px-5 pt-8 pb-4">
+        <h1 className="text-2xl font-bold text-foreground mb-1">
+          {profile?.display_name ? `Hey ${profile.display_name.split(" ")[0]} 👋` : "Welcome 👋"}
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Find your people. Discover events. Connect with the diaspora.
+        </p>
+      </div>
+
+      <div className="px-5 mb-4">
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { icon: Users, label: "Community", action: "people" as const, color: "text-primary" },
+            { icon: Calendar, label: "Events", action: "events" as const, color: "text-accent" },
+            { icon: Star, label: "Profile", action: "profile" as const, color: "text-primary" },
+          ].map((item) => (
+            <button
+              key={item.label}
+              onClick={() => {
+                trackEvent("home_quick_action", { action: item.action });
+                if (item.action === "people") setTab("people");
+                else if (item.action === "events") setTab("events");
+                else onNavigate?.(item.action);
+              }}
+              className="flex flex-col items-center gap-2 p-4 rounded-xl bg-card border border-border hover:border-primary/40 transition-all"
+            >
+              <item.icon size={22} className={item.color} />
+              <span className="text-xs font-medium text-foreground">{item.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Nearby Events Carousel */}
+      <section className="mb-4">
+        <div className="flex items-center justify-between px-5 mb-3">
+          <div className="flex items-center gap-2">
+            <MapPin size={16} className="text-primary" />
+            <h2 className="text-sm font-semibold text-foreground">Nearby Events</h2>
+          </div>
+          <button
+            onClick={() => onNavigate?.("events")}
+            className="text-xs text-primary font-medium flex items-center gap-1"
+          >
+            See all <ArrowRight size={12} />
+          </button>
+        </div>
+        <div className="flex gap-3 overflow-x-auto px-5 pb-2 scrollbar-hide">
+          {nearbyLoading || profileLoading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="min-w-[220px]">
+                <Skeleton className="w-full h-28 rounded-xl mb-2" />
+                <Skeleton className="h-4 w-3/4 mb-1" />
+                <Skeleton className="h-3 w-1/2" />
+              </div>
+            ))
+          ) : nearbyEvents.length === 0 ? (
+            <div className="w-full py-6 text-center">
+              <Calendar size={28} className="mx-auto text-muted-foreground mb-2" />
+              <p className="text-sm text-muted-foreground">No events nearby yet</p>
+            </div>
+          ) : (
+            nearbyEvents.map((event) => (
+              <button
+                key={event.id}
+                onClick={() => { trackEvent("event_viewed", { event_id: event.id, source: "discover" }); onNavigate?.("events"); }}
+                className="min-w-[220px] bg-card border border-border rounded-xl overflow-hidden text-left hover:border-primary/40 transition-all"
+              >
+                {event.image_url ? (
+                  <img src={event.image_url} alt={event.title} className="w-full h-28 object-cover" loading="lazy" />
+                ) : (
+                  <div className="w-full h-28 bg-muted flex items-center justify-center"><Calendar size={20} className="text-muted-foreground" /></div>
+                )}
+                <div className="p-2.5">
+                  <h3 className="text-xs font-semibold text-foreground line-clamp-1">{event.title}</h3>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">{format(new Date(event.date), "MMM d")} • {event.city}</p>
+                </div>
+              </button>
+            ))
+          )}
+        </div>
+      </section>
+
+      {/* Trending Posts */}
+      {trendingPosts.length > 0 && (
+        <section className="mb-4 px-5">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp size={16} className="text-accent" />
+            <h2 className="text-sm font-semibold text-foreground">Trending</h2>
+          </div>
+          <div className="space-y-2">
+            {trendingPosts.map((post) => (
+              <div key={post.id} className="flex gap-3 items-start p-3 rounded-xl bg-card border border-border">
+                <div className="w-9 h-9 rounded-full bg-muted overflow-hidden shrink-0">
+                  {post.profile?.avatar_url ? (
+                    <img src={post.profile.avatar_url} alt="" className="w-full h-full object-cover" loading="lazy" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-bold">{post.profile?.display_name?.[0] || "?"}</div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-medium text-foreground">{post.profile?.display_name || "Anonymous"}</p>
+                  <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{post.content}</p>
+                  <div className="flex gap-3 mt-1 text-[10px] text-muted-foreground">
+                    <span>❤️ {post.likes_count}</span>
+                    <span>💬 {post.comments_count}</span>
+                  </div>
+                </div>
+                {post.image_url && <img src={post.image_url} alt="" className="w-12 h-12 rounded-lg object-cover shrink-0" loading="lazy" />}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
       {/* Header */}
       <header className="sticky top-0 z-40 glass border-b border-border px-4 py-3">
         <div className="max-w-lg mx-auto space-y-3">
