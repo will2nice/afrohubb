@@ -13,6 +13,12 @@ export interface Profile {
   interests: string[];
   profile_mode: string;
   vibe: string;
+  onboarding_completed: boolean;
+  nationality: string;
+  languages: string[];
+  looking_for: string[];
+  diaspora_roots: string;
+  is_verified: boolean;
 }
 
 export const useProfile = () => {

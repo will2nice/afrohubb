@@ -155,22 +155,22 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
                 className="flex gap-3 items-start p-3 rounded-xl bg-card border border-border"
               >
                 <div className="w-10 h-10 rounded-full bg-muted overflow-hidden shrink-0">
-                  {post.profiles?.avatar_url ? (
+                  {post.profile?.avatar_url ? (
                     <img
-                      src={post.profiles.avatar_url}
+                      src={post.profile.avatar_url}
                       alt=""
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-muted-foreground text-xs font-bold">
-                      {post.profiles?.display_name?.[0] || "?"}
+                      {post.profile?.display_name?.[0] || "?"}
                     </div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-medium text-foreground">
-                    {post.profiles?.display_name || "Anonymous"}
+                    {post.profile?.display_name || "Anonymous"}
                   </p>
                   <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">
                     {post.content}
