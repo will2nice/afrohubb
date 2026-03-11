@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useSessionDuration } from "@/hooks/useAnalytics";
 import BottomNav, { type Tab } from "@/components/BottomNav";
-import HomeScreen from "@/components/HomeScreen";
+import FeedScreen from "@/components/FeedScreen";
 import DiscoverScreen from "@/components/DiscoverScreen";
 import EventsScreen from "@/components/EventsScreen";
 import MessagesScreen from "@/components/MessagesScreen";
@@ -32,8 +32,8 @@ const Index = () => {
 
   return (
     <div className="max-w-lg mx-auto min-h-screen bg-background relative">
-      {activeTab === "home" && <HomeScreen onNavigate={(tab) => setActiveTab(tab as Tab)} />}
-      {activeTab === "discover" && <DiscoverScreen selectedCity={selectedCity} onCityChange={setSelectedCity} onOpenDM={() => setActiveTab("messages")} />}
+      {activeTab === "home" && <FeedScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
+      {activeTab === "discover" && <DiscoverScreen selectedCity={selectedCity} onCityChange={setSelectedCity} onOpenDM={() => setActiveTab("messages")} onNavigate={(tab) => setActiveTab(tab as Tab)} />}
       {activeTab === "events" && <EventsScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "messages" && <MessagesScreen />}
       {activeTab === "profile" && <ProfileScreen />}

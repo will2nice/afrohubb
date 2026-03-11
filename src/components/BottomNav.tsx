@@ -9,7 +9,7 @@ interface BottomNavProps {
 }
 
 const tabs: { id: Tab; label: string; icon: typeof Home }[] = [
-  { id: "home", label: "Home", icon: Home },
+  { id: "home", label: "Feed", icon: Newspaper },
   { id: "discover", label: "Discover", icon: Compass },
   { id: "events", label: "Events", icon: CalendarDays },
   { id: "messages", label: "Chat", icon: MessageCircle },
