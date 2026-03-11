@@ -38,6 +38,7 @@ const menuItems = [
   { icon: Ticket, label: "Promoter Dashboard", desc: "Tickets, sales, payouts", action: "promoter" },
   { icon: Heart, label: "Preferences", desc: "Matching, filters" },
   { icon: Shield, label: "Safety & Privacy", desc: "Blocking, visibility" },
+  { icon: BookOpen, label: "Community Guidelines", desc: "Our community standards", action: "guidelines" },
   { icon: Crown, label: "AfroHub Plus", desc: "Premium features", gold: true, action: "subscription" },
   { icon: Settings, label: "Settings", desc: "Account, notifications" },
   { icon: Sun, label: "Appearance", desc: "Light / Dark mode", action: "theme" },
