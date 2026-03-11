@@ -93,8 +93,8 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
   ].filter(Boolean).length;
 
   const toggleItems: { id: DiscoverView; label: string }[] = [
-    { id: "explore", label: "Explore" },
     { id: "map", label: "Map" },
+    { id: "explore", label: "Search" },
     { id: "places", label: "Places" },
     { id: "campus", label: "Campus" },
     { id: "flights", label: "Flights" },
