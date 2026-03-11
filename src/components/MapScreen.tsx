@@ -548,6 +548,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [zoomTarget, setZoomTarget] = useState<string | null>(selectedCity.id);
   const [nearbyCollapsed, setNearbyCollapsed] = useState(false);
   const [selectedNearbyEvent, setSelectedNearbyEvent] = useState<typeof allEventPositions[0] | null>(null);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
 
   const { events: dbEvents } = useEvents();
   const { places: dbPlaces } = usePlaces();
