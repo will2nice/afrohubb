@@ -1,6 +1,6 @@
-import { Newspaper, MapPinned, MessageCircle, User, GraduationCap, Compass } from "lucide-react";
+import { Home, Compass, CalendarDays, MessageCircle, User } from "lucide-react";
 
-type Tab = "feed" | "map" | "explore" | "messages" | "campus" | "profile";
+type Tab = "home" | "discover" | "events" | "messages" | "profile";
 
 interface BottomNavProps {
   activeTab: Tab;
@@ -8,12 +8,11 @@ interface BottomNavProps {
   unreadMessages?: number;
 }
 
-const tabs: { id: Tab; label: string; icon: typeof Newspaper }[] = [
-  { id: "feed", label: "Feed", icon: Newspaper },
-  { id: "map", label: "Map", icon: MapPinned },
-  { id: "explore", label: "Explore", icon: Compass },
+const tabs: { id: Tab; label: string; icon: typeof Home }[] = [
+  { id: "home", label: "Home", icon: Home },
+  { id: "discover", label: "Discover", icon: Compass },
+  { id: "events", label: "Events", icon: CalendarDays },
   { id: "messages", label: "Chat", icon: MessageCircle },
-  { id: "campus", label: "Campus", icon: GraduationCap },
   { id: "profile", label: "Profile", icon: User },
 ];
 
@@ -29,14 +28,14 @@ const BottomNav = ({ activeTab, onTabChange, unreadMessages = 0 }: BottomNavProp
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className={`flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl transition-all duration-200 relative ${
+              className={`flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-xl transition-all duration-200 relative ${
                 isActive
                   ? "text-primary scale-105"
                   : "text-muted-foreground hover:text-foreground"
               }`}
             >
               <div className="relative">
-                <Icon size={20} strokeWidth={isActive ? 2.5 : 1.8} />
+                <Icon size={22} strokeWidth={isActive ? 2.5 : 1.8} />
                 {showBadge && (
                   <div className="absolute -top-1.5 -right-2 min-w-[18px] h-[18px] rounded-full gradient-gold flex items-center justify-center px-1">
                     <span className="text-[9px] font-bold text-primary-foreground">{unreadMessages > 9 ? "9+" : unreadMessages}</span>

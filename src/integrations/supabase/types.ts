@@ -600,9 +600,15 @@ export type Database = {
           bio: string | null
           city: string | null
           created_at: string
+          diaspora_roots: string | null
           display_name: string
           id: string
           interests: string[] | null
+          is_verified: boolean
+          languages: string[] | null
+          looking_for: string[] | null
+          nationality: string | null
+          onboarding_completed: boolean
           profile_mode: string | null
           updated_at: string
           username: string | null
@@ -614,9 +620,15 @@ export type Database = {
           bio?: string | null
           city?: string | null
           created_at?: string
+          diaspora_roots?: string | null
           display_name?: string
           id: string
           interests?: string[] | null
+          is_verified?: boolean
+          languages?: string[] | null
+          looking_for?: string[] | null
+          nationality?: string | null
+          onboarding_completed?: boolean
           profile_mode?: string | null
           updated_at?: string
           username?: string | null
@@ -628,9 +640,15 @@ export type Database = {
           bio?: string | null
           city?: string | null
           created_at?: string
+          diaspora_roots?: string | null
           display_name?: string
           id?: string
           interests?: string[] | null
+          is_verified?: boolean
+          languages?: string[] | null
+          looking_for?: string[] | null
+          nationality?: string | null
+          onboarding_completed?: boolean
           profile_mode?: string | null
           updated_at?: string
           username?: string | null
