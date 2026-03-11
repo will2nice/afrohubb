@@ -45,7 +45,7 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
   const { posts, loading: postsLoading } = usePosts(profile?.city || undefined);
   const nearbyEvents = nearbyEventsData.slice(0, 4);
   const trendingPosts = posts?.slice(0, 3) || [];
-  const [view, setView] = useState<DiscoverView>("explore");
+  const [view, setView] = useState<DiscoverView>("map");
   const [tab, setTab] = useState<DiscoverTab>("people");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -93,8 +93,8 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
   ].filter(Boolean).length;
 
   const toggleItems: { id: DiscoverView; label: string }[] = [
-    { id: "explore", label: "Explore" },
     { id: "map", label: "Map" },
+    { id: "explore", label: "Search" },
     { id: "places", label: "Places" },
     { id: "campus", label: "Campus" },
     { id: "flights", label: "Flights" },
