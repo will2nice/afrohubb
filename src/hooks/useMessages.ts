@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 import { trackEvent } from "@/lib/posthog";
+import { trackMessageSent } from "@/lib/analytics";
 
 export interface Message {
   id: string;
