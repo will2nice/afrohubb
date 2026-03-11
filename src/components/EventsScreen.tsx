@@ -77,6 +77,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
 
   const handleRsvpAction = (event: EventItem, action: "going" | "not_going") => {
     trackEvent("event_rsvp", { event_id: event.id, event_title: event.title, action, city: event.city });
+    trackEventViewed(String(event.id), event.title);
     if (action === "going") {
       setRsvpEvents((prev) => new Set(prev).add(event.id));
       setNotGoingEvents((prev) => { const n = new Set(prev); n.delete(event.id); return n; });
