@@ -133,6 +133,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
         goals: selectedGoals,
         has_photo: !!photoFile,
       });
+      trackOnboardingCompleted(step + 1);
 
       onComplete();
     } catch (err: any) {
