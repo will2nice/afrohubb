@@ -153,6 +153,8 @@ const ProfileScreen = () => {
       setShowSubscription(true);
     } else if (action === "promoter") {
       setShowPromoter(true);
+    } else if (action === "guidelines") {
+      navigate("/community-guidelines");
     }
   };
 
