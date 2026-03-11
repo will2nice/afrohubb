@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, MapPinned, Users, Sliders, X, Filter, BadgeCheck, Ticket, MapPin, ChevronDown, Sparkles } from "lucide-react";
+import { Search, MapPinned, Users, Sliders, X, Filter, BadgeCheck, Ticket, MapPin, ChevronDown, Sparkles, TrendingUp, Calendar, ArrowRight, Star } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useScreenView } from "@/hooks/useAnalytics";
 import { trackEvent } from "@/lib/posthog";
@@ -12,6 +12,10 @@ import CampusScreen from "@/components/CampusScreen";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { useDiscoverProfiles, useDiscoverEvents, type DiscoverProfile } from "@/hooks/useDiscover";
 import { trackProfileViewed } from "@/lib/analytics";
+import { useProfile } from "@/hooks/useProfile";
+import { useEvents } from "@/hooks/useEvents";
+import { usePosts } from "@/hooks/usePosts";
+import { format } from "date-fns";
 
 type DiscoverView = "explore" | "map" | "places" | "campus" | "flights" | "help";
 type DiscoverTab = "people" | "events";
