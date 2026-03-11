@@ -1,11 +1,14 @@
 import { useState, useRef } from "react";
-import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase, Sun, Moon, Ticket } from "lucide-react";
+import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase, Sun, Moon, Ticket, BookOpen } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import PromoterDashboard from "@/components/PromoterDashboard";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import { useToast } from "@/hooks/use-toast";
 import SubscriptionModal from "@/components/SubscriptionModal";
+import VerifiedBadge from "@/components/VerifiedBadge";
+import ProfileCompleteness from "@/components/ProfileCompleteness";
 import profileMan1 from "@/assets/profile-man-1.jpg";
 
 // Dating mode removed - keeping imports for potential future use
