@@ -663,6 +663,8 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
       <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }} zoomControl={false} attributionControl={false} minZoom={2} maxBoundsViscosity={0} worldCopyJump={true}>
         <MapController targetCity={zoomTarget} onZoomDone={() => setZoomTarget(null)} />
+        <NearMeButton onLocated={(lat, lng) => setUserLocation([lat, lng])} />
+        {userLocation && <Marker position={userLocation} icon={userLocationIcon}><Popup>You are here</Popup></Marker>}
         <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
 
         <Marker position={center} icon={youIcon}>
