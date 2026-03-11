@@ -1,9 +1,9 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useScreenView } from "@/hooks/useAnalytics";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping, Music, Plane } from "lucide-react";
+import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping, Music, Plane, Crosshair, Loader2 } from "lucide-react";
 import { events as allEvents, cities, type City, AFRO_NATION_EVENT_ID } from "@/data/cityData";
 import afroNationIcon from "@/assets/afro-nation-icon.webp";
 import CityPicker from "@/components/CityPicker";
@@ -490,6 +490,43 @@ const MapController = ({ targetCity, onZoomDone }: { targetCity: string | null; 
   return null;
 };
 
+const userLocationIcon = new L.DivIcon({
+  html: `<div style="width:18px;height:18px;border-radius:50%;background:hsl(217,91%,60%);border:3px solid white;box-shadow:0 0 8px rgba(59,130,246,0.5);"></div>`,
+  className: "",
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
+});
+
+const NearMeButton = ({ onLocated }: { onLocated: (lat: number, lng: number) => void }) => {
+  const map = useMap();
+  const [loading, setLoading] = useState(false);
+
+  const handleClick = useCallback(() => {
+    if (!navigator.geolocation) return;
+    setLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        map.setView([latitude, longitude], 14, { animate: true });
+        onLocated(latitude, longitude);
+        setLoading(false);
+      },
+      () => setLoading(false),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }, [map, onLocated]);
+
+  return (
+    <button
+      onClick={handleClick}
+      className="absolute bottom-36 right-3 z-[1000] p-2.5 rounded-full bg-card/95 backdrop-blur-lg border border-border shadow-lg text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+      title="Near me"
+    >
+      {loading ? <Loader2 size={18} className="animate-spin" /> : <Crosshair size={18} />}
+    </button>
+  );
+};
+
 interface MapScreenProps {
   selectedCity: City;
   onCityChange: (city: City) => void;
@@ -511,6 +548,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [zoomTarget, setZoomTarget] = useState<string | null>(selectedCity.id);
   const [nearbyCollapsed, setNearbyCollapsed] = useState(false);
   const [selectedNearbyEvent, setSelectedNearbyEvent] = useState<typeof allEventPositions[0] | null>(null);
+  const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
 
   const { events: dbEvents } = useEvents();
   const { places: dbPlaces } = usePlaces();
@@ -625,6 +663,8 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
       <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }} zoomControl={false} attributionControl={false} minZoom={2} maxBoundsViscosity={0} worldCopyJump={true}>
         <MapController targetCity={zoomTarget} onZoomDone={() => setZoomTarget(null)} />
+        <NearMeButton onLocated={(lat, lng) => setUserLocation([lat, lng])} />
+        {userLocation && <Marker position={userLocation} icon={userLocationIcon}><Popup>You are here</Popup></Marker>}
         <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
 
         <Marker position={center} icon={youIcon}>
