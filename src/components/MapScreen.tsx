@@ -559,6 +559,48 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
   const { events: dbEvents } = useEvents();
   const { places: dbPlaces } = usePlaces();
+
+  // Time filter helpers
+  const now = useMemo(() => new Date(), []);
+  const isTonight = useCallback((dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toDateString() === now.toDateString() && d.getHours() >= 17;
+  }, [now]);
+  const isThisWeekend = useCallback((dateStr: string) => {
+    const d = new Date(dateStr);
+    const day = d.getDay();
+    const diff = (day === 0 ? 0 : 6 - day);
+    const friday = new Date(now); friday.setDate(now.getDate() + (5 - now.getDay() + 7) % 7);
+    friday.setHours(0, 0, 0, 0);
+    const sunday = new Date(friday); sunday.setDate(friday.getDate() + 2); sunday.setHours(23, 59, 59);
+    return d >= friday && d <= sunday;
+  }, [now]);
+  const isThisWeek = useCallback((dateStr: string) => {
+    const d = new Date(dateStr);
+    const weekEnd = new Date(now); weekEnd.setDate(now.getDate() + 7);
+    return d >= now && d <= weekEnd;
+  }, [now]);
+  const passesTimeFilter = useCallback((dateStr: string) => {
+    if (timeFilter === "all") return true;
+    if (timeFilter === "tonight") return isTonight(dateStr);
+    if (timeFilter === "weekend") return isThisWeekend(dateStr);
+    if (timeFilter === "thisweek") return isThisWeek(dateStr);
+    return true;
+  }, [timeFilter, isTonight, isThisWeekend, isThisWeek]);
+
+  // Distance filter helper (Haversine)
+  const getDistanceKm = useCallback((lat1: number, lng1: number, lat2: number, lng2: number) => {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLng = ((lng2 - lng1) * Math.PI) / 180;
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }, []);
+  const passesDistanceFilter = useCallback((lat: number, lng: number) => {
+    if (!distanceFilter || !userLocation) return true;
+    return getDistanceKm(userLocation[0], userLocation[1], lat, lng) <= distanceFilter;
+  }, [distanceFilter, userLocation, getDistanceKm]);
+
   const dbEventPositions = useMemo(() => {
     return dbEvents.filter(e => {
       const source = (e as any).source;
@@ -576,8 +618,24 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         source: (e as any).source as string,
         external_url: (e as any).external_url as string | null,
       };
+    }).filter(e => passesTimeFilter(e.date) && passesDistanceFilter(e.lat, e.lng));
+  }, [dbEvents, passesTimeFilter, passesDistanceFilter]);
+
+  // Trending locations — cities with most events
+  const trendingLocations = useMemo(() => {
+    const counts: Record<string, number> = {};
+    [...allEventPositions, ...dbEventPositions].forEach(e => {
+      const c = (e as any).city || "austin";
+      counts[c] = (counts[c] || 0) + 1;
     });
-  }, [dbEvents]);
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([cityId, count]) => {
+        const city = cities.find(c => c.id === cityId);
+        return { cityId, name: city?.name || cityId, flag: city?.flag || "📍", count };
+      });
+  }, [dbEventPositions]);
 
   const center = cityCoords[selectedCity.id] || cityCoords.austin;
   const flightRoutes = useMemo(() => getFlightRoutes(selectedCity.id), [selectedCity.id]);
