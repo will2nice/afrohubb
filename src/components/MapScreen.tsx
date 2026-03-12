@@ -787,7 +787,80 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         </div>
       </div>
 
-      <div className="absolute top-28 left-4 right-4 z-[1000] max-w-lg mx-auto">
+      {/* Layer toggles */}
+      <div className="absolute top-28 left-4 right-4 z-[1000] max-w-lg mx-auto space-y-2">
+        {/* Time & Distance filters */}
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
+          {([
+            { id: "all" as TimeFilter, label: "All Events", icon: Calendar },
+            { id: "tonight" as TimeFilter, label: "Tonight 🌙", icon: Clock },
+            { id: "weekend" as TimeFilter, label: "This Weekend", icon: Clock },
+            { id: "thisweek" as TimeFilter, label: "This Week", icon: Clock },
+          ] as const).map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setTimeFilter(id)}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1 shadow-card whitespace-nowrap ${
+                timeFilter === id ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"
+              }`}
+            >
+              <Icon size={12} /> {label}
+            </button>
+          ))}
+          {/* Distance filter */}
+          {userLocation && (
+            <>
+              {([5, 10, 25] as const).map((km) => (
+                <button
+                  key={`d-${km}`}
+                  onClick={() => setDistanceFilter(distanceFilter === km ? null : km)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1 shadow-card whitespace-nowrap ${
+                    distanceFilter === km ? "bg-[hsl(210,90%,55%)] text-white" : "bg-card text-muted-foreground border border-border"
+                  }`}
+                >
+                  <Ruler size={12} /> {km}km
+                </button>
+              ))}
+            </>
+          )}
+          {/* Trending toggle */}
+          <button
+            onClick={() => setShowTrending(!showTrending)}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1 shadow-card whitespace-nowrap ${
+              showTrending ? "bg-[hsl(340,80%,55%)] text-white" : "bg-card text-muted-foreground border border-border"
+            }`}
+          >
+            <Flame size={12} /> Trending
+          </button>
+        </div>
+
+        {/* Trending locations dropdown */}
+        {showTrending && (
+          <div className="bg-card/95 backdrop-blur-md border border-border rounded-xl shadow-elevated p-3">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">🔥 Trending Locations</p>
+            <div className="grid grid-cols-3 gap-1.5">
+              {trendingLocations.map(({ cityId, name, flag, count }) => (
+                <button
+                  key={cityId}
+                  onClick={() => {
+                    const city = cities.find(c => c.id === cityId);
+                    if (city) { onCityChange(city); setZoomTarget(cityId); }
+                    setShowTrending(false);
+                  }}
+                  className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-secondary/60 hover:bg-secondary text-left transition-colors"
+                >
+                  <span className="text-sm">{flag}</span>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-medium text-foreground truncate">{name}</p>
+                    <p className="text-[9px] text-primary font-semibold">{count} events</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Category layer toggles */}
         <div className="flex gap-2 overflow-x-auto scrollbar-hide">
           <button onClick={() => setShowEvents(!showEvents)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showEvents ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"}`}>
             <Calendar size={14} /> Events
