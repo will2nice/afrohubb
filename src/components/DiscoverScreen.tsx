@@ -107,6 +107,7 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
     return (
       <div className="relative min-h-screen">
         {view === "map" && <MapScreen selectedCity={selectedCity} onCityChange={onCityChange} />}
+        {view === "groups" && <GroupsScreen />}
         {view === "places" && <PlacesScreen selectedCity={selectedCity} onCityChange={onCityChange} />}
         {view === "campus" && <CampusScreen />}
         {view === "flights" && <FlightsScreen selectedCity={selectedCity} onCityChange={onCityChange} />}
