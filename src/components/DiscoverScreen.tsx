@@ -9,6 +9,7 @@ import PlacesScreen from "@/components/PlacesScreen";
 import AskForHelpScreen from "@/components/AskForHelpScreen";
 import FlightsScreen from "@/components/FlightsScreen";
 import CampusScreen from "@/components/CampusScreen";
+import GroupsScreen from "@/components/GroupsScreen";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { useDiscoverProfiles, useDiscoverEvents, type DiscoverProfile } from "@/hooks/useDiscover";
 import { trackProfileViewed } from "@/lib/analytics";
