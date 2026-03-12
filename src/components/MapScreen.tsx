@@ -3,7 +3,7 @@ import { useScreenView } from "@/hooks/useAnalytics";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping, Music, Plane, Crosshair, Loader2, Search } from "lucide-react";
+import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping, Music, Plane, Crosshair, Loader2, Search, Clock, Flame, Ruler } from "lucide-react";
 import { events as allEvents, cities, type City, AFRO_NATION_EVENT_ID } from "@/data/cityData";
 import afroNationIcon from "@/assets/afro-nation-icon.webp";
 import CityPicker from "@/components/CityPicker";
@@ -532,6 +532,8 @@ interface MapScreenProps {
   onCityChange: (city: City) => void;
 }
 
+type TimeFilter = "all" | "tonight" | "weekend" | "thisweek";
+
 const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   useScreenView("map", { city: selectedCity.id });
   const [showEvents, setShowEvents] = useState(true);
@@ -551,9 +553,54 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [mapSearch, setMapSearch] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
+  const [timeFilter, setTimeFilter] = useState<TimeFilter>("all");
+  const [distanceFilter, setDistanceFilter] = useState<number | null>(null); // km
+  const [showTrending, setShowTrending] = useState(false);
 
   const { events: dbEvents } = useEvents();
   const { places: dbPlaces } = usePlaces();
+
+  // Time filter helpers
+  const now = useMemo(() => new Date(), []);
+  const isTonight = useCallback((dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toDateString() === now.toDateString() && d.getHours() >= 17;
+  }, [now]);
+  const isThisWeekend = useCallback((dateStr: string) => {
+    const d = new Date(dateStr);
+    const day = d.getDay();
+    const diff = (day === 0 ? 0 : 6 - day);
+    const friday = new Date(now); friday.setDate(now.getDate() + (5 - now.getDay() + 7) % 7);
+    friday.setHours(0, 0, 0, 0);
+    const sunday = new Date(friday); sunday.setDate(friday.getDate() + 2); sunday.setHours(23, 59, 59);
+    return d >= friday && d <= sunday;
+  }, [now]);
+  const isThisWeek = useCallback((dateStr: string) => {
+    const d = new Date(dateStr);
+    const weekEnd = new Date(now); weekEnd.setDate(now.getDate() + 7);
+    return d >= now && d <= weekEnd;
+  }, [now]);
+  const passesTimeFilter = useCallback((dateStr: string) => {
+    if (timeFilter === "all") return true;
+    if (timeFilter === "tonight") return isTonight(dateStr);
+    if (timeFilter === "weekend") return isThisWeekend(dateStr);
+    if (timeFilter === "thisweek") return isThisWeek(dateStr);
+    return true;
+  }, [timeFilter, isTonight, isThisWeekend, isThisWeek]);
+
+  // Distance filter helper (Haversine)
+  const getDistanceKm = useCallback((lat1: number, lng1: number, lat2: number, lng2: number) => {
+    const R = 6371;
+    const dLat = ((lat2 - lat1) * Math.PI) / 180;
+    const dLng = ((lng2 - lng1) * Math.PI) / 180;
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }, []);
+  const passesDistanceFilter = useCallback((lat: number, lng: number) => {
+    if (!distanceFilter || !userLocation) return true;
+    return getDistanceKm(userLocation[0], userLocation[1], lat, lng) <= distanceFilter;
+  }, [distanceFilter, userLocation, getDistanceKm]);
+
   const dbEventPositions = useMemo(() => {
     return dbEvents.filter(e => {
       const source = (e as any).source;
@@ -571,8 +618,24 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         source: (e as any).source as string,
         external_url: (e as any).external_url as string | null,
       };
+    }).filter(e => passesTimeFilter(e.date) && passesDistanceFilter(e.lat, e.lng));
+  }, [dbEvents, passesTimeFilter, passesDistanceFilter]);
+
+  // Trending locations — cities with most events
+  const trendingLocations = useMemo(() => {
+    const counts: Record<string, number> = {};
+    [...allEventPositions, ...dbEventPositions].forEach(e => {
+      const c = (e as any).city || "austin";
+      counts[c] = (counts[c] || 0) + 1;
     });
-  }, [dbEvents]);
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([cityId, count]) => {
+        const city = cities.find(c => c.id === cityId);
+        return { cityId, name: city?.name || cityId, flag: city?.flag || "📍", count };
+      });
+  }, [dbEventPositions]);
 
   const center = cityCoords[selectedCity.id] || cityCoords.austin;
   const flightRoutes = useMemo(() => getFlightRoutes(selectedCity.id), [selectedCity.id]);
@@ -724,7 +787,80 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         </div>
       </div>
 
-      <div className="absolute top-28 left-4 right-4 z-[1000] max-w-lg mx-auto">
+      {/* Layer toggles */}
+      <div className="absolute top-28 left-4 right-4 z-[1000] max-w-lg mx-auto space-y-2">
+        {/* Time & Distance filters */}
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
+          {([
+            { id: "all" as TimeFilter, label: "All Events", icon: Calendar },
+            { id: "tonight" as TimeFilter, label: "Tonight 🌙", icon: Clock },
+            { id: "weekend" as TimeFilter, label: "This Weekend", icon: Clock },
+            { id: "thisweek" as TimeFilter, label: "This Week", icon: Clock },
+          ] as const).map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setTimeFilter(id)}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1 shadow-card whitespace-nowrap ${
+                timeFilter === id ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"
+              }`}
+            >
+              <Icon size={12} /> {label}
+            </button>
+          ))}
+          {/* Distance filter */}
+          {userLocation && (
+            <>
+              {([5, 10, 25] as const).map((km) => (
+                <button
+                  key={`d-${km}`}
+                  onClick={() => setDistanceFilter(distanceFilter === km ? null : km)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1 shadow-card whitespace-nowrap ${
+                    distanceFilter === km ? "bg-[hsl(210,90%,55%)] text-white" : "bg-card text-muted-foreground border border-border"
+                  }`}
+                >
+                  <Ruler size={12} /> {km}km
+                </button>
+              ))}
+            </>
+          )}
+          {/* Trending toggle */}
+          <button
+            onClick={() => setShowTrending(!showTrending)}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1 shadow-card whitespace-nowrap ${
+              showTrending ? "bg-[hsl(340,80%,55%)] text-white" : "bg-card text-muted-foreground border border-border"
+            }`}
+          >
+            <Flame size={12} /> Trending
+          </button>
+        </div>
+
+        {/* Trending locations dropdown */}
+        {showTrending && (
+          <div className="bg-card/95 backdrop-blur-md border border-border rounded-xl shadow-elevated p-3">
+            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">🔥 Trending Locations</p>
+            <div className="grid grid-cols-3 gap-1.5">
+              {trendingLocations.map(({ cityId, name, flag, count }) => (
+                <button
+                  key={cityId}
+                  onClick={() => {
+                    const city = cities.find(c => c.id === cityId);
+                    if (city) { onCityChange(city); setZoomTarget(cityId); }
+                    setShowTrending(false);
+                  }}
+                  className="flex items-center gap-1.5 px-2.5 py-2 rounded-lg bg-secondary/60 hover:bg-secondary text-left transition-colors"
+                >
+                  <span className="text-sm">{flag}</span>
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-medium text-foreground truncate">{name}</p>
+                    <p className="text-[9px] text-primary font-semibold">{count} events</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Category layer toggles */}
         <div className="flex gap-2 overflow-x-auto scrollbar-hide">
           <button onClick={() => setShowEvents(!showEvents)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showEvents ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"}`}>
             <Calendar size={14} /> Events
@@ -1167,7 +1303,9 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             onClick={() => setNearbyCollapsed(!nearbyCollapsed)}
             className="w-full flex items-center justify-between px-4 py-3"
           >
-            <h3 className="font-display font-bold text-foreground text-sm">Nearby This Week</h3>
+            <h3 className="font-display font-bold text-foreground text-sm">
+              {timeFilter === "tonight" ? "Events Tonight" : timeFilter === "weekend" ? "This Weekend" : timeFilter === "thisweek" ? "This Week" : "Nearby This Week"}
+            </h3>
             <div className="flex items-center gap-2">
               <span className="text-xs text-primary font-semibold">{nearbyEvents.length} events</span>
               {nearbyCollapsed ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />}
