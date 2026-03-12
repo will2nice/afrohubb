@@ -532,6 +532,8 @@ interface MapScreenProps {
   onCityChange: (city: City) => void;
 }
 
+type TimeFilter = "all" | "tonight" | "weekend" | "thisweek";
+
 const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   useScreenView("map", { city: selectedCity.id });
   const [showEvents, setShowEvents] = useState(true);
@@ -551,6 +553,9 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
   const [mapSearch, setMapSearch] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
+  const [timeFilter, setTimeFilter] = useState<TimeFilter>("all");
+  const [distanceFilter, setDistanceFilter] = useState<number | null>(null); // km
+  const [showTrending, setShowTrending] = useState(false);
 
   const { events: dbEvents } = useEvents();
   const { places: dbPlaces } = usePlaces();
