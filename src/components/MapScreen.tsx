@@ -242,6 +242,14 @@ const afroNationMapIcon = new L.DivIcon({
   iconSize: [44, 44], iconAnchor: [22, 44], popupAnchor: [0, -44],
 });
 
+const sxswMapIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:44px;height:44px;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px hsl(0,0%,10%),0 4px 16px rgba(0,0,0,0.5);border:2px solid hsl(0,0%,7%);overflow:hidden;">
+    <img src="${sxswIcon}" style="width:36px;height:36px;object-fit:contain;" />
+  </div>`,
+  iconSize: [44, 44], iconAnchor: [22, 44], popupAnchor: [0, -44],
+});
+
 const personIcon = new L.DivIcon({
   className: "custom-marker",
   html: `<div style="width:32px;height:32px;border-radius:50%;background:hsl(0,0%,16%);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(43,96%,56%);">
