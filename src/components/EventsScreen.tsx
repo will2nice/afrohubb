@@ -165,10 +165,11 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
           const isNotGoing = notGoingEvents.has(event.id);
           const isEventbrite = event.source === "eventbrite" || (event as any).source === "eventbrite";
           const isPosh = event.source === "posh" || (event as any).source === "posh";
+          const isSXSW = event.source === "sxsw" || (event as any).source === "sxsw";
           const isAfroNation = event.id === AFRO_NATION_EVENT_ID;
           const isSoundclash = event.id === SOUNDCLASH_EVENT_ID;
-          const displayAttending = isAfroNation ? 45000 : isSoundclash ? SOUNDCLASH_TOTAL : TOTAL_ATTENDING;
-          const displayOnApp = isAfroNation ? 8500 : isSoundclash ? SOUNDCLASH_ON_APP : ON_APP_TOTAL;
+          const displayAttending = isAfroNation ? 45000 : isSoundclash ? SOUNDCLASH_TOTAL : isSXSW ? event.attending : TOTAL_ATTENDING;
+          const displayOnApp = isAfroNation ? 8500 : isSoundclash ? SOUNDCLASH_ON_APP : isSXSW ? Math.round(event.attending * 0.18) : ON_APP_TOTAL;
 
           return (
             <article key={event.id} className="bg-card rounded-2xl border border-border overflow-hidden shadow-card animate-slide-up">
