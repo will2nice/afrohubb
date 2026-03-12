@@ -706,6 +706,9 @@ export type Database = {
           nationality: string | null
           onboarding_completed: boolean
           profile_mode: string | null
+          referral_code: string | null
+          referral_count: number
+          referred_by: string | null
           updated_at: string
           username: string | null
           vibe: string | null
@@ -726,6 +729,9 @@ export type Database = {
           nationality?: string | null
           onboarding_completed?: boolean
           profile_mode?: string | null
+          referral_code?: string | null
+          referral_count?: number
+          referred_by?: string | null
           updated_at?: string
           username?: string | null
           vibe?: string | null
@@ -746,6 +752,9 @@ export type Database = {
           nationality?: string | null
           onboarding_completed?: boolean
           profile_mode?: string | null
+          referral_code?: string | null
+          referral_count?: number
+          referred_by?: string | null
           updated_at?: string
           username?: string | null
           vibe?: string | null
@@ -776,6 +785,39 @@ export type Database = {
           stripe_account_id?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          channel: string | null
+          converted_at: string | null
+          created_at: string
+          id: string
+          referred_email: string | null
+          referred_user_id: string | null
+          referrer_id: string
+          status: string
+        }
+        Insert: {
+          channel?: string | null
+          converted_at?: string | null
+          created_at?: string
+          id?: string
+          referred_email?: string | null
+          referred_user_id?: string | null
+          referrer_id: string
+          status?: string
+        }
+        Update: {
+          channel?: string | null
+          converted_at?: string | null
+          created_at?: string
+          id?: string
+          referred_email?: string | null
+          referred_user_id?: string | null
+          referrer_id?: string
+          status?: string
         }
         Relationships: []
       }
@@ -1001,6 +1043,16 @@ export type Database = {
         Returns: {
           count: number
           event_name: string
+        }[]
+      }
+      get_referral_leaderboard: {
+        Args: { lim?: number }
+        Returns: {
+          avatar_url: string
+          display_name: string
+          is_verified: boolean
+          referral_count: number
+          user_id: string
         }[]
       }
       get_retention: {
