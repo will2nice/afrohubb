@@ -951,7 +951,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             </Marker>
           );
         })}
-        {showEvents && allEventPositions.filter(e => !e.host?.toLowerCase().includes("afro nation")).map((event) => (
+        {showEvents && allEventPositions.filter(e => !e.host?.toLowerCase().includes("afro nation") && e.source !== "sxsw").map((event) => (
           <Marker key={`event-${event.id}`} position={[event.lat, event.lng]} icon={eventIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
