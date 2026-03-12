@@ -3,7 +3,7 @@ import { useScreenView } from "@/hooks/useAnalytics";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping, Music, Plane, Crosshair, Loader2, Search } from "lucide-react";
+import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping, Music, Plane, Crosshair, Loader2, Search, Clock, Flame, Ruler } from "lucide-react";
 import { events as allEvents, cities, type City, AFRO_NATION_EVENT_ID } from "@/data/cityData";
 import afroNationIcon from "@/assets/afro-nation-icon.webp";
 import CityPicker from "@/components/CityPicker";
