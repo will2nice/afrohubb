@@ -577,6 +577,18 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const center = cityCoords[selectedCity.id] || cityCoords.austin;
   const flightRoutes = useMemo(() => getFlightRoutes(selectedCity.id), [selectedCity.id]);
 
+  const searchResults = useMemo(() => {
+    const q = mapSearch.trim().toLowerCase();
+    if (!q) return { events: [], places: [] };
+    const matchedEvents = [...dbEventPositions, ...allEventPositions.map(e => ({ ...e, id: String(e.id), source: (e as any).source || "mock", external_url: null, image_url: e.image || null, location: e.venue || null, price: e.price || null, date: e.date || "", title: e.title, city: e.city, category: e.category || "" }))]
+      .filter(e => e.title.toLowerCase().includes(q) || (e.location || "").toLowerCase().includes(q))
+      .slice(0, 5);
+    const matchedPlaces = dbPlaces
+      .filter(p => p.name.toLowerCase().includes(q) || (p.cuisine_type || "").toLowerCase().includes(q) || (p.address || "").toLowerCase().includes(q))
+      .slice(0, 5);
+    return { events: matchedEvents, places: matchedPlaces };
+  }, [mapSearch, dbEventPositions, dbPlaces]);
+
   const handleEventClick = (cityId: string) => {
     setZoomTarget(cityId);
     const city = cities.find(c => c.id === cityId);
