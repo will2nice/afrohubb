@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/posthog";
+import { createNotification } from "@/hooks/useNotifications";
 
 /**
  * Track an analytics event to both PostHog and the DB.
@@ -42,8 +43,21 @@ export const trackTicketPurchased = (eventId: string, quantity: number, totalCen
 export const trackMessageSent = (conversationId: string) =>
   trackAnalyticsEvent("message_sent", { conversation_id: conversationId });
 
-export const trackProfileViewed = (profileId: string) =>
+export const trackProfileViewed = async (profileId: string) => {
   trackAnalyticsEvent("profile_viewed", { profile_id: profileId });
+  // Notify the profile owner
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user && user.id !== profileId) {
+    const viewerName = (await supabase.from("profiles").select("display_name").eq("id", user.id).single()).data?.display_name;
+    createNotification(
+      profileId,
+      "profile_view",
+      `${viewerName || "Someone"} viewed your profile`,
+      "Tap to see who's checking you out",
+      { viewer_id: user.id }
+    );
+  }
+};
 
 export const trackProfileCompleted = () =>
   trackAnalyticsEvent("profile_completed", {});
