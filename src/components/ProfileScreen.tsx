@@ -359,8 +359,11 @@ const ProfileScreen = () => {
           </div>
         </div>
 
-        {/* ─── GRID VIEW ─── */}
-        {viewMode === "grid" ? (
+        {/* ─── INVITE VIEW ─── */}
+        {viewMode === "invite" ? (
+          <InviteFriends />
+        ) : viewMode === "grid" ? (
+          /* ─── GRID VIEW ─── */
           <div className="grid grid-cols-3 gap-0.5">
             {(modeFeedPosts[profileMode] || []).map((post) => (
               <button key={post.id} onClick={() => setViewMode("feed")} className="aspect-square overflow-hidden">
