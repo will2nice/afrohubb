@@ -1015,6 +1015,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </Marker>
         ))}
 
+        {showPeople && allPeople.map((person, i) => (
           <Marker key={`person-${i}`} position={[person.lat, person.lng]} icon={personIcon}>
             <Popup className="afro-popup">
               <div className="p-1">
