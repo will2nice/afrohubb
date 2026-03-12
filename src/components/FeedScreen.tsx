@@ -418,8 +418,6 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
         </div>
       </header>
       <NotificationCenter open={showNotifications} onClose={() => setShowNotifications(false)} />
-        </div>
-      </header>
 
       {/* Feed Type Tabs */}
       <div className="sticky top-[57px] z-30 bg-background/95 backdrop-blur-md border-b border-border">
