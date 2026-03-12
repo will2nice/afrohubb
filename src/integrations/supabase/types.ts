@@ -394,6 +394,78 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          created_at: string
+          event_invites: boolean
+          group_activity: boolean
+          id: string
+          messages: boolean
+          nearby_events: boolean
+          profile_views: boolean
+          ticket_alerts: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_invites?: boolean
+          group_activity?: boolean
+          id?: string
+          messages?: boolean
+          nearby_events?: boolean
+          profile_views?: boolean
+          ticket_alerts?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_invites?: boolean
+          group_activity?: boolean
+          id?: string
+          messages?: boolean
+          nearby_events?: boolean
+          profile_views?: boolean
+          ticket_alerts?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string
+          created_at: string
+          data: Json | null
+          id: string
+          is_read: boolean
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_read?: boolean
+          title: string
+          type?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          is_read?: boolean
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           application_fee_cents: number
