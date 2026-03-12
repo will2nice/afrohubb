@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase, Sun, Moon, Ticket, BookOpen } from "lucide-react";
+import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase, Sun, Moon, Ticket, BookOpen, Share2 } from "lucide-react";
+import InviteFriends from "@/components/InviteFriends";
 import { useNavigate } from "react-router-dom";
 import PromoterDashboard from "@/components/PromoterDashboard";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -90,7 +91,7 @@ const ProfileScreen = () => {
   // ProfileMode type is defined above the component
   const [showSettings, setShowSettings] = useState(false);
   const [profileMode, setProfileMode] = useState<ProfileMode>("community");
-  const [viewMode, setViewMode] = useState<"feed" | "grid">("feed");
+  const [viewMode, setViewMode] = useState<"feed" | "grid" | "invite">("feed");
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
   const [showEditProfile, setShowEditProfile] = useState(false);
   const { signOut } = useAuth();
@@ -328,7 +329,7 @@ const ProfileScreen = () => {
           </div>
         </div>
 
-        {/* Feed/Grid toggle */}
+        {/* Feed/Grid/Invite toggle */}
         <div className="border-t border-border">
           <div className="flex">
             <button
@@ -347,11 +348,22 @@ const ProfileScreen = () => {
             >
               <Grid3X3 size={20} />
             </button>
+            <button
+              onClick={() => setViewMode("invite")}
+              className={`flex-1 py-3 flex items-center justify-center transition-colors border-b-2 ${
+                viewMode === "invite" ? "border-primary text-primary" : "border-transparent text-muted-foreground"
+              }`}
+            >
+              <Share2 size={20} />
+            </button>
           </div>
         </div>
 
-        {/* ─── GRID VIEW ─── */}
-        {viewMode === "grid" ? (
+        {/* ─── INVITE VIEW ─── */}
+        {viewMode === "invite" ? (
+          <InviteFriends />
+        ) : viewMode === "grid" ? (
+          /* ─── GRID VIEW ─── */
           <div className="grid grid-cols-3 gap-0.5">
             {(modeFeedPosts[profileMode] || []).map((post) => (
               <button key={post.id} onClick={() => setViewMode("feed")} className="aspect-square overflow-hidden">
