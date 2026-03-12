@@ -1,5 +1,6 @@
 import { supabase } from "@/integrations/supabase/client";
 import { trackEvent } from "@/lib/posthog";
+import { createNotification } from "@/hooks/useNotifications";
 
 /**
  * Track an analytics event to both PostHog and the DB.
