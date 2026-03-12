@@ -181,6 +181,11 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                       <ExternalLink size={10} /> Eventbrite
                     </span>
                   )}
+                  {isSXSW && (
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[hsl(0,0%,10%)]/90 text-white backdrop-blur-sm flex items-center gap-1">
+                      <img src={sxswIcon} alt="SXSW" className="w-3 h-3 object-contain" /> SXSW
+                    </span>
+                  )}
                   {isPosh && (
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[hsl(270,80%,60%)]/90 text-white backdrop-blur-sm flex items-center gap-1">
                       <ExternalLink size={10} /> Posh

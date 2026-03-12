@@ -992,7 +992,29 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </Marker>
         ))}
 
-        {showPeople && allPeople.map((person, i) => (
+        {/* SXSW events with custom icon */}
+        {showSXSW && allEventPositions.filter(e => e.source === "sxsw").map((event) => (
+          <Marker key={`sxsw-${event.id}`} position={[event.lat, event.lng]} icon={sxswMapIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
+            <Popup className="afro-popup" maxWidth={280}>
+              <div className="p-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <img src={sxswIcon} alt="SXSW" className="w-8 h-8 object-contain" />
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-900 text-white">SXSW 2026</span>
+                </div>
+                <img src={event.image} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />
+                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
+                <p className="text-xs text-gray-500 mt-1">{event.host}</p>
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500"><span>{event.date}</span></div>
+                <div className="flex items-center gap-2 mt-1 text-xs text-gray-500"><span>{event.venue}</span></div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs text-gray-500">{event.attending >= 1000 ? `${(event.attending / 1000).toFixed(1)}K` : event.attending} attending</span>
+                  {event.price && <span className="text-xs font-bold">{event.price}</span>}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
           <Marker key={`person-${i}`} position={[person.lat, person.lng]} icon={personIcon}>
             <Popup className="afro-popup">
               <div className="p-1">
