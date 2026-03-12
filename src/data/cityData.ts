@@ -609,8 +609,18 @@ export const feedPosts: FeedPost[] = [
 
 export const SOUNDCLASH_EVENT_ID = 9999;
 export const AFRO_NATION_EVENT_ID = 8888;
+export const SXSW_EVENT_ID = 7777;
 
 export const events: EventItem[] = [
+  // Austin — SXSW 2026 (pinned marquee)
+  { id: SXSW_EVENT_ID, title: "SXSW 2026 — Official Opening Night", host: "SXSW", date: "Fri, Mar 13 · 7:00 PM", venue: "Austin Convention Center", city: "austin", distance: "0.5 mi", image: eventConcert, attending: 25000, free: false, price: "$450+", category: "Festival", source: "sxsw", external_url: "https://www.sxsw.com" },
+  { id: 7778, title: "SXSW Music — Afrobeats Showcase", host: "SXSW", date: "Sat, Mar 14 · 8:00 PM", venue: "Stubb's BBQ", city: "austin", distance: "1.2 mi", image: eventUkAfrobeats, attending: 4200, free: false, price: "$95", category: "Concert", source: "sxsw", external_url: "https://www.sxsw.com" },
+  { id: 7779, title: "SXSW Film — African Cinema Spotlight", host: "SXSW", date: "Sun, Mar 15 · 2:00 PM", venue: "Paramount Theatre", city: "austin", distance: "0.8 mi", image: eventAfricanArt, attending: 1800, free: false, price: "$75", category: "Culture", source: "sxsw", external_url: "https://www.sxsw.com" },
+  { id: 7780, title: "SXSW Interactive — Black in Tech Panel", host: "SXSW", date: "Mon, Mar 16 · 10:00 AM", venue: "JW Marriott Austin", city: "austin", distance: "0.6 mi", image: eventAfricanArt, attending: 3500, free: false, price: "Badge Required", category: "Networking", source: "sxsw", external_url: "https://www.sxsw.com" },
+  { id: 7781, title: "SXSW — Diaspora Founders Mixer", host: "SXSW x AfroHub", date: "Sat, Mar 14 · 6:00 PM", venue: "Capital Factory", city: "austin", distance: "1.0 mi", image: eventBrunch, attending: 850, free: true, category: "Networking", source: "sxsw", external_url: "https://www.sxsw.com" },
+  { id: 7782, title: "SXSW Music — Amapiano Night", host: "SXSW", date: "Fri, Mar 13 · 11:00 PM", venue: "Empire Control Room", city: "austin", distance: "1.8 mi", image: eventParty, attending: 2200, free: false, price: "$85", category: "Afrobeats", source: "sxsw", external_url: "https://www.sxsw.com" },
+  { id: 7783, title: "SXSW — African Food & Culture Festival", host: "SXSW x Austin Food Scene", date: "Sun, Mar 15 · 11:00 AM", venue: "Auditorium Shores", city: "austin", distance: "1.5 mi", image: eventBrunch, attending: 5600, free: false, price: "$35", category: "Festival", source: "sxsw", external_url: "https://www.sxsw.com" },
+  { id: 7784, title: "SXSW — Closing Night: Afro Futurism Party", host: "SXSW", date: "Sun, Mar 22 · 9:00 PM", venue: "ACL Live at The Moody Theater", city: "austin", distance: "0.7 mi", image: eventRapConcert, attending: 8500, free: false, price: "$120", category: "Party", source: "sxsw", external_url: "https://www.sxsw.com" },
   // Austin — Soundclash Vol. 7 (pinned)
   {
     id: SOUNDCLASH_EVENT_ID, title: "SOUNDCLASH VOL. 7: Afrobeats vs Dancehall", host: "JRIPSET",
