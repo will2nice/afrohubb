@@ -4,8 +4,9 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping, Music, Plane, Crosshair, Loader2, Search, Clock, Flame, Ruler } from "lucide-react";
-import { events as allEvents, cities, type City, AFRO_NATION_EVENT_ID } from "@/data/cityData";
+import { events as allEvents, cities, type City, AFRO_NATION_EVENT_ID, SXSW_EVENT_ID } from "@/data/cityData";
 import afroNationIcon from "@/assets/afro-nation-icon.webp";
+import sxswIcon from "@/assets/sxsw-icon.png";
 import CityPicker from "@/components/CityPicker";
 import { cityResources, type CityResource } from "@/data/resourceData";
 import { diasporaHubs, type DiasporaHub } from "@/data/diasporaHubs";
@@ -237,6 +238,14 @@ const afroNationMapIcon = new L.DivIcon({
   className: "custom-marker",
   html: `<div style="width:44px;height:44px;border-radius:50%;background:#f5f0e1;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px hsl(320,70%,45%),0 4px 16px rgba(0,0,0,0.5);border:2px solid hsl(0,0%,7%);overflow:hidden;">
     <img src="${afroNationIcon}" style="width:38px;height:38px;object-fit:cover;border-radius:50%;" />
+  </div>`,
+  iconSize: [44, 44], iconAnchor: [22, 44], popupAnchor: [0, -44],
+});
+
+const sxswMapIcon = new L.DivIcon({
+  className: "custom-marker",
+  html: `<div style="width:44px;height:44px;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px hsl(0,0%,10%),0 4px 16px rgba(0,0,0,0.5);border:2px solid hsl(0,0%,7%);overflow:hidden;">
+    <img src="${sxswIcon}" style="width:36px;height:36px;object-fit:contain;" />
   </div>`,
   iconSize: [44, 44], iconAnchor: [22, 44], popupAnchor: [0, -44],
 });
@@ -545,6 +554,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [showPosh, setShowPosh] = useState(true);
   const [showPlaces, setShowPlaces] = useState(true);
   const [showAfroNation, setShowAfroNation] = useState(true);
+  const [showSXSW, setShowSXSW] = useState(true);
   const [showFlights, setShowFlights] = useState(false);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [zoomTarget, setZoomTarget] = useState<string | null>(selectedCity.id);
@@ -889,6 +899,9 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           <button onClick={() => setShowAfroNation(!showAfroNation)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showAfroNation ? "bg-[hsl(310,60%,45%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
             <img src={afroNationIcon} alt="Afro Nation" className="w-4 h-4 rounded-full object-cover" /> Afro Nation
           </button>
+          <button onClick={() => setShowSXSW(!showSXSW)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showSXSW ? "bg-[hsl(0,0%,10%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
+            <img src={sxswIcon} alt="SXSW" className="w-4 h-4 object-contain" /> SXSW
+          </button>
           <button onClick={() => setShowFlights(!showFlights)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showFlights ? "bg-[hsl(210,90%,55%)] text-white" : "bg-card text-muted-foreground border border-border"}`}>
             <Plane size={14} /> Flights
           </button>
@@ -938,7 +951,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             </Marker>
           );
         })}
-        {showEvents && allEventPositions.filter(e => !e.host?.toLowerCase().includes("afro nation")).map((event) => (
+        {showEvents && allEventPositions.filter(e => !e.host?.toLowerCase().includes("afro nation") && e.source !== "sxsw").map((event) => (
           <Marker key={`event-${event.id}`} position={[event.lat, event.lng]} icon={eventIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
@@ -973,6 +986,29 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-xs text-gray-500">{event.attending >= 1000 ? `${(event.attending / 1000).toFixed(1)}K` : event.attending} attending</span>
                   {event.price && <span className="text-xs font-bold text-purple-600">{event.price}</span>}
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
+
+        {/* SXSW events with custom icon */}
+        {showSXSW && allEventPositions.filter(e => e.source === "sxsw").map((event) => (
+          <Marker key={`sxsw-${event.id}`} position={[event.lat, event.lng]} icon={sxswMapIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
+            <Popup className="afro-popup" maxWidth={280}>
+              <div className="p-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <img src={sxswIcon} alt="SXSW" className="w-8 h-8 object-contain" />
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-900 text-white">SXSW 2026</span>
+                </div>
+                <img src={event.image} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />
+                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
+                <p className="text-xs text-gray-500 mt-1">{event.host}</p>
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500"><span>{event.date}</span></div>
+                <div className="flex items-center gap-2 mt-1 text-xs text-gray-500"><span>{event.venue}</span></div>
+                <div className="flex items-center justify-between mt-2">
+                  <span className="text-xs text-gray-500">{event.attending >= 1000 ? `${(event.attending / 1000).toFixed(1)}K` : event.attending} attending</span>
+                  {event.price && <span className="text-xs font-bold">{event.price}</span>}
                 </div>
               </div>
             </Popup>

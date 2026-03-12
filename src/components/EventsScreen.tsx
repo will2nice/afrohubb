@@ -3,7 +3,8 @@ import { useScreenView } from "@/hooks/useAnalytics";
 import { trackEvent } from "@/lib/posthog";
 import { trackEventViewed } from "@/lib/analytics";
 import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, UserCheck, Plus, Download, Loader2, ExternalLink, X, CheckCircle, XCircle } from "lucide-react";
-import { events as allEvents, cities, type City, type EventItem, SOUNDCLASH_EVENT_ID, AFRO_NATION_EVENT_ID } from "@/data/cityData";
+import { events as allEvents, cities, type City, type EventItem, SOUNDCLASH_EVENT_ID, AFRO_NATION_EVENT_ID, SXSW_EVENT_ID } from "@/data/cityData";
+import sxswIcon from "@/assets/sxsw-icon.png";
 import CityPicker from "@/components/CityPicker";
 import EventAttendeesSheet from "@/components/EventAttendeesSheet";
 import CreateEventSheet from "@/components/CreateEventSheet";
@@ -164,10 +165,11 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
           const isNotGoing = notGoingEvents.has(event.id);
           const isEventbrite = event.source === "eventbrite" || (event as any).source === "eventbrite";
           const isPosh = event.source === "posh" || (event as any).source === "posh";
+          const isSXSW = event.source === "sxsw" || (event as any).source === "sxsw";
           const isAfroNation = event.id === AFRO_NATION_EVENT_ID;
           const isSoundclash = event.id === SOUNDCLASH_EVENT_ID;
-          const displayAttending = isAfroNation ? 45000 : isSoundclash ? SOUNDCLASH_TOTAL : TOTAL_ATTENDING;
-          const displayOnApp = isAfroNation ? 8500 : isSoundclash ? SOUNDCLASH_ON_APP : ON_APP_TOTAL;
+          const displayAttending = isAfroNation ? 45000 : isSoundclash ? SOUNDCLASH_TOTAL : isSXSW ? event.attending : TOTAL_ATTENDING;
+          const displayOnApp = isAfroNation ? 8500 : isSoundclash ? SOUNDCLASH_ON_APP : isSXSW ? Math.round(event.attending * 0.18) : ON_APP_TOTAL;
 
           return (
             <article key={event.id} className="bg-card rounded-2xl border border-border overflow-hidden shadow-card animate-slide-up">
@@ -177,6 +179,11 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                   {isEventbrite && (
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[hsl(14,100%,53%)]/90 text-white backdrop-blur-sm flex items-center gap-1">
                       <ExternalLink size={10} /> Eventbrite
+                    </span>
+                  )}
+                  {isSXSW && (
+                    <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[hsl(0,0%,10%)]/90 text-white backdrop-blur-sm flex items-center gap-1">
+                      <img src={sxswIcon} alt="SXSW" className="w-3 h-3 object-contain" /> SXSW
                     </span>
                   )}
                   {isPosh && (
