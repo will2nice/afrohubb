@@ -413,11 +413,11 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
             <button className="p-2 rounded-full hover:bg-secondary transition-colors">
               <Search size={20} className="text-muted-foreground" />
             </button>
-            <button className="p-2 rounded-full hover:bg-secondary transition-colors relative">
-              <Bell size={20} className="text-muted-foreground" />
-              <div className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full gradient-gold" />
-            </button>
+            <NotificationBell onClick={() => setShowNotifications(true)} />
           </div>
+        </div>
+      </header>
+      <NotificationCenter open={showNotifications} onClose={() => setShowNotifications(false)} />
         </div>
       </header>
 
