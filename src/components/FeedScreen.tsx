@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { Search, Bell, Heart, MessageCircle, Share2, Bookmark, Users, Play, Volume2, VolumeX, Maximize2, Newspaper, Megaphone, Film, LayoutGrid, AlertTriangle, Send, BookOpen, PenSquare } from "lucide-react";
+import { Search, Heart, MessageCircle, Share2, Bookmark, Users, Play, Volume2, VolumeX, Maximize2, Newspaper, Megaphone, Film, LayoutGrid, AlertTriangle, Send, BookOpen, PenSquare } from "lucide-react";
+import NotificationCenter, { NotificationBell } from "@/components/NotificationCenter";
 import { feedPosts, type City, type FeedCategory } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
 import FeedStories from "@/components/FeedStories";
@@ -276,6 +277,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [commentingPost, setCommentingPost] = useState<string | null>(null);
   const [comments, setComments] = useState<PostComment[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
   const { user } = useAuth();
 
   const { posts: dbPosts, toggleLike: dbToggleLike, addComment, fetchComments, refetch: refetchPosts } = usePosts(selectedCity.id);
@@ -411,13 +413,11 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
             <button className="p-2 rounded-full hover:bg-secondary transition-colors">
               <Search size={20} className="text-muted-foreground" />
             </button>
-            <button className="p-2 rounded-full hover:bg-secondary transition-colors relative">
-              <Bell size={20} className="text-muted-foreground" />
-              <div className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full gradient-gold" />
-            </button>
+            <NotificationBell onClick={() => setShowNotifications(true)} />
           </div>
         </div>
       </header>
+      <NotificationCenter open={showNotifications} onClose={() => setShowNotifications(false)} />
 
       {/* Feed Type Tabs */}
       <div className="sticky top-[57px] z-30 bg-background/95 backdrop-blur-md border-b border-border">
