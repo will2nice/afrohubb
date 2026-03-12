@@ -277,6 +277,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
   const [showCreatePost, setShowCreatePost] = useState(false);
   const [commentingPost, setCommentingPost] = useState<string | null>(null);
   const [comments, setComments] = useState<PostComment[]>([]);
+  const [showNotifications, setShowNotifications] = useState(false);
   const { user } = useAuth();
 
   const { posts: dbPosts, toggleLike: dbToggleLike, addComment, fetchComments, refetch: refetchPosts } = usePosts(selectedCity.id);
