@@ -258,6 +258,121 @@ export type Database = {
         }
         Relationships: []
       }
+      group_members: {
+        Row: {
+          group_id: string
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          group_id: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          group_id?: string
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_members_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      group_posts: {
+        Row: {
+          comments_count: number
+          content: string
+          created_at: string
+          group_id: string
+          id: string
+          image_url: string | null
+          likes_count: number
+          user_id: string
+        }
+        Insert: {
+          comments_count?: number
+          content: string
+          created_at?: string
+          group_id: string
+          id?: string
+          image_url?: string | null
+          likes_count?: number
+          user_id: string
+        }
+        Update: {
+          comments_count?: number
+          content?: string
+          created_at?: string
+          group_id?: string
+          id?: string
+          image_url?: string | null
+          likes_count?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "group_posts_group_id_fkey"
+            columns: ["group_id"]
+            isOneToOne: false
+            referencedRelation: "groups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      groups: {
+        Row: {
+          category: string
+          cover_url: string | null
+          created_at: string
+          creator_id: string
+          description: string
+          icon_emoji: string
+          id: string
+          is_featured: boolean
+          member_count: number
+          name: string
+          slug: string
+        }
+        Insert: {
+          category?: string
+          cover_url?: string | null
+          created_at?: string
+          creator_id: string
+          description?: string
+          icon_emoji?: string
+          id?: string
+          is_featured?: boolean
+          member_count?: number
+          name: string
+          slug: string
+        }
+        Update: {
+          category?: string
+          cover_url?: string | null
+          created_at?: string
+          creator_id?: string
+          description?: string
+          icon_emoji?: string
+          id?: string
+          is_featured?: boolean
+          member_count?: number
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       help_requests: {
         Row: {
           category: string

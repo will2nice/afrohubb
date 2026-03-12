@@ -9,6 +9,7 @@ import PlacesScreen from "@/components/PlacesScreen";
 import AskForHelpScreen from "@/components/AskForHelpScreen";
 import FlightsScreen from "@/components/FlightsScreen";
 import CampusScreen from "@/components/CampusScreen";
+import GroupsScreen from "@/components/GroupsScreen";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import { useDiscoverProfiles, useDiscoverEvents, type DiscoverProfile } from "@/hooks/useDiscover";
 import { trackProfileViewed } from "@/lib/analytics";
@@ -17,7 +18,7 @@ import { useEvents } from "@/hooks/useEvents";
 import { usePosts } from "@/hooks/usePosts";
 import { format } from "date-fns";
 
-type DiscoverView = "explore" | "map" | "places" | "campus" | "flights" | "help";
+type DiscoverView = "explore" | "map" | "places" | "groups" | "campus" | "flights" | "help";
 type DiscoverTab = "people" | "events";
 
 const INTEREST_OPTIONS = [
@@ -95,6 +96,7 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
   const toggleItems: { id: DiscoverView; label: string }[] = [
     { id: "map", label: "Map" },
     { id: "explore", label: "Search" },
+    { id: "groups", label: "Groups" },
     { id: "places", label: "Places" },
     { id: "campus", label: "Campus" },
     { id: "flights", label: "Flights" },
@@ -105,6 +107,7 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
     return (
       <div className="relative min-h-screen">
         {view === "map" && <MapScreen selectedCity={selectedCity} onCityChange={onCityChange} />}
+        {view === "groups" && <GroupsScreen />}
         {view === "places" && <PlacesScreen selectedCity={selectedCity} onCityChange={onCityChange} />}
         {view === "campus" && <CampusScreen />}
         {view === "flights" && <FlightsScreen selectedCity={selectedCity} onCityChange={onCityChange} />}
