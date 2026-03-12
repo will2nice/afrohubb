@@ -329,7 +329,7 @@ const ProfileScreen = () => {
           </div>
         </div>
 
-        {/* Feed/Grid toggle */}
+        {/* Feed/Grid/Invite toggle */}
         <div className="border-t border-border">
           <div className="flex">
             <button
@@ -347,6 +347,14 @@ const ProfileScreen = () => {
               }`}
             >
               <Grid3X3 size={20} />
+            </button>
+            <button
+              onClick={() => setViewMode("invite")}
+              className={`flex-1 py-3 flex items-center justify-center transition-colors border-b-2 ${
+                viewMode === "invite" ? "border-primary text-primary" : "border-transparent text-muted-foreground"
+              }`}
+            >
+              <Share2 size={20} />
             </button>
           </div>
         </div>
