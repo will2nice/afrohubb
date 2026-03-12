@@ -1303,7 +1303,9 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             onClick={() => setNearbyCollapsed(!nearbyCollapsed)}
             className="w-full flex items-center justify-between px-4 py-3"
           >
-            <h3 className="font-display font-bold text-foreground text-sm">Nearby This Week</h3>
+            <h3 className="font-display font-bold text-foreground text-sm">
+              {timeFilter === "tonight" ? "Events Tonight" : timeFilter === "weekend" ? "This Weekend" : timeFilter === "thisweek" ? "This Week" : "Nearby This Week"}
+            </h3>
             <div className="flex items-center gap-2">
               <span className="text-xs text-primary font-semibold">{nearbyEvents.length} events</span>
               {nearbyCollapsed ? <ChevronUp size={16} className="text-muted-foreground" /> : <ChevronDown size={16} className="text-muted-foreground" />}
