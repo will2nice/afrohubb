@@ -640,7 +640,91 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         </div>
       </header>
 
-      <div className="absolute top-16 left-4 right-4 z-[1000] max-w-lg mx-auto">
+      {/* Compact search bar overlay */}
+      <div className="absolute top-14 left-4 right-4 z-[1001] max-w-lg mx-auto">
+        <div className="relative">
+          <div className="flex items-center bg-card/95 backdrop-blur-md border border-border rounded-xl shadow-card px-3 py-2 gap-2">
+            <Search size={16} className="text-muted-foreground shrink-0" />
+            <input
+              type="text"
+              value={mapSearch}
+              onChange={(e) => setMapSearch(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+              placeholder="Search events & places..."
+              className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
+            />
+            {mapSearch && (
+              <button onClick={() => setMapSearch("")} className="text-muted-foreground hover:text-foreground">
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          {/* Search results dropdown */}
+          {searchFocused && mapSearch.trim() && (searchResults.events.length > 0 || searchResults.places.length > 0) && (
+            <div className="mt-1 bg-card/95 backdrop-blur-md border border-border rounded-xl shadow-elevated max-h-64 overflow-y-auto">
+              {searchResults.events.length > 0 && (
+                <div className="p-2">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-2 mb-1">Events</p>
+                  {searchResults.events.map((e: any, i: number) => (
+                    <button
+                      key={`se-${i}`}
+                      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-secondary/60 text-left transition-colors"
+                      onMouseDown={() => {
+                        if (e.lat && e.lng) {
+                          setZoomTarget(e.city);
+                          const city = cities.find(c => c.id === e.city);
+                          if (city) onCityChange(city);
+                        }
+                        setMapSearch("");
+                      }}
+                    >
+                      <Calendar size={14} className="text-primary shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium text-foreground truncate">{e.title}</p>
+                        <p className="text-[10px] text-muted-foreground truncate">{e.location || e.venue || e.city}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+              {searchResults.places.length > 0 && (
+                <div className="p-2 border-t border-border">
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider px-2 mb-1">Places</p>
+                  {searchResults.places.map((p: any, i: number) => (
+                    <button
+                      key={`sp-${i}`}
+                      className="w-full flex items-center gap-2 px-2 py-1.5 rounded-lg hover:bg-secondary/60 text-left transition-colors"
+                      onMouseDown={() => {
+                        if (p.latitude && p.longitude) {
+                          const city = cities.find(c => c.id === p.city);
+                          if (city) { onCityChange(city); setZoomTarget(city.id); }
+                        }
+                        setMapSearch("");
+                      }}
+                    >
+                      <UtensilsCrossed size={14} className="text-primary shrink-0" />
+                      <div className="min-w-0">
+                        <p className="text-xs font-medium text-foreground truncate">{p.name}</p>
+                        <p className="text-[10px] text-muted-foreground truncate">{p.cuisine_type || p.category} · {p.city}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {searchFocused && mapSearch.trim() && searchResults.events.length === 0 && searchResults.places.length === 0 && (
+            <div className="mt-1 bg-card/95 backdrop-blur-md border border-border rounded-xl shadow-elevated p-4 text-center">
+              <p className="text-xs text-muted-foreground">No results for "{mapSearch}"</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div className="absolute top-28 left-4 right-4 z-[1000] max-w-lg mx-auto">
         <div className="flex gap-2 overflow-x-auto scrollbar-hide">
           <button onClick={() => setShowEvents(!showEvents)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showEvents ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"}`}>
             <Calendar size={14} /> Events
