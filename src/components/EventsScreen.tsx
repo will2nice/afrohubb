@@ -250,7 +250,17 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                 </div>
 
                 <div className="flex items-center justify-between mt-4">
-                  <button className="p-2 rounded-full hover:bg-secondary transition-colors">
+                  <button
+                    onClick={async () => {
+                      const text = `🎫 ${event.title} — ${event.date} at ${event.venue}`;
+                      if (navigator.share) {
+                        try { await navigator.share({ title: event.title, text }); } catch {}
+                      } else {
+                        await navigator.clipboard.writeText(text);
+                      }
+                    }}
+                    className="p-2 rounded-full hover:bg-secondary transition-colors"
+                  >
                     <Share2 size={16} className="text-muted-foreground" />
                   </button>
                   <div className="flex items-center gap-2">
