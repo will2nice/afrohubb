@@ -256,7 +256,11 @@ const DbPostCard = ({ post, onLike, onComment }: {
           <MessageCircle size={18} className="text-muted-foreground" />
           <span className="text-xs text-muted-foreground">{post.comments_count}</span>
         </button>
-        <button className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
+        <button onClick={async () => {
+          const text = post.content || "Check out this post on AfroHub!";
+          if (navigator.share) { try { await navigator.share({ title: "AfroHub Post", text }); } catch {} }
+          else { await navigator.clipboard.writeText(text); }
+        }} className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
         <div className="flex-1" />
         <button onClick={() => setSaved(!saved)} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
           <Bookmark size={18} className={saved ? "text-primary" : "text-muted-foreground"} fill={saved ? "currentColor" : "none"} />
