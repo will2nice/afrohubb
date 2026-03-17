@@ -1,6 +1,6 @@
 import { useState } from "react";
 import CityConciergeChat from "@/components/CityConciergeChat";
-import { Search, MapPinned, Users, Sliders, X, Filter, BadgeCheck, Ticket, MapPin, ChevronDown, Sparkles, TrendingUp, Calendar, ArrowRight, Star } from "lucide-react";
+import { Search, MapPinned, Users, Sliders, X, Filter, BadgeCheck, Ticket, MapPin, ChevronDown, Sparkles, TrendingUp, Calendar, ArrowRight, Star, Bot } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useScreenView } from "@/hooks/useAnalytics";
 import { trackEvent } from "@/lib/posthog";
