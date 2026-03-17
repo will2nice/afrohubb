@@ -143,7 +143,7 @@ const TableBookingSheet = ({ eventId, eventTitle, open, onClose }: TableBookingS
           {selectedTable && (
             <section>
               <button onClick={() => setShowBottles(!showBottles)} className="flex items-center gap-2 text-sm font-semibold text-foreground w-full">
-                <Wine size={16} className="text-primary" /> Bottle Packages
+                <Package size={16} className="text-primary" /> Add-ons & Extras
                 {showBottles ? <ChevronUp size={14} className="ml-auto" /> : <ChevronDown size={14} className="ml-auto" />}
               </button>
               {showBottles && (
