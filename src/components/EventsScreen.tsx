@@ -17,10 +17,43 @@ import { SOUNDCLASH_TOTAL, SOUNDCLASH_ON_APP } from "@/data/soundclashAttendees"
 
 const filters = ["All", "Today", "This Weekend", "Concerts", "Festivals", "Sports", "Art", "Networking"];
 
-const filterMap: Record<string, (e: EventItem) => boolean> = {
+const isToday = (e: EventItem & { rawDate?: string }) => {
+  if (e.rawDate) {
+    const eventDate = new Date(e.rawDate);
+    const now = new Date();
+    return eventDate.getFullYear() === now.getFullYear() &&
+      eventDate.getMonth() === now.getMonth() &&
+      eventDate.getDate() === now.getDate();
+  }
+  return e.date.toLowerCase().includes("today");
+};
+
+const isThisWeekend = (e: EventItem & { rawDate?: string }) => {
+  if (e.rawDate) {
+    const eventDate = new Date(e.rawDate);
+    const now = new Date();
+    // Find next Saturday 00:00 and Sunday 23:59
+    const dayOfWeek = now.getDay(); // 0=Sun, 6=Sat
+    const daysUntilSat = (6 - dayOfWeek + 7) % 7 || 7;
+    const satStart = new Date(now);
+    satStart.setDate(now.getDate() + (dayOfWeek === 6 ? 0 : daysUntilSat));
+    satStart.setHours(0, 0, 0, 0);
+    const sunEnd = new Date(satStart);
+    sunEnd.setDate(satStart.getDate() + 1);
+    sunEnd.setHours(23, 59, 59, 999);
+    // Also include Friday evening (after 5pm)
+    const friStart = new Date(satStart);
+    friStart.setDate(satStart.getDate() - 1);
+    friStart.setHours(17, 0, 0, 0);
+    return eventDate >= friStart && eventDate <= sunEnd;
+  }
+  return e.date.toLowerCase().includes("sat,") || e.date.toLowerCase().includes("sun,") || e.date.toLowerCase().includes("weekend");
+};
+
+const filterMap: Record<string, (e: EventItem & { rawDate?: string }) => boolean> = {
   "All": () => true,
-  "Today": (e) => e.date.toLowerCase().includes("today") || e.date.toLowerCase().includes("fri,") || e.date.toLowerCase().includes("mon,"),
-  "This Weekend": (e) => e.date.toLowerCase().includes("sat,") || e.date.toLowerCase().includes("sun,") || e.date.toLowerCase().includes("weekend"),
+  "Today": isToday,
+  "This Weekend": isThisWeekend,
   "Concerts": (e) => (e.category?.toLowerCase().includes("afrobeats") || e.category?.toLowerCase().includes("concert") || e.category?.toLowerCase().includes("hip-hop") || e.category?.toLowerCase().includes("r&b") || e.title.toLowerCase().includes("concert") || e.title.toLowerCase().includes("live")) ?? false,
   "Festivals": (e) => e.category?.toLowerCase().includes("festival") ?? false,
   "Sports": (e) => (e.category?.toLowerCase().includes("soccer") || e.category?.toLowerCase().includes("sports") || e.category?.toLowerCase().includes("watch party") || e.category?.toLowerCase().includes("fifa")) ?? false,
@@ -49,12 +82,13 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const { events: dbEvents } = useEvents(selectedCity.id);
   const { importEvents, importing } = useEventbriteImport();
 
-  const dbMapped: (EventItem & { source?: string; external_url?: string; dbId?: string })[] = dbEvents.map((e) => ({
+  const dbMapped: (EventItem & { source?: string; external_url?: string; dbId?: string; rawDate?: string })[] = dbEvents.map((e) => ({
     id: typeof e.id === "string" ? Math.abs(hashCode(e.id)) : 0,
     dbId: e.id,
     title: e.title,
     host: (e as any).source === "eventbrite" ? "via Eventbrite" : (e as any).source === "posh" ? "via Posh" : "Community",
     date: new Date(e.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
+    rawDate: e.date,
     venue: e.location || "",
     city: e.city,
     distance: "",
