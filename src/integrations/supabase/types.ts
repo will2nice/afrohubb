@@ -182,6 +182,71 @@ export type Database = {
         }
         Relationships: []
       }
+      concierge_requests: {
+        Row: {
+          arrival_date: string | null
+          assigned_agent_id: string | null
+          budget: string | null
+          city: string
+          conversation_id: string | null
+          created_at: string
+          departure_date: string | null
+          group_size: number
+          id: string
+          interests: string[]
+          payment_status: string
+          special_notes: string | null
+          status: string
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          arrival_date?: string | null
+          assigned_agent_id?: string | null
+          budget?: string | null
+          city: string
+          conversation_id?: string | null
+          created_at?: string
+          departure_date?: string | null
+          group_size?: number
+          id?: string
+          interests?: string[]
+          payment_status?: string
+          special_notes?: string | null
+          status?: string
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          arrival_date?: string | null
+          assigned_agent_id?: string | null
+          budget?: string | null
+          city?: string
+          conversation_id?: string | null
+          created_at?: string
+          departure_date?: string | null
+          group_size?: number
+          id?: string
+          interests?: string[]
+          payment_status?: string
+          special_notes?: string | null
+          status?: string
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "concierge_requests_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversation_members: {
         Row: {
           conversation_id: string

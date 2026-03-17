@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ConciergeScreen from "@/components/ConciergeScreen";
 import CityConciergeChat from "@/components/CityConciergeChat";
 import { Search, MapPinned, Users, Sliders, X, Filter, BadgeCheck, Ticket, MapPin, ChevronDown, Sparkles, TrendingUp, Calendar, ArrowRight, Star, Bot } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,7 +20,7 @@ import { useEvents } from "@/hooks/useEvents";
 import { usePosts } from "@/hooks/usePosts";
 import { format } from "date-fns";
 
-type DiscoverView = "explore" | "map" | "places" | "groups" | "campus" | "flights" | "help";
+type DiscoverView = "explore" | "map" | "places" | "groups" | "campus" | "flights" | "help" | "concierge";
 type DiscoverTab = "people" | "events";
 
 const INTEREST_OPTIONS = [
@@ -100,6 +101,7 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
     { id: "explore", label: "Search" },
     { id: "groups", label: "Groups" },
     { id: "places", label: "Places" },
+    { id: "concierge", label: "Concierge" },
     { id: "campus", label: "Campus" },
     { id: "flights", label: "Flights" },
     { id: "help", label: "Help" },
@@ -114,6 +116,7 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
         {view === "campus" && <CampusScreen />}
         {view === "flights" && <FlightsScreen selectedCity={selectedCity} onCityChange={onCityChange} />}
         {view === "help" && <AskForHelpScreen onOpenDM={onOpenDM || (() => {})} />}
+        {view === "concierge" && <ConciergeScreen selectedCity={selectedCity} onBack={() => setView("explore")} />}
 
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40">
           <div className="flex items-center bg-card/95 backdrop-blur-lg border border-border rounded-full p-1 shadow-lg">
