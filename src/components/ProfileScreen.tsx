@@ -148,6 +148,8 @@ const ProfileScreen = () => {
 
   const [showSubscription, setShowSubscription] = useState(false);
   const [showPromoter, setShowPromoter] = useState(false);
+  const [showMyTickets, setShowMyTickets] = useState(false);
+  const [showCheckIn, setShowCheckIn] = useState(false);
 
   const handleMenuAction = async (action?: string) => {
     if (action === "logout") {
