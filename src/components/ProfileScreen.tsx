@@ -3,6 +3,8 @@ import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, L
 import InviteFriends from "@/components/InviteFriends";
 import { useNavigate } from "react-router-dom";
 import PromoterDashboard from "@/components/PromoterDashboard";
+import MyTicketsScreen from "@/components/MyTicketsScreen";
+import CheckInScreen from "@/components/CheckInScreen";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
