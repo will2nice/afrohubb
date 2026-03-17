@@ -3,62 +3,70 @@ import { useScreenView } from "@/hooks/useAnalytics";
 import TableBookingSheet from "@/components/TableBookingSheet";
 import { trackEvent } from "@/lib/posthog";
 import { trackEventViewed } from "@/lib/analytics";
-import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, UserCheck, Plus, Download, Loader2, ExternalLink, X, CheckCircle, XCircle } from "lucide-react";
-import { events as allEvents, cities, type City, type EventItem, SOUNDCLASH_EVENT_ID, AFRO_NATION_EVENT_ID, SXSW_EVENT_ID } from "@/data/cityData";
-import sxswIcon from "@/assets/sxsw-icon.png";
+import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, UserCheck, Plus, Download, Loader2, ExternalLink, X, CheckCircle, XCircle, Link2 } from "lucide-react";
+import { cities, type City } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
 import EventAttendeesSheet from "@/components/EventAttendeesSheet";
 import CreateEventSheet from "@/components/CreateEventSheet";
 import TicketPurchaseSheet from "@/components/TicketPurchaseSheet";
-import { useEvents } from "@/hooks/useEvents";
+import { useEvents, type DbEvent } from "@/hooks/useEvents";
 import { useEventbriteImport } from "@/hooks/useEventbriteImport";
-import { TOTAL_ATTENDING, ON_APP_TOTAL } from "@/data/eventAttendees";
-import { SOUNDCLASH_TOTAL, SOUNDCLASH_ON_APP } from "@/data/soundclashAttendees";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const filters = ["All", "Today", "This Weekend", "Concerts", "Festivals", "Sports", "Art", "Networking"];
 
-const isToday = (e: EventItem & { rawDate?: string }) => {
-  if (e.rawDate) {
-    const eventDate = new Date(e.rawDate);
-    const now = new Date();
-    return eventDate.getFullYear() === now.getFullYear() &&
-      eventDate.getMonth() === now.getMonth() &&
-      eventDate.getDate() === now.getDate();
-  }
-  return e.date.toLowerCase().includes("today");
+interface MappedEvent {
+  id: string;
+  title: string;
+  host: string;
+  date: string;
+  rawDate: string;
+  venue: string;
+  city: string;
+  image: string;
+  free: boolean;
+  price?: string;
+  category: string;
+  source: string;
+  external_url?: string;
+}
+
+const isToday = (e: MappedEvent) => {
+  const eventDate = new Date(e.rawDate);
+  const now = new Date();
+  return eventDate.getFullYear() === now.getFullYear() &&
+    eventDate.getMonth() === now.getMonth() &&
+    eventDate.getDate() === now.getDate();
 };
 
-const isThisWeekend = (e: EventItem & { rawDate?: string }) => {
-  if (e.rawDate) {
-    const eventDate = new Date(e.rawDate);
-    const now = new Date();
-    // Find next Saturday 00:00 and Sunday 23:59
-    const dayOfWeek = now.getDay(); // 0=Sun, 6=Sat
-    const daysUntilSat = (6 - dayOfWeek + 7) % 7 || 7;
-    const satStart = new Date(now);
-    satStart.setDate(now.getDate() + (dayOfWeek === 6 ? 0 : daysUntilSat));
-    satStart.setHours(0, 0, 0, 0);
-    const sunEnd = new Date(satStart);
-    sunEnd.setDate(satStart.getDate() + 1);
-    sunEnd.setHours(23, 59, 59, 999);
-    // Also include Friday evening (after 5pm)
-    const friStart = new Date(satStart);
-    friStart.setDate(satStart.getDate() - 1);
-    friStart.setHours(17, 0, 0, 0);
-    return eventDate >= friStart && eventDate <= sunEnd;
-  }
-  return e.date.toLowerCase().includes("sat,") || e.date.toLowerCase().includes("sun,") || e.date.toLowerCase().includes("weekend");
+const isThisWeekend = (e: MappedEvent) => {
+  const eventDate = new Date(e.rawDate);
+  const now = new Date();
+  const dayOfWeek = now.getDay();
+  const daysUntilSat = (6 - dayOfWeek + 7) % 7 || 7;
+  const satStart = new Date(now);
+  satStart.setDate(now.getDate() + (dayOfWeek === 6 ? 0 : daysUntilSat));
+  satStart.setHours(0, 0, 0, 0);
+  const sunEnd = new Date(satStart);
+  sunEnd.setDate(satStart.getDate() + 1);
+  sunEnd.setHours(23, 59, 59, 999);
+  const friStart = new Date(satStart);
+  friStart.setDate(satStart.getDate() - 1);
+  friStart.setHours(17, 0, 0, 0);
+  return eventDate >= friStart && eventDate <= sunEnd;
 };
 
-const filterMap: Record<string, (e: EventItem & { rawDate?: string }) => boolean> = {
+const filterMap: Record<string, (e: MappedEvent) => boolean> = {
   "All": () => true,
   "Today": isToday,
   "This Weekend": isThisWeekend,
-  "Concerts": (e) => (e.category?.toLowerCase().includes("afrobeats") || e.category?.toLowerCase().includes("concert") || e.category?.toLowerCase().includes("hip-hop") || e.category?.toLowerCase().includes("r&b") || e.title.toLowerCase().includes("concert") || e.title.toLowerCase().includes("live")) ?? false,
-  "Festivals": (e) => e.category?.toLowerCase().includes("festival") ?? false,
-  "Sports": (e) => (e.category?.toLowerCase().includes("soccer") || e.category?.toLowerCase().includes("sports") || e.category?.toLowerCase().includes("watch party") || e.category?.toLowerCase().includes("fifa")) ?? false,
-  "Art": (e) => (e.title.toLowerCase().includes("art") || e.title.toLowerCase().includes("film") || e.category?.toLowerCase().includes("culture")) ?? false,
-  "Networking": (e) => (e.category?.toLowerCase().includes("networking") || e.title.toLowerCase().includes("mixer") || e.title.toLowerCase().includes("professional")) ?? false,
+  "Concerts": (e) => /afrobeats|concert|hip-hop|r&b|live/i.test(e.category + " " + e.title),
+  "Festivals": (e) => /festival/i.test(e.category),
+  "Sports": (e) => /soccer|sports|watch party|fifa/i.test(e.category),
+  "Art": (e) => /art|film|culture/i.test(e.category + " " + e.title),
+  "Networking": (e) => /networking|mixer|professional/i.test(e.category + " " + e.title),
 };
 
 interface EventsScreenProps {
@@ -66,67 +74,78 @@ interface EventsScreenProps {
   onCityChange: (city: City) => void;
 }
 
-const hashCode = (s: string) => s.split("").reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0);
+const sourceLabel = (source: string) => {
+  const map: Record<string, string> = { eventbrite: "Eventbrite", posh: "Posh", dice: "DICE", shotgun: "Shotgun", billetto: "Billetto", afronation: "Afro Nation" };
+  return map[source] || null;
+};
+
+const sourceColor = (source: string) => {
+  const map: Record<string, string> = { eventbrite: "bg-[hsl(14,100%,53%)]/90", posh: "bg-[hsl(270,80%,60%)]/90", dice: "bg-[hsl(210,80%,50%)]/90", shotgun: "bg-[hsl(330,70%,55%)]/90", billetto: "bg-[hsl(170,60%,45%)]/90" };
+  return map[source] || "bg-primary/90";
+};
 
 const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   useScreenView("events", { city: selectedCity.id });
-  const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(null);
   const [activeFilter, setActiveFilter] = useState("All");
-  const [rsvpEvents, setRsvpEvents] = useState<Set<number>>(new Set());
-  const [notGoingEvents, setNotGoingEvents] = useState<Set<number>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateEvent, setShowCreateEvent] = useState(false);
-  const [rsvpDialogEvent, setRsvpDialogEvent] = useState<EventItem | null>(null);
+  const [rsvpDialogEvent, setRsvpDialogEvent] = useState<MappedEvent | null>(null);
   const [ticketEvent, setTicketEvent] = useState<{ id: string; title: string } | null>(null);
   const [tableEvent, setTableEvent] = useState<{ id: string; title: string } | null>(null);
-  const { events: dbEvents } = useEvents(selectedCity.id);
+  const [selectedEvent, setSelectedEvent] = useState<MappedEvent | null>(null);
+  const [importUrl, setImportUrl] = useState("");
+  const [importingUrl, setImportingUrl] = useState(false);
+  const { events: dbEvents, toggleRsvp, rsvpEventIds, loading } = useEvents(selectedCity.id);
   const { importEvents, importing } = useEventbriteImport();
+  const { user } = useAuth();
+  const { toast } = useToast();
 
-  const dbMapped: (EventItem & { source?: string; external_url?: string; dbId?: string; rawDate?: string })[] = dbEvents.map((e) => ({
-    id: typeof e.id === "string" ? Math.abs(hashCode(e.id)) : 0,
-    dbId: e.id,
+  // Map DB events to display format
+  const cityEvents: MappedEvent[] = dbEvents.map((e) => ({
+    id: e.id,
     title: e.title,
-    host: (e as any).source === "eventbrite" ? "via Eventbrite" : (e as any).source === "posh" ? "via Posh" : "Community",
+    host: sourceLabel((e as any).source) ? `via ${sourceLabel((e as any).source)}` : "Community",
     date: new Date(e.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
     rawDate: e.date,
     venue: e.location || "",
     city: e.city,
-    distance: "",
     image: e.image_url || "/placeholder.svg",
-    attending: TOTAL_ATTENDING,
-    free: e.price === "Free",
+    free: e.price === "Free" || !e.price,
     price: e.price || undefined,
     category: e.category,
     source: (e as any).source || "user",
     external_url: (e as any).external_url || undefined,
   }));
 
-  const poshEvents = dbMapped.filter((e) => e.source === "posh");
-  const otherDbEvents = dbMapped.filter((e) => e.source !== "posh");
-  const mockEvents = allEvents.filter((e) => e.city === selectedCity.id);
-  const pinnedMock = mockEvents.filter((e) => e.source === "posh");
-  const unpinnedMock = mockEvents.filter((e) => e.source !== "posh");
-  const cityEvents = [...pinnedMock, ...poshEvents, ...otherDbEvents, ...unpinnedMock];
   const filterFn = filterMap[activeFilter] || (() => true);
   const filteredEvents = cityEvents.filter(filterFn).filter(e =>
     searchQuery === "" || e.title.toLowerCase().includes(searchQuery.toLowerCase()) || e.host.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleRsvpAction = (event: EventItem, action: "going" | "not_going") => {
-    trackEvent("event_rsvp", { event_id: event.id, event_title: event.title, action, city: event.city });
-    trackEventViewed(String(event.id), event.title);
-    if (action === "going") {
-      setRsvpEvents((prev) => new Set(prev).add(event.id));
-      setNotGoingEvents((prev) => { const n = new Set(prev); n.delete(event.id); return n; });
-      setSelectedEvent(event);
-    } else {
-      setNotGoingEvents((prev) => new Set(prev).add(event.id));
-      setRsvpEvents((prev) => { const n = new Set(prev); n.delete(event.id); return n; });
-    }
+  const handleRsvp = (event: MappedEvent) => {
+    trackEvent("event_rsvp", { event_id: event.id, event_title: event.title, city: event.city });
+    trackEventViewed(event.id, event.title);
+    toggleRsvp.mutate(event.id);
     setRsvpDialogEvent(null);
   };
 
-  const formatAttending = (n: number) => n >= 1000 ? `${(n / 1000).toFixed(1)}K` : n;
+  const handleImportUrl = async () => {
+    if (!importUrl.trim()) return;
+    setImportingUrl(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("import-event-url", {
+        body: { url: importUrl.trim(), city: selectedCity.id },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      toast({ title: "Event imported! 🎉", description: data?.title || "The event has been added." });
+      setImportUrl("");
+    } catch (err: any) {
+      toast({ title: "Import failed", description: err.message || "Could not import event from that URL.", variant: "destructive" });
+    } finally {
+      setImportingUrl(false);
+    }
+  };
 
   return (
     <div className="min-h-screen pb-24">
@@ -140,7 +159,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                 onClick={() => importEvents([selectedCity.id])}
                 disabled={importing}
                 className="p-2 rounded-full bg-secondary border border-border hover:bg-muted transition-colors"
-                title="Import from Eventbrite"
+                title="Import from platforms"
               >
                 {importing ? <Loader2 size={16} className="text-primary animate-spin" /> : <Download size={16} className="text-primary" />}
               </button>
@@ -150,7 +169,9 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
               <CityPicker selectedCity={selectedCity} onCityChange={onCityChange} />
             </div>
           </div>
-          <div className="relative">
+
+          {/* Search */}
+          <div className="relative mb-2">
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <input
               type="text"
@@ -159,6 +180,29 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-secondary text-sm text-foreground placeholder:text-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
             />
+          </div>
+
+          {/* Paste event link */}
+          <div className="flex gap-2">
+            <div className="relative flex-1">
+              <Link2 size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="url"
+                placeholder="Paste event link (Eventbrite, Posh...)"
+                value={importUrl}
+                onChange={(e) => setImportUrl(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleImportUrl()}
+                className="w-full pl-9 pr-3 py-2 rounded-xl bg-secondary text-xs text-foreground placeholder:text-muted-foreground border border-border focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all"
+              />
+            </div>
+            <button
+              onClick={handleImportUrl}
+              disabled={importingUrl || !importUrl.trim()}
+              className="px-4 py-2 rounded-xl gradient-gold text-primary-foreground text-xs font-semibold disabled:opacity-50 flex items-center gap-1"
+            >
+              {importingUrl ? <Loader2 size={14} className="animate-spin" /> : <Download size={14} />}
+              Import
+            </button>
           </div>
         </div>
       </header>
@@ -190,41 +234,35 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
 
       {/* Events list */}
       <div className="px-4 space-y-4 max-w-lg mx-auto">
-        {filteredEvents.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-16">
+            <Loader2 size={32} className="text-primary mx-auto animate-spin mb-3" />
+            <p className="text-sm text-muted-foreground">Loading events...</p>
+          </div>
+        ) : filteredEvents.length === 0 ? (
           <div className="text-center py-16">
             <Calendar size={40} className="text-muted-foreground mx-auto mb-3 opacity-40" />
-            <p className="text-sm text-muted-foreground">No events match this filter</p>
-            <button onClick={() => setActiveFilter("All")} className="mt-3 text-sm text-primary font-semibold">Show all events</button>
+            <p className="text-sm text-muted-foreground">
+              {cityEvents.length === 0
+                ? "No events yet in this city. Import from a platform or create your own!"
+                : "No events match this filter"}
+            </p>
+            {cityEvents.length > 0 && (
+              <button onClick={() => setActiveFilter("All")} className="mt-3 text-sm text-primary font-semibold">Show all events</button>
+            )}
           </div>
         ) : filteredEvents.map((event) => {
-          const isGoing = rsvpEvents.has(event.id);
-          const isNotGoing = notGoingEvents.has(event.id);
-          const isEventbrite = event.source === "eventbrite" || (event as any).source === "eventbrite";
-          const isPosh = event.source === "posh" || (event as any).source === "posh";
-          const isSXSW = event.source === "sxsw" || (event as any).source === "sxsw";
-          const isAfroNation = event.id === AFRO_NATION_EVENT_ID;
-          const isSoundclash = event.id === SOUNDCLASH_EVENT_ID;
-          const displayAttending = isAfroNation ? 45000 : isSoundclash ? SOUNDCLASH_TOTAL : isSXSW ? event.attending : TOTAL_ATTENDING;
-          const displayOnApp = isAfroNation ? 8500 : isSoundclash ? SOUNDCLASH_ON_APP : isSXSW ? Math.round(event.attending * 0.18) : ON_APP_TOTAL;
+          const isGoing = rsvpEventIds.includes(event.id);
+          const srcLabel = sourceLabel(event.source);
 
           return (
             <article key={event.id} className="bg-card rounded-2xl border border-border overflow-hidden shadow-card animate-slide-up">
               <div className="relative">
                 <img src={event.image} alt={event.title} className="w-full aspect-[16/9] object-cover" loading="lazy" />
                 <div className="absolute top-3 left-3 flex gap-1.5">
-                  {isEventbrite && (
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[hsl(14,100%,53%)]/90 text-white backdrop-blur-sm flex items-center gap-1">
-                      <ExternalLink size={10} /> Eventbrite
-                    </span>
-                  )}
-                  {isSXSW && (
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[hsl(0,0%,10%)]/90 text-white backdrop-blur-sm flex items-center gap-1">
-                      <img src={sxswIcon} alt="SXSW" className="w-3 h-3 object-contain" /> SXSW
-                    </span>
-                  )}
-                  {isPosh && (
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-[hsl(270,80%,60%)]/90 text-white backdrop-blur-sm flex items-center gap-1">
-                      <ExternalLink size={10} /> Posh
+                  {srcLabel && (
+                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-semibold ${sourceColor(event.source)} text-white backdrop-blur-sm flex items-center gap-1`}>
+                      <ExternalLink size={10} /> {srcLabel}
                     </span>
                   )}
                   {event.category && (
@@ -235,11 +273,6 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                   {isGoing && (
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-green-500/90 text-white backdrop-blur-sm flex items-center gap-1">
                       <UserCheck size={10} /> Going
-                    </span>
-                  )}
-                  {isNotGoing && (
-                    <span className="px-2.5 py-1 rounded-full text-[10px] font-semibold bg-red-500/90 text-white backdrop-blur-sm flex items-center gap-1">
-                      <XCircle size={10} /> Not Going
                     </span>
                   )}
                 </div>
@@ -263,34 +296,23 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                     <Calendar size={14} className="text-primary" />
                     <span>{event.date}</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <MapPin size={14} className="text-primary" />
-                    <span>{event.distance}</span>
-                  </div>
-                </div>
-
-                {/* Attending stats row */}
-                <div className="flex items-center gap-3 mt-3">
-                  <button onClick={() => setSelectedEvent(event)} className="flex items-center gap-1.5 group">
-                    <Users size={14} className="text-muted-foreground group-hover:text-primary transition-colors" />
-                    <span className="text-xs text-muted-foreground group-hover:text-primary transition-colors underline-offset-2 group-hover:underline">
-                      {formatAttending(displayAttending)} attending
-                    </span>
-                    <Eye size={12} className="text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </button>
-                  <span className="text-[10px] text-primary font-medium px-2 py-0.5 rounded-full bg-primary/10">
-                    {displayOnApp.toLocaleString()} on app
-                  </span>
+                  {event.venue && (
+                    <div className="flex items-center gap-1">
+                      <MapPin size={14} className="text-primary" />
+                      <span className="truncate max-w-[160px]">{event.venue}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between mt-4">
                   <button
                     onClick={async () => {
-                      const text = `🎫 ${event.title} — ${event.date} at ${event.venue}`;
+                      const text = `🎫 ${event.title} — ${event.date}${event.venue ? ` at ${event.venue}` : ""}`;
                       if (navigator.share) {
                         try { await navigator.share({ title: event.title, text }); } catch {}
                       } else {
                         await navigator.clipboard.writeText(text);
+                        toast({ title: "Copied!", description: "Event details copied to clipboard." });
                       }
                     }}
                     className="p-2 rounded-full hover:bg-secondary transition-colors"
@@ -298,41 +320,32 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                     <Share2 size={16} className="text-muted-foreground" />
                   </button>
                   <div className="flex items-center gap-2">
-                    {(event as any).dbId && (
-                      <button
-                        onClick={() => setTableEvent({ id: (event as any).dbId, title: event.title })}
-                        className="px-3 py-2 rounded-full text-xs font-semibold bg-secondary text-foreground border border-border hover:bg-muted transition-all flex items-center gap-1"
-                      >
-                        <Users size={12} /> Table
-                      </button>
-                    )}
+                    <button
+                      onClick={() => setTableEvent({ id: event.id, title: event.title })}
+                      className="px-3 py-2 rounded-full text-xs font-semibold bg-secondary text-foreground border border-border hover:bg-muted transition-all flex items-center gap-1"
+                    >
+                      <Users size={12} /> Table
+                    </button>
                     {isGoing ? (
                       <button
-                        onClick={() => { setRsvpEvents(prev => { const n = new Set(prev); n.delete(event.id); return n; }); }}
+                        onClick={() => toggleRsvp.mutate(event.id)}
                         className="px-5 py-2 rounded-full text-sm font-semibold bg-green-500/20 text-green-400 border border-green-500/30 hover:bg-green-500/30 transition-all flex items-center gap-1.5"
                       >
-                        <UserCheck size={14} /> I'm Going
+                        <UserCheck size={14} /> Going ✓
                       </button>
                     ) : event.free ? (
                       <button
-                        onClick={() => setRsvpDialogEvent(event)}
+                        onClick={() => handleRsvp(event)}
                         className="px-5 py-2 rounded-full text-sm font-semibold gradient-gold text-primary-foreground shadow-gold hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5"
                       >
                         <Ticket size={14} /> RSVP
-                      </button>
-                    ) : (event as any).dbId ? (
-                      <button
-                        onClick={() => setTicketEvent({ id: (event as any).dbId, title: event.title })}
-                        className="px-5 py-2 rounded-full text-sm font-semibold gradient-gold text-primary-foreground shadow-gold hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5"
-                      >
-                        <Ticket size={14} /> Get Tickets
                       </button>
                     ) : (
                       <button
-                        onClick={() => setRsvpDialogEvent(event)}
+                        onClick={() => setTicketEvent({ id: event.id, title: event.title })}
                         className="px-5 py-2 rounded-full text-sm font-semibold gradient-gold text-primary-foreground shadow-gold hover:scale-105 active:scale-95 transition-all flex items-center gap-1.5"
                       >
-                        <Ticket size={14} /> RSVP
+                        <Ticket size={14} /> Get Tickets
                       </button>
                     )}
                   </div>
@@ -343,59 +356,12 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
         })}
       </div>
 
-      {/* RSVP Dialog */}
-      {rsvpDialogEvent && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" onClick={() => setRsvpDialogEvent(null)} />
-          <div className="relative w-full max-w-sm mx-4 mb-8 sm:mb-0 bg-card rounded-2xl border border-border shadow-2xl p-5 animate-slide-up">
-            <button onClick={() => setRsvpDialogEvent(null)} className="absolute top-3 right-3 p-1.5 rounded-full hover:bg-secondary">
-              <X size={18} className="text-muted-foreground" />
-            </button>
-            <h3 className="font-display font-bold text-foreground text-base pr-8 leading-tight">{rsvpDialogEvent.title}</h3>
-            <p className="text-xs text-muted-foreground mt-1">{rsvpDialogEvent.date}</p>
-
-            <div className="mt-5 space-y-3">
-              <button
-                onClick={() => handleRsvpAction(rsvpDialogEvent, "going")}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-green-500/10 border border-green-500/30 hover:bg-green-500/20 transition-all"
-              >
-                <CheckCircle size={20} className="text-green-500" />
-                <div className="text-left">
-                  <p className="text-sm font-semibold text-foreground">I'm Going ✅</p>
-                  <p className="text-[11px] text-muted-foreground">RSVP & see who else is attending</p>
-                </div>
-              </button>
-
-              <button
-                onClick={() => handleRsvpAction(rsvpDialogEvent, "not_going")}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-secondary border border-border hover:bg-muted transition-all"
-              >
-                <XCircle size={20} className="text-muted-foreground" />
-                <div className="text-left">
-                  <p className="text-sm font-semibold text-foreground">Not Going</p>
-                  <p className="text-[11px] text-muted-foreground">Maybe next time</p>
-                </div>
-              </button>
-
-              {!rsvpDialogEvent.free && (rsvpDialogEvent as any).dbId && (
-                <button
-                  onClick={() => { setRsvpDialogEvent(null); setTicketEvent({ id: (rsvpDialogEvent as any).dbId, title: rsvpDialogEvent.title }); }}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl gradient-gold text-primary-foreground transition-all hover:scale-[1.02] active:scale-[0.98]"
-                >
-                  <Ticket size={20} />
-                  <div className="text-left">
-                    <p className="text-sm font-semibold">Buy Tickets</p>
-                    <p className="text-[11px] opacity-80">{rsvpDialogEvent.price || "View pricing"}</p>
-                  </div>
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
+      {/* Attendee sheet */}
       {selectedEvent && (
-        <EventAttendeesSheet event={selectedEvent} onClose={() => setSelectedEvent(null)} />
+        <EventAttendeesSheet
+          event={{ id: 0, title: selectedEvent.title, host: selectedEvent.host, date: selectedEvent.date, venue: selectedEvent.venue, city: selectedEvent.city, distance: "", image: selectedEvent.image, attending: 0, free: selectedEvent.free }}
+          onClose={() => setSelectedEvent(null)}
+        />
       )}
       <CreateEventSheet open={showCreateEvent} onClose={() => setShowCreateEvent(false)} defaultCity={selectedCity.name} />
       {ticketEvent && (
