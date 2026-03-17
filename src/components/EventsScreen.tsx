@@ -5,6 +5,7 @@ import { trackEvent } from "@/lib/posthog";
 import { trackEventViewed } from "@/lib/analytics";
 import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, UserCheck, Plus, Download, Loader2, ExternalLink, X, CheckCircle, XCircle, Link2 } from "lucide-react";
 import { cities, type City } from "@/data/cityData";
+import EventAddOns from "@/components/EventAddOns";
 import CityPicker from "@/components/CityPicker";
 import EventAttendeesSheet from "@/components/EventAttendeesSheet";
 import CreateEventSheet from "@/components/CreateEventSheet";
