@@ -1,278 +1,237 @@
-import { useState } from "react";
-import { ArrowLeft, Crown, Calendar, Users, DollarSign, Sparkles, Check, MapPin, PartyPopper, Wine, Utensils, Dumbbell, Music, Moon } from "lucide-react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { ArrowLeft, Send, Sparkles, Crown, Bot } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { type City } from "@/data/cityData";
+import ReactMarkdown from "react-markdown";
 
 interface Props {
   selectedCity: City;
   onBack: () => void;
 }
 
-const INTEREST_OPTIONS = [
-  { id: "parties", label: "Parties & Clubs", icon: PartyPopper, emoji: "🎉" },
-  { id: "bars", label: "Bars & Lounges", icon: Wine, emoji: "🍸" },
-  { id: "speakeasy", label: "Speakeasies", icon: Moon, emoji: "🌙" },
-  { id: "dinners", label: "Dinners & Food", icon: Utensils, emoji: "🍽️" },
-  { id: "social", label: "Social Events", icon: Users, emoji: "👥" },
-  { id: "concerts", label: "Concerts & Music", icon: Music, emoji: "🎵" },
-  { id: "bowling", label: "Bowling & Games", icon: Dumbbell, emoji: "🎳" },
-  { id: "nightlife", label: "Nightlife", icon: Moon, emoji: "✨" },
-];
+type Msg = { role: "user" | "assistant"; content: string };
 
-const BUDGET_OPTIONS = ["$0–50", "$50–150", "$150–300", "$300+", "No limit"];
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/concierge-chat`;
+
+const QUICK_PROMPTS = [
+  "What's the best nightlife this weekend?",
+  "Find me a speakeasy or hidden bar",
+  "Plan a birthday dinner for 6 people",
+  "What Afrobeats events are coming up?",
+];
 
 const ConciergeScreen = ({ selectedCity, onBack }: Props) => {
   const { user } = useAuth();
   const { toast } = useToast();
-  const [step, setStep] = useState<"info" | "submitting" | "done">("info");
+  const [input, setInput] = useState("");
+  const [streaming, setStreaming] = useState(false);
+  const [messages, setMessages] = useState<Msg[]>([]);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  const [arrivalDate, setArrivalDate] = useState("");
-  const [departureDate, setDepartureDate] = useState("");
-  const [groupSize, setGroupSize] = useState(1);
-  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
-  const [budget, setBudget] = useState("");
-  const [notes, setNotes] = useState("");
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-  const toggleInterest = (id: string) => {
-    setSelectedInterests((prev) =>
-      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
-    );
-  };
+  const sendMessage = useCallback(async (text?: string) => {
+    const msgText = text || input.trim();
+    if (!msgText || streaming || !user) return;
 
-  const handleSubmit = async () => {
-    if (!user) return;
-    if (selectedInterests.length === 0) {
-      toast({ title: "Select at least one interest", variant: "destructive" });
-      return;
+    const userMsg: Msg = { role: "user", content: msgText };
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
+    setInput("");
+    setStreaming(true);
+
+    let assistantContent = "";
+
+    const updateAssistant = (chunk: string) => {
+      assistantContent += chunk;
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        if (last?.role === "assistant") {
+          return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantContent } : m));
+        }
+        return [...prev, { role: "assistant", content: assistantContent }];
+      });
+    };
+
+    try {
+      const session = await supabase.auth.getSession();
+      const token = session.data.session?.access_token;
+
+      const resp = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+        },
+        body: JSON.stringify({
+          message: msgText,
+          city: selectedCity.id,
+          history: updatedMessages.slice(0, -1), // exclude the current user message
+        }),
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({ error: "Failed" }));
+        throw new Error(err.error || `Error ${resp.status}`);
+      }
+      if (!resp.body) throw new Error("No response body");
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        let newlineIdx: number;
+        while ((newlineIdx = buffer.indexOf("\n")) !== -1) {
+          let line = buffer.slice(0, newlineIdx);
+          buffer = buffer.slice(newlineIdx + 1);
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (!line.startsWith("data: ")) continue;
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) updateAssistant(content);
+          } catch { /* partial */ }
+        }
+      }
+    } catch (err: any) {
+      toast({ title: "Chat error", description: err.message, variant: "destructive" });
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        if (last?.role === "assistant" && !last.content) return prev.slice(0, -1);
+        return prev;
+      });
+    } finally {
+      setStreaming(false);
     }
+  }, [input, streaming, user, selectedCity.id, messages, toast]);
 
-    setStep("submitting");
-
+  const handleSubmitRequest = async () => {
+    if (!user) return;
     try {
       const { error } = await supabase.from("concierge_requests" as any).insert({
         user_id: user.id,
         city: selectedCity.id,
-        arrival_date: arrivalDate || null,
-        departure_date: departureDate || null,
-        group_size: groupSize,
-        interests: selectedInterests,
-        budget: budget || null,
-        special_notes: notes,
+        interests: ["concierge-chat"],
+        special_notes: messages.map(m => `${m.role}: ${m.content}`).join("\n").substring(0, 2000),
         status: "pending",
         payment_status: "unpaid",
       } as any);
-
       if (error) throw error;
-
-      setStep("done");
-      toast({ title: "Request submitted! 🎉", description: "A concierge agent will reach out to you shortly." });
+      toast({ title: "Request submitted! 🎉", description: "A human concierge will follow up in your messages." });
     } catch (err: any) {
-      console.error("Concierge submit error:", err);
-      toast({ title: "Error submitting request", description: err.message, variant: "destructive" });
-      setStep("info");
+      toast({ title: "Error", description: err.message, variant: "destructive" });
     }
   };
 
-  if (step === "done") {
-    return (
-      <div className="min-h-screen pb-24">
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-          <button onClick={onBack} className="p-1"><ArrowLeft size={20} /></button>
-          <h2 className="font-semibold">Concierge</h2>
-        </div>
-        <div className="flex flex-col items-center justify-center px-6 pt-20 text-center gap-4">
-          <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-            <Check className="w-10 h-10 text-primary" />
-          </div>
-          <h2 className="text-2xl font-bold">You're All Set!</h2>
-          <p className="text-muted-foreground max-w-xs">
-            A personal concierge agent for {selectedCity.flag} {selectedCity.name} will be in touch via your messages soon.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            They'll curate the perfect itinerary based on your preferences.
-          </p>
-          <Button onClick={onBack} className="mt-4 rounded-full px-8">
-            Back to Discover
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="min-h-screen pb-24">
+    <div className="fixed inset-0 z-50 bg-background flex flex-col">
       {/* Header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b border-border">
-        <button onClick={onBack} className="p-1"><ArrowLeft size={20} /></button>
-        <div className="flex-1">
-          <h2 className="font-semibold text-sm">Personal Concierge</h2>
-          <p className="text-xs text-muted-foreground">{selectedCity.flag} {selectedCity.name}</p>
+      <div className="flex items-center gap-3 px-4 py-3 border-b border-border bg-card">
+        <button onClick={onBack} className="p-1">
+          <ArrowLeft size={20} />
+        </button>
+        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+          <Sparkles className="w-5 h-5 text-primary-foreground" />
         </div>
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10">
+        <div className="flex-1 min-w-0">
+          <h2 className="font-semibold text-sm">
+            {selectedCity.flag} {selectedCity.name} Concierge
+          </h2>
+          <p className="text-xs text-muted-foreground">AI Agent • Events • Nightlife • Dining</p>
+        </div>
+        <button
+          onClick={handleSubmitRequest}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 hover:bg-primary/20 transition"
+        >
           <Crown size={14} className="text-primary" />
-          <span className="text-xs font-semibold text-primary">$25</span>
-        </div>
+          <span className="text-xs font-semibold text-primary">Get Human — $25</span>
+        </button>
       </div>
 
-      {/* Hero */}
-      <div className="px-5 pt-6 pb-4">
-        <div className="flex items-center gap-3 mb-3">
-          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
-            <Sparkles className="w-6 h-6 text-primary-foreground" />
-          </div>
-          <div>
-            <h1 className="text-xl font-bold">Your City, Your Way</h1>
-            <p className="text-sm text-muted-foreground">Real people. Real recommendations.</p>
-          </div>
-        </div>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          Tell us what you're looking for and a local concierge agent will personally curate the best experiences in {selectedCity.name} — from exclusive parties to hidden speakeasies.
-        </p>
-      </div>
-
-      <div className="px-5 space-y-6">
-        {/* Interests */}
-        <div>
-          <label className="text-sm font-semibold text-foreground mb-2 block">
-            What are you looking for? *
-          </label>
-          <div className="grid grid-cols-2 gap-2">
-            {INTEREST_OPTIONS.map((opt) => {
-              const selected = selectedInterests.includes(opt.id);
-              return (
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+        {messages.length === 0 && (
+          <div className="flex flex-col items-center justify-center h-full text-center gap-4 opacity-80">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+              <Bot className="w-8 h-8 text-primary" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold">Your Personal Concierge</h3>
+              <p className="text-sm text-muted-foreground mt-1 max-w-xs">
+                Tell me what you're looking for in {selectedCity.name} — parties, dinners, speakeasies, anything!
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-2 justify-center max-w-sm">
+              {QUICK_PROMPTS.map((q) => (
                 <button
-                  key={opt.id}
-                  onClick={() => toggleInterest(opt.id)}
-                  className={`flex items-center gap-2 px-3 py-2.5 rounded-xl border text-sm font-medium transition-all ${
-                    selected
-                      ? "border-primary bg-primary/10 text-primary"
-                      : "border-border bg-card text-foreground hover:border-primary/40"
-                  }`}
+                  key={q}
+                  onClick={() => sendMessage(q)}
+                  className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition"
                 >
-                  <span>{opt.emoji}</span>
-                  <span>{opt.label}</span>
+                  {q}
                 </button>
-              );
-            })}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Dates */}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-sm font-semibold text-foreground mb-1.5 block">
-              <Calendar size={14} className="inline mr-1" />
-              Arrival
-            </label>
-            <Input
-              type="date"
-              value={arrivalDate}
-              onChange={(e) => setArrivalDate(e.target.value)}
-              className="rounded-xl"
-            />
+        {messages.map((msg, i) => (
+          <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+            <div
+              className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
+                msg.role === "user"
+                  ? "bg-primary text-primary-foreground rounded-br-md"
+                  : "bg-muted rounded-bl-md"
+              }`}
+            >
+              {msg.role === "assistant" ? (
+                <div className="prose prose-sm dark:prose-invert max-w-none [&>p]:mb-1 [&>ul]:mt-1">
+                  <ReactMarkdown>{msg.content || "..."}</ReactMarkdown>
+                </div>
+              ) : (
+                msg.content
+              )}
+            </div>
           </div>
-          <div>
-            <label className="text-sm font-semibold text-foreground mb-1.5 block">
-              <Calendar size={14} className="inline mr-1" />
-              Departure
-            </label>
-            <Input
-              type="date"
-              value={departureDate}
-              onChange={(e) => setDepartureDate(e.target.value)}
-              className="rounded-xl"
-            />
-          </div>
-        </div>
+        ))}
+        <div ref={bottomRef} />
+      </div>
 
-        {/* Group Size */}
-        <div>
-          <label className="text-sm font-semibold text-foreground mb-1.5 block">
-            <Users size={14} className="inline mr-1" />
-            Group Size
-          </label>
-          <div className="flex gap-2">
-            {[1, 2, 3, 4, 5, 6].map((n) => (
-              <button
-                key={n}
-                onClick={() => setGroupSize(n)}
-                className={`w-10 h-10 rounded-xl border text-sm font-semibold transition-all ${
-                  groupSize === n
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border bg-card text-foreground hover:border-primary/40"
-                }`}
-              >
-                {n === 6 ? "6+" : n}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Budget */}
-        <div>
-          <label className="text-sm font-semibold text-foreground mb-1.5 block">
-            <DollarSign size={14} className="inline mr-1" />
-            Budget per person
-          </label>
-          <div className="flex flex-wrap gap-2">
-            {BUDGET_OPTIONS.map((opt) => (
-              <button
-                key={opt}
-                onClick={() => setBudget(opt)}
-                className={`px-3 py-1.5 rounded-full border text-xs font-semibold transition-all ${
-                  budget === opt
-                    ? "border-primary bg-primary/10 text-primary"
-                    : "border-border bg-card text-foreground hover:border-primary/40"
-                }`}
-              >
-                {opt}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Notes */}
-        <div>
-          <label className="text-sm font-semibold text-foreground mb-1.5 block">
-            Anything else we should know?
-          </label>
-          <Textarea
-            value={notes}
-            onChange={(e) => setNotes(e.target.value)}
-            placeholder="e.g. Birthday celebration, prefer upscale venues, want to meet locals..."
-            className="rounded-xl min-h-[80px]"
-            maxLength={500}
+      {/* Input */}
+      <div className="border-t border-border p-3 bg-card">
+        <form
+          onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
+          className="flex gap-2"
+        >
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={`What are you looking for in ${selectedCity.name}?`}
+            className="flex-1 bg-muted rounded-full px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/30"
+            disabled={streaming}
           />
-        </div>
-
-        {/* Submit */}
-        <div className="pb-6">
           <Button
-            onClick={handleSubmit}
-            disabled={step === "submitting" || selectedInterests.length === 0}
-            className="w-full rounded-full h-12 text-base font-semibold"
+            type="submit"
+            size="icon"
+            className="rounded-full shrink-0"
+            disabled={streaming || !input.trim()}
           >
-            {step === "submitting" ? (
-              <span className="flex items-center gap-2">
-                <div className="w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
-                Submitting...
-              </span>
-            ) : (
-              <span className="flex items-center gap-2">
-                <Crown size={18} />
-                Submit Request — $25
-              </span>
-            )}
+            <Send className="w-4 h-4" />
           </Button>
-          <p className="text-xs text-center text-muted-foreground mt-2">
-            Payment will be collected after a concierge is assigned to you.
-          </p>
-        </div>
+        </form>
       </div>
     </div>
   );
