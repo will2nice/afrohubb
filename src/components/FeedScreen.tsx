@@ -100,7 +100,7 @@ const ReelCard = ({ reel, onOpenFullScreen }: { reel: typeof reelItems[0]; onOpe
           <MessageCircle size={18} className="text-muted-foreground" />
           <span className="text-xs text-muted-foreground">{reel.comments}</span>
         </button>
-        <button className="p-1.5 rounded-full hover:bg-secondary transition-colors">
+        <button onClick={async () => { const t = `${reel.caption}`; if (navigator.share) { try { await navigator.share({ title: "AfroHub Reel", text: t }); } catch {} } else { await navigator.clipboard.writeText(t); } }} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
           <Share2 size={18} className="text-muted-foreground" />
         </button>
         <div className="flex-1" />
