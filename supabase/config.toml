@@ -14,3 +14,6 @@ verify_jwt = false
 
 [functions.city-agent-tasks]
 verify_jwt = false
+
+[functions.import-event-url]
+verify_jwt = false

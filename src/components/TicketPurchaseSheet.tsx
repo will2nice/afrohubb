@@ -114,15 +114,19 @@ const TicketPurchaseSheet = ({ eventId, eventTitle, open, onClose }: TicketPurch
                 <button
                   onClick={handleCheckout}
                   disabled={checkout.isPending}
-                  className="w-full py-3 rounded-xl gradient-gold text-primary-foreground font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="w-full py-3.5 rounded-xl bg-foreground text-background font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-2 hover:opacity-90 transition-opacity"
                 >
                   {checkout.isPending ? (
                     <>
                       <Loader2 size={16} className="animate-spin" /> Processing...
                     </>
+                  ) : selectedType!.price_cents === 0 ? (
+                    <>
+                      <Ticket size={16} /> Confirm Free Ticket
+                    </>
                   ) : (
                     <>
-                      <Ticket size={16} /> Buy Tickets
+                      Pay ${((selectedType!.price_cents * quantity) / 100).toFixed(2)} · Apple Pay
                     </>
                   )}
                 </button>
