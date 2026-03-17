@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.import-event-url]
 verify_jwt = false
+
+[functions.concierge-chat]
+verify_jwt = false
