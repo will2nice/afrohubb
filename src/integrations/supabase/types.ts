@@ -38,6 +38,99 @@ export type Database = {
         }
         Relationships: []
       }
+      bottle_packages: {
+        Row: {
+          created_at: string
+          description: string | null
+          event_id: string
+          id: string
+          includes: string[] | null
+          name: string
+          price_cents: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event_id: string
+          id?: string
+          includes?: string[] | null
+          name?: string
+          price_cents?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event_id?: string
+          id?: string
+          includes?: string[] | null
+          name?: string
+          price_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bottle_packages_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      check_ins: {
+        Row: {
+          checked_in_at: string
+          checked_in_by: string | null
+          event_id: string
+          id: string
+          method: string
+          order_id: string | null
+          reservation_id: string | null
+          user_id: string
+        }
+        Insert: {
+          checked_in_at?: string
+          checked_in_by?: string | null
+          event_id: string
+          id?: string
+          method?: string
+          order_id?: string | null
+          reservation_id?: string | null
+          user_id: string
+        }
+        Update: {
+          checked_in_at?: string
+          checked_in_by?: string | null
+          event_id?: string
+          id?: string
+          method?: string
+          order_id?: string | null
+          reservation_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "check_ins_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "check_ins_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "check_ins_reservation_id_fkey"
+            columns: ["reservation_id"]
+            isOneToOne: false
+            referencedRelation: "reservations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       conversation_members: {
         Row: {
           conversation_id: string
@@ -584,6 +677,7 @@ export type Database = {
       orders: {
         Row: {
           application_fee_cents: number
+          check_in_code: string | null
           created_at: string
           event_id: string
           id: string
@@ -597,6 +691,7 @@ export type Database = {
         }
         Insert: {
           application_fee_cents?: number
+          check_in_code?: string | null
           created_at?: string
           event_id: string
           id?: string
@@ -610,6 +705,7 @@ export type Database = {
         }
         Update: {
           application_fee_cents?: number
+          check_in_code?: string | null
           created_at?: string
           event_id?: string
           id?: string
@@ -936,6 +1032,79 @@ export type Database = {
         }
         Relationships: []
       }
+      reservations: {
+        Row: {
+          arrival_time: string | null
+          bottle_package_id: string | null
+          check_in_code: string | null
+          created_at: string
+          deposit_paid_cents: number
+          event_id: string
+          guest_count: number
+          id: string
+          special_notes: string | null
+          status: string
+          stripe_session_id: string | null
+          table_type_id: string | null
+          total_cents: number
+          user_id: string
+        }
+        Insert: {
+          arrival_time?: string | null
+          bottle_package_id?: string | null
+          check_in_code?: string | null
+          created_at?: string
+          deposit_paid_cents?: number
+          event_id: string
+          guest_count?: number
+          id?: string
+          special_notes?: string | null
+          status?: string
+          stripe_session_id?: string | null
+          table_type_id?: string | null
+          total_cents?: number
+          user_id: string
+        }
+        Update: {
+          arrival_time?: string | null
+          bottle_package_id?: string | null
+          check_in_code?: string | null
+          created_at?: string
+          deposit_paid_cents?: number
+          event_id?: string
+          guest_count?: number
+          id?: string
+          special_notes?: string | null
+          status?: string
+          stripe_session_id?: string | null
+          table_type_id?: string | null
+          total_cents?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reservations_bottle_package_id_fkey"
+            columns: ["bottle_package_id"]
+            isOneToOne: false
+            referencedRelation: "bottle_packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reservations_table_type_id_fkey"
+            columns: ["table_type_id"]
+            isOneToOne: false
+            referencedRelation: "table_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       stories: {
         Row: {
           created_at: string
@@ -959,6 +1128,53 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      table_types: {
+        Row: {
+          capacity: number
+          created_at: string
+          deposit_cents: number
+          description: string | null
+          event_id: string
+          id: string
+          name: string
+          price_cents: number
+          quantity_available: number
+          quantity_total: number
+        }
+        Insert: {
+          capacity?: number
+          created_at?: string
+          deposit_cents?: number
+          description?: string | null
+          event_id: string
+          id?: string
+          name?: string
+          price_cents?: number
+          quantity_available?: number
+          quantity_total?: number
+        }
+        Update: {
+          capacity?: number
+          created_at?: string
+          deposit_cents?: number
+          description?: string | null
+          event_id?: string
+          id?: string
+          name?: string
+          price_cents?: number
+          quantity_available?: number
+          quantity_total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "table_types_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ticket_types: {
         Row: {
