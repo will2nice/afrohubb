@@ -172,6 +172,12 @@ const ProfileScreen = () => {
   if (showPromoter) {
     return <PromoterDashboard onBack={() => setShowPromoter(false)} />;
   }
+  if (showMyTickets) {
+    return <MyTicketsScreen onBack={() => setShowMyTickets(false)} />;
+  }
+  if (showCheckIn) {
+    return <CheckInScreen onBack={() => setShowCheckIn(false)} />;
+  }
 
   const displayName = profile?.display_name || "Your Name";
   const displayCity = profile?.city || "Set your city";
