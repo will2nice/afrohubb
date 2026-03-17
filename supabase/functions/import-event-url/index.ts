@@ -89,7 +89,7 @@ Deno.serve(async (req) => {
 
 Return ONLY valid JSON, no markdown formatting.`,
           },
-          { role: "user", content: markdown.substring(0, 8000) },
+          { role: "user", content: `[START]\n${sanitizeForAI(markdown)}\n[END]` },
         ],
         temperature: 0.1,
         max_tokens: 1000,
