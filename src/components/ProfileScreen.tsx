@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
-import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase, Sun, Moon, Ticket, BookOpen, Share2 } from "lucide-react";
+import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase, Sun, Moon, Ticket, BookOpen, Share2, Smartphone } from "lucide-react";
 import InviteFriends from "@/components/InviteFriends";
+import TapShareCard from "@/components/TapShareCard";
 import { useNavigate } from "react-router-dom";
 import PromoterDashboard from "@/components/PromoterDashboard";
 import MyTicketsScreen from "@/components/MyTicketsScreen";
@@ -96,6 +97,7 @@ const ProfileScreen = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [profileMode, setProfileMode] = useState<ProfileMode>("community");
   const [viewMode, setViewMode] = useState<"feed" | "grid" | "invite">("feed");
+  const [showTapCard, setShowTapCard] = useState(false);
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
   const [showEditProfile, setShowEditProfile] = useState(false);
   const { signOut } = useAuth();
@@ -372,6 +374,12 @@ const ProfileScreen = () => {
             >
               <Share2 size={20} />
             </button>
+            <button
+              onClick={() => setShowTapCard(true)}
+              className="flex-1 py-3 flex items-center justify-center transition-colors border-b-2 border-transparent text-muted-foreground hover:text-primary"
+            >
+              <Smartphone size={20} />
+            </button>
           </div>
         </div>
 
@@ -487,6 +495,7 @@ const ProfileScreen = () => {
         </div>
       )}
       <SubscriptionModal open={showSubscription} onOpenChange={setShowSubscription} />
+      {showTapCard && <TapShareCard onClose={() => setShowTapCard(false)} />}
     </div>
   );
 };
