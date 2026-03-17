@@ -194,7 +194,7 @@ Deno.serve(async (req) => {
           },
           {
             role: "user",
-            content: `Extract all events from this Eventbrite search results page. Return a JSON object with an "events" array. Each event should have: title, date (ISO 8601 format like 2025-03-15T20:00:00), location (venue name), price (string like "Free" or "$25"), url (eventbrite URL if found), image_url (if found). Only include actual events, not ads or navigation. Here is the page content:\n\n${markdown.substring(0, 8000)}`
+            content: `Extract all events from this Eventbrite search results page. Return a JSON object with an "events" array. Each event should have: title, date (ISO 8601 format like 2025-03-15T20:00:00), location (venue name), price (string like "Free" or "$25"), url (eventbrite URL if found), image_url (if found). Only include actual events, not ads or navigation. Content is between [START] and [END] markers.\n\n[START]\n${sanitizeForAI(markdown)}\n[END]`
           }
         ],
         temperature: 0,
