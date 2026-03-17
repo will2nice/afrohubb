@@ -495,6 +495,7 @@ const ProfileScreen = () => {
         </div>
       )}
       <SubscriptionModal open={showSubscription} onOpenChange={setShowSubscription} />
+      {showTapCard && <TapShareCard onClose={() => setShowTapCard(false)} />}
     </div>
   );
 };
