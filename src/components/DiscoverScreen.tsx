@@ -116,6 +116,7 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
         {view === "campus" && <CampusScreen />}
         {view === "flights" && <FlightsScreen selectedCity={selectedCity} onCityChange={onCityChange} />}
         {view === "help" && <AskForHelpScreen onOpenDM={onOpenDM || (() => {})} />}
+        {view === "concierge" && <ConciergeScreen selectedCity={selectedCity} onBack={() => setView("explore")} />}
 
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-40">
           <div className="flex items-center bg-card/95 backdrop-blur-lg border border-border rounded-full p-1 shadow-lg">
