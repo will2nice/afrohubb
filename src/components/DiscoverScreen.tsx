@@ -101,6 +101,7 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
     { id: "explore", label: "Search" },
     { id: "groups", label: "Groups" },
     { id: "places", label: "Places" },
+    { id: "concierge", label: "Concierge" },
     { id: "campus", label: "Campus" },
     { id: "flights", label: "Flights" },
     { id: "help", label: "Help" },
