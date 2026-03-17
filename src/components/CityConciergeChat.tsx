@@ -31,16 +31,16 @@ const CityConciergeChat = ({ city, open, onClose }: Props) => {
   const { data: history } = useQuery({
     queryKey: ["city_agent_messages", city.id, user?.id],
     queryFn: async () => {
-      if (!user) return [];
+      if (!user) return [] as Msg[];
       const { data, error } = await supabase
-        .from("city_agent_messages" as any)
+        .from("city_agent_messages")
         .select("role, content")
         .eq("user_id", user.id)
         .eq("city", city.id)
         .order("created_at", { ascending: true })
         .limit(50);
       if (error) throw error;
-      return (data || []) as Msg[];
+      return (data || []).map((m: any) => ({ role: m.role as "user" | "assistant", content: m.content as string }));
     },
     enabled: !!user && open,
   });
