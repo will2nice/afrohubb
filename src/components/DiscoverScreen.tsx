@@ -51,6 +51,7 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
   const [tab, setTab] = useState<DiscoverTab>("people");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [showConcierge, setShowConcierge] = useState(false);
 
   // People filters
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
