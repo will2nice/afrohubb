@@ -135,7 +135,7 @@ const CityConciergeChat = ({ city, open, onClose }: Props) => {
 
   const clearHistory = async () => {
     if (!user) return;
-    await supabase.from("city_agent_messages" as any).delete().eq("user_id", user.id).eq("city", city.id);
+    await (supabase.from("city_agent_messages") as any).delete().eq("user_id", user.id).eq("city", city.id);
     setMessages([]);
     qc.invalidateQueries({ queryKey: ["city_agent_messages"] });
   };
