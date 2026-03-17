@@ -70,6 +70,124 @@ const TapShareCard = ({ onClose }: { onClose: () => void }) => {
     }
   };
 
+  const generateWalletCard = useCallback(async () => {
+    setSaving(true);
+    try {
+      const canvas = document.createElement("canvas");
+      const w = 900;
+      const h = 1400;
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext("2d")!;
+
+      // Background gradient
+      const grad = ctx.createLinearGradient(0, 0, w, h);
+      grad.addColorStop(0, "#C4933F");
+      grad.addColorStop(0.5, "#D4A84B");
+      grad.addColorStop(1, "#8B6914");
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.roundRect(0, 0, w, h, 40);
+      ctx.fill();
+
+      // Decorative circles
+      ctx.fillStyle = "rgba(255,255,255,0.08)";
+      ctx.beginPath(); ctx.arc(w + 20, -40, 250, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(-40, h + 20, 200, 0, Math.PI * 2); ctx.fill();
+
+      // Header
+      ctx.fillStyle = "rgba(255,255,255,0.7)";
+      ctx.font = "bold 28px system-ui, sans-serif";
+      ctx.fillText("AFROHUB", 60, 80);
+
+      // Name
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 48px system-ui, sans-serif";
+      ctx.fillText(profile?.display_name || "Member", 60, 160);
+
+      // Badge
+      if (badge) {
+        ctx.font = "bold 24px system-ui, sans-serif";
+        ctx.fillStyle = "rgba(255,255,255,0.9)";
+        ctx.fillText(badge.label, 60, 210);
+      }
+
+      // QR code — render SVG to image
+      const qrSvg = document.querySelector(".wallet-qr-source svg") as SVGElement;
+      if (qrSvg) {
+        const svgData = new XMLSerializer().serializeToString(qrSvg);
+        const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
+        const url = URL.createObjectURL(svgBlob);
+        const img = new Image();
+        await new Promise<void>((resolve) => {
+          img.onload = () => resolve();
+          img.src = url;
+        });
+        // White background for QR
+        const qrSize = 500;
+        const qrX = (w - qrSize) / 2;
+        const qrY = 300;
+        ctx.fillStyle = "#FFFFFF";
+        ctx.beginPath(); ctx.roundRect(qrX - 40, qrY - 40, qrSize + 80, qrSize + 80, 30); ctx.fill();
+        ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+        URL.revokeObjectURL(url);
+      }
+
+      // Scan text
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 32px system-ui, sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("Scan to Join AfroHub", w / 2, 920);
+      ctx.font = "22px system-ui, sans-serif";
+      ctx.fillStyle = "rgba(255,255,255,0.7)";
+      ctx.fillText("Point your camera at this code", w / 2, 960);
+
+      // Referral code box
+      ctx.textAlign = "center";
+      ctx.fillStyle = "rgba(255,255,255,0.15)";
+      ctx.beginPath(); ctx.roundRect(60, 1020, w - 120, 120, 20); ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,0.6)";
+      ctx.font = "bold 20px system-ui, sans-serif";
+      ctx.fillText("REFERRAL CODE", w / 2, 1065);
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 44px monospace";
+      ctx.fillText(code || "...", w / 2, 1120);
+
+      // Stats
+      ctx.fillStyle = "#FFFFFF";
+      ctx.font = "bold 56px system-ui, sans-serif";
+      ctx.fillText(String(referralCount), w / 2, 1240);
+      ctx.font = "20px system-ui, sans-serif";
+      ctx.fillStyle = "rgba(255,255,255,0.6)";
+      ctx.fillText("REFERRALS", w / 2, 1275);
+
+      // Footer
+      ctx.font = "18px system-ui, sans-serif";
+      ctx.fillStyle = "rgba(255,255,255,0.5)";
+      ctx.fillText("diaspora-vibe.lovable.app", w / 2, 1370);
+
+      // Save
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        const file = new File([blob], "afrohub-card.png", { type: "image/png" });
+        if (navigator.share && navigator.canShare?.({ files: [file] })) {
+          await navigator.share({ files: [file], title: "My AfroHub Card" });
+        } else {
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "afrohub-card.png";
+          a.click();
+          URL.revokeObjectURL(a.href);
+        }
+        toast({ title: "Wallet card saved!", description: "Share it or save to your photos." });
+        setSaving(false);
+      }, "image/png");
+    } catch {
+      setSaving(false);
+      toast({ title: "Failed to generate card", variant: "destructive" });
+    }
+  }, [profile, badge, code, referralCount, link, toast]);
+
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-background animate-in slide-in-from-bottom duration-200">
       {/* Header */}
