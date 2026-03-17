@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Users, Clock, Wine, Loader2, ChevronDown, ChevronUp, StickyNote } from "lucide-react";
+import { X, Users, Clock, Package, Loader2, ChevronDown, ChevronUp, StickyNote } from "lucide-react";
 import { useTableTypes, useBottlePackages, useCreateReservation } from "@/hooks/useReservations";
 
 interface TableBookingSheetProps {
