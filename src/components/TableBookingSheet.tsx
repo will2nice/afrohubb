@@ -151,7 +151,7 @@ const TableBookingSheet = ({ eventId, eventTitle, open, onClose }: TableBookingS
                   {bottlesLoading ? (
                     <Loader2 className="w-5 h-5 animate-spin text-muted-foreground mx-auto" />
                   ) : !bottles?.length ? (
-                    <p className="text-xs text-muted-foreground text-center py-2">No bottle packages available.</p>
+                    <p className="text-xs text-muted-foreground text-center py-2">No add-ons available.</p>
                   ) : (
                     bottles.map((b: any) => (
                       <button
