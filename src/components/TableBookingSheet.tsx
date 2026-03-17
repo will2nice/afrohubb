@@ -203,7 +203,7 @@ const TableBookingSheet = ({ eventId, eventTitle, open, onClose }: TableBookingS
               </div>
               {selectedBottle && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Bottles</span>
+                  <span className="text-muted-foreground">Add-on</span>
                   <span className="text-foreground font-medium">${(bottleCents / 100).toFixed(0)}</span>
                 </div>
               )}
