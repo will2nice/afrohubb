@@ -1454,6 +1454,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_dm_conversation: {
+        Args: { _other_user_id: string }
+        Returns: string
+      }
       get_dau: {
         Args: { days_back?: number }
         Returns: {
