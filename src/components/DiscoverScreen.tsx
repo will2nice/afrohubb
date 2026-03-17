@@ -19,7 +19,7 @@ import { useEvents } from "@/hooks/useEvents";
 import { usePosts } from "@/hooks/usePosts";
 import { format } from "date-fns";
 
-type DiscoverView = "explore" | "map" | "places" | "groups" | "campus" | "flights" | "help";
+type DiscoverView = "explore" | "map" | "places" | "groups" | "campus" | "flights" | "help" | "concierge";
 type DiscoverTab = "people" | "events";
 
 const INTEREST_OPTIONS = [
