@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.stripe-connect-onboard]
 verify_jwt = false
+
+[functions.city-concierge]
+verify_jwt = false
+
+[functions.city-agent-tasks]
+verify_jwt = false

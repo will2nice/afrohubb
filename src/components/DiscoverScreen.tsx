@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Search, MapPinned, Users, Sliders, X, Filter, BadgeCheck, Ticket, MapPin, ChevronDown, Sparkles, TrendingUp, Calendar, ArrowRight, Star } from "lucide-react";
+import CityConciergeChat from "@/components/CityConciergeChat";
+import { Search, MapPinned, Users, Sliders, X, Filter, BadgeCheck, Ticket, MapPin, ChevronDown, Sparkles, TrendingUp, Calendar, ArrowRight, Star, Bot } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useScreenView } from "@/hooks/useAnalytics";
 import { trackEvent } from "@/lib/posthog";
@@ -50,6 +51,7 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
   const [tab, setTab] = useState<DiscoverTab>("people");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [showConcierge, setShowConcierge] = useState(false);
 
   // People filters
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
@@ -126,6 +128,16 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
             ))}
           </div>
         </div>
+
+        {/* AI Concierge FAB */}
+        <button
+          onClick={() => setShowConcierge(true)}
+          className="fixed bottom-40 right-4 z-40 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition-transform"
+        >
+          <Bot className="w-5 h-5" />
+        </button>
+
+        <CityConciergeChat city={selectedCity} open={showConcierge} onClose={() => setShowConcierge(false)} />
       </div>
     );
   }
@@ -490,6 +502,16 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
           ))}
         </div>
       </div>
+
+      {/* AI Concierge FAB */}
+      <button
+        onClick={() => setShowConcierge(true)}
+        className="fixed bottom-40 right-4 z-40 w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition-transform"
+      >
+        <Bot className="w-5 h-5" />
+      </button>
+
+      <CityConciergeChat city={selectedCity} open={showConcierge} onClose={() => setShowConcierge(false)} />
     </div>
   );
 };
