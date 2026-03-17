@@ -24,7 +24,9 @@ const TapShareCard = ({ onClose }: { onClose: () => void }) => {
   const [copied, setCopied] = useState(false);
   const [nfcStatus, setNfcStatus] = useState<"idle" | "writing" | "success" | "unsupported">("idle");
   const [showQR, setShowQR] = useState(false);
+  const [saving, setSaving] = useState(false);
   const badge = getReferralBadge(referralCount);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const isNFCSupported = typeof window !== "undefined" && "NDEFReader" in window;
 
