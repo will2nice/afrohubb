@@ -141,7 +141,7 @@ const NewsPostCard = ({ post, liked, saved, onLike, onSave }: {
         <MessageCircle size={18} className="text-muted-foreground" />
         <span className="text-xs text-muted-foreground">{post.comments}</span>
       </button>
-      <button className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
+      <button onClick={async () => { const t = post.text || "Check this out on AfroHub!"; if (navigator.share) { try { await navigator.share({ title: "AfroHub", text: t }); } catch {} } else { await navigator.clipboard.writeText(t); } }} className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
       <div className="flex-1" />
       <button onClick={onSave} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
         <Bookmark size={18} className={saved ? "text-primary" : "text-muted-foreground"} fill={saved ? "currentColor" : "none"} />
