@@ -122,7 +122,7 @@ Return a JSON object with an "events" array. Each event should have:
 - url (the afronation.com URL)
 - ticket_tiers (array of {name, price} if available)
 
-${allMarkdown.substring(0, 12000)}`,
+[START]\n${sanitizeForAI(allMarkdown.substring(0, 12000))}\n[END]`,
           },
         ],
         temperature: 0,

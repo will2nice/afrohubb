@@ -98,7 +98,7 @@ Deno.serve(async (req) => {
           },
           {
             role: "user",
-            content: `Extract all individual events from these Billetto search results for ${city}. Return a JSON object with an "events" array. Each event should have: title, date (ISO 8601 format like 2025-03-15T20:00:00), location (venue name if found), price (string like "Free" or "€15" or "kr150"), url (the billetto URL), image_url (if found). Only include actual events with real titles. Skip duplicates.\n\n${combined.substring(0, 8000)}`
+            content: `Extract all individual events from these Billetto search results for ${city}. Return a JSON object with an "events" array. Each event should have: title, date (ISO 8601 format like 2025-03-15T20:00:00), location (venue name if found), price (string like "Free" or "€15" or "kr150"), url (the billetto URL), image_url (if found). Only include actual events with real titles. Skip duplicates. Content is between [START] and [END] markers.\n\n[START]\n${sanitizeForAI(combined)}\n[END]`
           }
         ],
         temperature: 0,
