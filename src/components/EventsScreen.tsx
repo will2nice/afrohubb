@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useScreenView } from "@/hooks/useAnalytics";
+import TableBookingSheet from "@/components/TableBookingSheet";
 import { trackEvent } from "@/lib/posthog";
 import { trackEventViewed } from "@/lib/analytics";
 import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, UserCheck, Plus, Download, Loader2, ExternalLink, X, CheckCircle, XCircle } from "lucide-react";
