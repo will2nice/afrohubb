@@ -242,9 +242,14 @@ const TapShareCard = ({ onClose }: { onClose: () => void }) => {
           </div>
         </div>
 
+        {/* Hidden QR for canvas rendering */}
+        <div className="wallet-qr-source" style={{ position: "absolute", opacity: 0, pointerEvents: "none" }}>
+          <QRCodeSVG value={link || "https://diaspora-vibe.lovable.app/waitlist"} size={500} level="H" fgColor="#1a1a1a" bgColor="#ffffff" />
+        </div>
+
         {/* Action buttons */}
-        <div className="grid grid-cols-2 gap-3">
-          {/* NFC Tap */}
+        <div className="grid grid-cols-3 gap-3">
+          {/* NFC / AirDrop */}
           <button
             onClick={nfcStatus === "unsupported" ? nativeShare : startNFCWrite}
             className="flex flex-col items-center gap-2 bg-card border border-border rounded-2xl p-4 hover:bg-secondary/50 transition-colors active:scale-95"
@@ -262,13 +267,10 @@ const TapShareCard = ({ onClose }: { onClose: () => void }) => {
               )}
             </div>
             <div className="text-center">
-              <p className="text-sm font-semibold text-foreground">
-                {nfcStatus === "unsupported" ? "AirDrop / Share" : 
-                 nfcStatus === "writing" ? "Tap now..." :
-                 nfcStatus === "success" ? "Shared!" : "Tap to Share"}
-              </p>
-              <p className="text-[10px] text-muted-foreground">
-                {nfcStatus === "unsupported" ? "Share via AirDrop" : "NFC phone-to-phone"}
+              <p className="text-xs font-semibold text-foreground">
+                {nfcStatus === "unsupported" ? "AirDrop" : 
+                 nfcStatus === "writing" ? "Tap..." :
+                 nfcStatus === "success" ? "Done!" : "NFC Tap"}
               </p>
             </div>
           </button>
@@ -282,8 +284,25 @@ const TapShareCard = ({ onClose }: { onClose: () => void }) => {
               <QrCode className="w-6 h-6 text-primary-foreground" />
             </div>
             <div className="text-center">
-              <p className="text-sm font-semibold text-foreground">Show QR</p>
-              <p className="text-[10px] text-muted-foreground">Others scan to join</p>
+              <p className="text-xs font-semibold text-foreground">Show QR</p>
+            </div>
+          </button>
+
+          {/* Save Wallet Card */}
+          <button
+            onClick={generateWalletCard}
+            disabled={saving}
+            className="flex flex-col items-center gap-2 bg-card border border-border rounded-2xl p-4 hover:bg-secondary/50 transition-colors active:scale-95 disabled:opacity-50"
+          >
+            <div className="w-14 h-14 rounded-2xl gradient-gold flex items-center justify-center">
+              {saving ? (
+                <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Download className="w-6 h-6 text-primary-foreground" />
+              )}
+            </div>
+            <div className="text-center">
+              <p className="text-xs font-semibold text-foreground">{saving ? "Saving..." : "Save Card"}</p>
             </div>
           </button>
         </div>
