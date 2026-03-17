@@ -97,6 +97,7 @@ const ProfileScreen = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [profileMode, setProfileMode] = useState<ProfileMode>("community");
   const [viewMode, setViewMode] = useState<"feed" | "grid" | "invite">("feed");
+  const [showTapCard, setShowTapCard] = useState(false);
   const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
   const [showEditProfile, setShowEditProfile] = useState(false);
   const { signOut } = useAuth();
