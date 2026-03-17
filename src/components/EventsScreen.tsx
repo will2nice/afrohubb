@@ -45,6 +45,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [rsvpDialogEvent, setRsvpDialogEvent] = useState<EventItem | null>(null);
   const [ticketEvent, setTicketEvent] = useState<{ id: string; title: string } | null>(null);
+  const [tableEvent, setTableEvent] = useState<{ id: string; title: string } | null>(null);
   const { events: dbEvents } = useEvents(selectedCity.id);
   const { importEvents, importing } = useEventbriteImport();
 
