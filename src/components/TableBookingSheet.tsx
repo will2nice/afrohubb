@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, Users, Clock, Wine, Loader2, ChevronDown, ChevronUp, StickyNote } from "lucide-react";
+import { X, Users, Clock, Package, Loader2, ChevronDown, ChevronUp, StickyNote } from "lucide-react";
 import { useTableTypes, useBottlePackages, useCreateReservation } from "@/hooks/useReservations";
 
 interface TableBookingSheetProps {
@@ -143,7 +143,7 @@ const TableBookingSheet = ({ eventId, eventTitle, open, onClose }: TableBookingS
           {selectedTable && (
             <section>
               <button onClick={() => setShowBottles(!showBottles)} className="flex items-center gap-2 text-sm font-semibold text-foreground w-full">
-                <Wine size={16} className="text-primary" /> Bottle Packages
+                <Package size={16} className="text-primary" /> Add-ons & Extras
                 {showBottles ? <ChevronUp size={14} className="ml-auto" /> : <ChevronDown size={14} className="ml-auto" />}
               </button>
               {showBottles && (
@@ -151,7 +151,7 @@ const TableBookingSheet = ({ eventId, eventTitle, open, onClose }: TableBookingS
                   {bottlesLoading ? (
                     <Loader2 className="w-5 h-5 animate-spin text-muted-foreground mx-auto" />
                   ) : !bottles?.length ? (
-                    <p className="text-xs text-muted-foreground text-center py-2">No bottle packages available.</p>
+                    <p className="text-xs text-muted-foreground text-center py-2">No add-ons available.</p>
                   ) : (
                     bottles.map((b: any) => (
                       <button
@@ -203,7 +203,7 @@ const TableBookingSheet = ({ eventId, eventTitle, open, onClose }: TableBookingS
               </div>
               {selectedBottle && (
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Bottles</span>
+                  <span className="text-muted-foreground">Add-on</span>
                   <span className="text-foreground font-medium">${(bottleCents / 100).toFixed(0)}</span>
                 </div>
               )}
