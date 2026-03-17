@@ -89,6 +89,15 @@ const CITY_NORMALIZE: Record<string, string> = {
   la: "losangeles",
 };
 
+function sanitizeForAI(text: string): string {
+  return text
+    .replace(/```/g, '')
+    .replace(/(system|user|assistant):/gi, '')
+    .replace(/<script[^>]*>.*?<\/script>/gi, '')
+    .replace(/javascript:/gi, '')
+    .substring(0, 8000);
+}
+
 const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
 Deno.serve(async (req) => {
