@@ -362,6 +362,14 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
           onClose={() => setTicketEvent(null)}
         />
       )}
+      {tableEvent && (
+        <TableBookingSheet
+          eventId={tableEvent.id}
+          eventTitle={tableEvent.title}
+          open={!!tableEvent}
+          onClose={() => setTableEvent(null)}
+        />
+      )}
     </div>
   );
 };
