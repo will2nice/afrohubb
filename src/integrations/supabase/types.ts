@@ -1176,6 +1176,47 @@ export type Database = {
           },
         ]
       }
+      ticket_transfers: {
+        Row: {
+          claimed_at: string | null
+          created_at: string
+          from_user_id: string
+          id: string
+          order_id: string
+          status: string
+          to_email: string
+          to_user_id: string | null
+        }
+        Insert: {
+          claimed_at?: string | null
+          created_at?: string
+          from_user_id: string
+          id?: string
+          order_id: string
+          status?: string
+          to_email: string
+          to_user_id?: string | null
+        }
+        Update: {
+          claimed_at?: string | null
+          created_at?: string
+          from_user_id?: string
+          id?: string
+          order_id?: string
+          status?: string
+          to_email?: string
+          to_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_transfers_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ticket_types: {
         Row: {
           created_at: string

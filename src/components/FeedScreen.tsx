@@ -100,7 +100,7 @@ const ReelCard = ({ reel, onOpenFullScreen }: { reel: typeof reelItems[0]; onOpe
           <MessageCircle size={18} className="text-muted-foreground" />
           <span className="text-xs text-muted-foreground">{reel.comments}</span>
         </button>
-        <button className="p-1.5 rounded-full hover:bg-secondary transition-colors">
+        <button onClick={async () => { const t = `${reel.caption}`; if (navigator.share) { try { await navigator.share({ title: "AfroHub Reel", text: t }); } catch {} } else { await navigator.clipboard.writeText(t); } }} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
           <Share2 size={18} className="text-muted-foreground" />
         </button>
         <div className="flex-1" />
@@ -141,7 +141,7 @@ const NewsPostCard = ({ post, liked, saved, onLike, onSave }: {
         <MessageCircle size={18} className="text-muted-foreground" />
         <span className="text-xs text-muted-foreground">{post.comments}</span>
       </button>
-      <button className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
+      <button onClick={async () => { const t = post.text || "Check this out on AfroHub!"; if (navigator.share) { try { await navigator.share({ title: "AfroHub", text: t }); } catch {} } else { await navigator.clipboard.writeText(t); } }} className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
       <div className="flex-1" />
       <button onClick={onSave} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
         <Bookmark size={18} className={saved ? "text-primary" : "text-muted-foreground"} fill={saved ? "currentColor" : "none"} />
@@ -175,7 +175,7 @@ const CommunityUpdateCard = ({ post, liked, saved, onLike, onSave }: {
         <MessageCircle size={18} className="text-muted-foreground" />
         <span className="text-xs text-muted-foreground">{post.comments}</span>
       </button>
-      <button className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
+      <button onClick={async () => { const t = post.text || "Check this out on AfroHub!"; if (navigator.share) { try { await navigator.share({ title: "AfroHub", text: t }); } catch {} } else { await navigator.clipboard.writeText(t); } }} className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
       <div className="flex-1" />
       <button onClick={onSave} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
         <Bookmark size={18} className={saved ? "text-primary" : "text-muted-foreground"} fill={saved ? "currentColor" : "none"} />
@@ -256,7 +256,11 @@ const DbPostCard = ({ post, onLike, onComment }: {
           <MessageCircle size={18} className="text-muted-foreground" />
           <span className="text-xs text-muted-foreground">{post.comments_count}</span>
         </button>
-        <button className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
+        <button onClick={async () => {
+          const text = post.content || "Check out this post on AfroHub!";
+          if (navigator.share) { try { await navigator.share({ title: "AfroHub Post", text }); } catch {} }
+          else { await navigator.clipboard.writeText(text); }
+        }} className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
         <div className="flex-1" />
         <button onClick={() => setSaved(!saved)} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
           <Bookmark size={18} className={saved ? "text-primary" : "text-muted-foreground"} fill={saved ? "currentColor" : "none"} />
@@ -393,7 +397,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
             <MessageCircle size={18} className="text-muted-foreground" />
             <span className="text-xs text-muted-foreground">{post.comments}</span>
           </button>
-          <button className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
+          <button onClick={async () => { const t = post.text || "Check this out on AfroHub!"; if (navigator.share) { try { await navigator.share({ title: "AfroHub", text: t }); } catch {} } else { await navigator.clipboard.writeText(t); } }} className="p-1.5 rounded-full hover:bg-secondary transition-colors"><Share2 size={18} className="text-muted-foreground" /></button>
           <div className="flex-1" />
           <button onClick={() => toggleSave(post.id)} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
             <Bookmark size={18} className={savedPosts.has(post.id) ? "text-primary" : "text-muted-foreground"} fill={savedPosts.has(post.id) ? "currentColor" : "none"} />
