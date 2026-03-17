@@ -374,6 +374,12 @@ const ProfileScreen = () => {
             >
               <Share2 size={20} />
             </button>
+            <button
+              onClick={() => setShowTapCard(true)}
+              className="flex-1 py-3 flex items-center justify-center transition-colors border-b-2 border-transparent text-muted-foreground hover:text-primary"
+            >
+              <Smartphone size={20} />
+            </button>
           </div>
         </div>
 
