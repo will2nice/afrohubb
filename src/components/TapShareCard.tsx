@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   Smartphone,
   QrCode,
@@ -9,6 +9,8 @@ import {
   X,
   Nfc,
   ArrowRight,
+  Download,
+  Image as ImageIcon,
 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useReferralCode, getReferralBadge } from "@/hooks/useReferrals";
