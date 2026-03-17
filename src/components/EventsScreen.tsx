@@ -307,6 +307,8 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
 
                 {/* Add-ons preview */}
                 <EventAddOns eventId={event.id} />
+
+                <div className="flex items-center justify-between mt-4">
                   <button
                     onClick={async () => {
                       const text = `🎫 ${event.title} — ${event.date}${event.venue ? ` at ${event.venue}` : ""}`;
