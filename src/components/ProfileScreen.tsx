@@ -36,7 +36,9 @@ const stats = [
 
 const menuItems = [
   { icon: Edit3, label: "Edit Profile", desc: "Photos, bio, prompts" },
+  { icon: Ticket, label: "My Tickets", desc: "QR codes, reservations", action: "mytickets" },
   { icon: Ticket, label: "Promoter Dashboard", desc: "Tickets, sales, payouts", action: "promoter" },
+  { icon: Users, label: "Check-In", desc: "Scan QR, manage attendance", action: "checkin" },
   { icon: Heart, label: "Preferences", desc: "Matching, filters" },
   { icon: Shield, label: "Safety & Privacy", desc: "Blocking, visibility" },
   { icon: BookOpen, label: "Community Guidelines", desc: "Our community standards", action: "guidelines" },
