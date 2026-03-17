@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useScreenView } from "@/hooks/useAnalytics";
+import TableBookingSheet from "@/components/TableBookingSheet";
 import { trackEvent } from "@/lib/posthog";
 import { trackEventViewed } from "@/lib/analytics";
 import { Search, MapPin, Calendar, Users, Share2, Ticket, Eye, UserCheck, Plus, Download, Loader2, ExternalLink, X, CheckCircle, XCircle } from "lucide-react";
@@ -44,6 +45,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const [showCreateEvent, setShowCreateEvent] = useState(false);
   const [rsvpDialogEvent, setRsvpDialogEvent] = useState<EventItem | null>(null);
   const [ticketEvent, setTicketEvent] = useState<{ id: string; title: string } | null>(null);
+  const [tableEvent, setTableEvent] = useState<{ id: string; title: string } | null>(null);
   const { events: dbEvents } = useEvents(selectedCity.id);
   const { importEvents, importing } = useEventbriteImport();
 
@@ -252,6 +254,14 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
                     <Share2 size={16} className="text-muted-foreground" />
                   </button>
                   <div className="flex items-center gap-2">
+                    {(event as any).dbId && (
+                      <button
+                        onClick={() => setTableEvent({ id: (event as any).dbId, title: event.title })}
+                        className="px-3 py-2 rounded-full text-xs font-semibold bg-secondary text-foreground border border-border hover:bg-muted transition-all flex items-center gap-1"
+                      >
+                        <Users size={12} /> Table
+                      </button>
+                    )}
                     {isGoing ? (
                       <button
                         onClick={() => { setRsvpEvents(prev => { const n = new Set(prev); n.delete(event.id); return n; }); }}
@@ -350,6 +360,14 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
           eventTitle={ticketEvent.title}
           open={!!ticketEvent}
           onClose={() => setTicketEvent(null)}
+        />
+      )}
+      {tableEvent && (
+        <TableBookingSheet
+          eventId={tableEvent.id}
+          eventTitle={tableEvent.title}
+          open={!!tableEvent}
+          onClose={() => setTableEvent(null)}
         />
       )}
     </div>

@@ -3,6 +3,8 @@ import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, L
 import InviteFriends from "@/components/InviteFriends";
 import { useNavigate } from "react-router-dom";
 import PromoterDashboard from "@/components/PromoterDashboard";
+import MyTicketsScreen from "@/components/MyTicketsScreen";
+import CheckInScreen from "@/components/CheckInScreen";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
@@ -36,7 +38,9 @@ const stats = [
 
 const menuItems = [
   { icon: Edit3, label: "Edit Profile", desc: "Photos, bio, prompts" },
+  { icon: Ticket, label: "My Tickets", desc: "QR codes, reservations", action: "mytickets" },
   { icon: Ticket, label: "Promoter Dashboard", desc: "Tickets, sales, payouts", action: "promoter" },
+  { icon: Users, label: "Check-In", desc: "Scan QR, manage attendance", action: "checkin" },
   { icon: Heart, label: "Preferences", desc: "Matching, filters" },
   { icon: Shield, label: "Safety & Privacy", desc: "Blocking, visibility" },
   { icon: BookOpen, label: "Community Guidelines", desc: "Our community standards", action: "guidelines" },
@@ -144,6 +148,8 @@ const ProfileScreen = () => {
 
   const [showSubscription, setShowSubscription] = useState(false);
   const [showPromoter, setShowPromoter] = useState(false);
+  const [showMyTickets, setShowMyTickets] = useState(false);
+  const [showCheckIn, setShowCheckIn] = useState(false);
 
   const handleMenuAction = async (action?: string) => {
     if (action === "logout") {
@@ -154,6 +160,10 @@ const ProfileScreen = () => {
       setShowSubscription(true);
     } else if (action === "promoter") {
       setShowPromoter(true);
+    } else if (action === "mytickets") {
+      setShowMyTickets(true);
+    } else if (action === "checkin") {
+      setShowCheckIn(true);
     } else if (action === "guidelines") {
       navigate("/community-guidelines");
     }
@@ -161,6 +171,12 @@ const ProfileScreen = () => {
 
   if (showPromoter) {
     return <PromoterDashboard onBack={() => setShowPromoter(false)} />;
+  }
+  if (showMyTickets) {
+    return <MyTicketsScreen onBack={() => setShowMyTickets(false)} />;
+  }
+  if (showCheckIn) {
+    return <CheckInScreen onBack={() => setShowCheckIn(false)} />;
   }
 
   const displayName = profile?.display_name || "Your Name";
