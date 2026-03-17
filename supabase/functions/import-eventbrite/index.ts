@@ -89,6 +89,15 @@ const CITY_NORMALIZE: Record<string, string> = {
   la: "losangeles",
 };
 
+function sanitizeForAI(text: string): string {
+  return text
+    .replace(/```/g, '')
+    .replace(/(system|user|assistant):/gi, '')
+    .replace(/<script[^>]*>.*?<\/script>/gi, '')
+    .replace(/javascript:/gi, '')
+    .substring(0, 8000);
+}
+
 const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
 Deno.serve(async (req) => {
@@ -97,12 +106,22 @@ Deno.serve(async (req) => {
   }
 
   try {
+    // Auth: require admin role
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) return new Response(JSON.stringify({ error: "Unauthorized" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const userClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authHeader } } });
+    const { data: { user }, error: authError } = await userClient.auth.getUser();
+    if (authError || !user) return new Response(JSON.stringify({ error: "Invalid token" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const { data: isAdmin } = await userClient.rpc("has_role", { _user_id: user.id, _role: "admin" });
+    if (!isAdmin) return new Response(JSON.stringify({ error: "Admin access required" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+
     const FIRECRAWL_KEY = Deno.env.get("FIRECRAWL_API_KEY");
     if (!FIRECRAWL_KEY) throw new Error("FIRECRAWL_API_KEY is not configured");
     const LOVABLE_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -175,7 +194,7 @@ Deno.serve(async (req) => {
           },
           {
             role: "user",
-            content: `Extract all events from this Eventbrite search results page. Return a JSON object with an "events" array. Each event should have: title, date (ISO 8601 format like 2025-03-15T20:00:00), location (venue name), price (string like "Free" or "$25"), url (eventbrite URL if found), image_url (if found). Only include actual events, not ads or navigation. Here is the page content:\n\n${markdown.substring(0, 8000)}`
+            content: `Extract all events from this Eventbrite search results page. Return a JSON object with an "events" array. Each event should have: title, date (ISO 8601 format like 2025-03-15T20:00:00), location (venue name), price (string like "Free" or "$25"), url (eventbrite URL if found), image_url (if found). Only include actual events, not ads or navigation. Content is between [START] and [END] markers.\n\n[START]\n${sanitizeForAI(markdown)}\n[END]`
           }
         ],
         temperature: 0,

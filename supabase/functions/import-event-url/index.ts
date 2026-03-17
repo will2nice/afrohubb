@@ -6,6 +6,10 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+function sanitizeForAI(text: string): string {
+  return text.replace(/```/g, '').replace(/(system|user|assistant):/gi, '').replace(/<script[^>]*>.*?<\/script>/gi, '').replace(/javascript:/gi, '').substring(0, 8000);
+}
+
 const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const FIRECRAWL_API = "https://api.firecrawl.dev/v1/scrape";
 
@@ -85,7 +89,7 @@ Deno.serve(async (req) => {
 
 Return ONLY valid JSON, no markdown formatting.`,
           },
-          { role: "user", content: markdown.substring(0, 8000) },
+          { role: "user", content: `[START]\n${sanitizeForAI(markdown)}\n[END]` },
         ],
         temperature: 0.1,
         max_tokens: 1000,
