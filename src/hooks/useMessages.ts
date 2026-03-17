@@ -196,51 +196,15 @@ export const useMessages = (conversationId?: string) => {
   const startConversation = async (otherUserId: string): Promise<string> => {
     if (!user) throw new Error("Not authenticated");
 
-    // Check if DM already exists with this user
-    const { data: myMemberships } = await supabase
-      .from("conversation_members")
-      .select("conversation_id")
-      .eq("user_id", user.id);
+    // Use secure RPC to create or find existing DM conversation
+    const { data: convId, error } = await supabase.rpc("create_dm_conversation", {
+      _other_user_id: otherUserId,
+    });
 
-    if (myMemberships?.length) {
-      const convIds = myMemberships.map((m: any) => m.conversation_id);
-      const { data: sharedMemberships } = await supabase
-        .from("conversation_members")
-        .select("conversation_id")
-        .eq("user_id", otherUserId)
-        .in("conversation_id", convIds);
-
-      if (sharedMemberships?.length) {
-        // Check if any shared conversation is a DM
-        const { data: existingDMs } = await supabase
-          .from("conversations")
-          .select("id")
-          .in("id", sharedMemberships.map((m: any) => m.conversation_id))
-          .eq("type", "dm")
-          .limit(1);
-        if (existingDMs?.length) {
-          return existingDMs[0].id;
-        }
-      }
-    }
-
-    // Create new conversation
-    const { data: conv, error: cErr } = await supabase
-      .from("conversations")
-      .insert({ type: "dm" })
-      .select()
-      .single();
-    if (cErr) throw cErr;
-
-    // Add both members
-    const { error: mErr } = await supabase.from("conversation_members").insert([
-      { conversation_id: conv.id, user_id: user.id },
-      { conversation_id: conv.id, user_id: otherUserId },
-    ]);
-    if (mErr) throw mErr;
+    if (error) throw error;
 
     queryClient.invalidateQueries({ queryKey: ["conversations"] });
-    return conv.id;
+    return convId;
   };
 
   return {
