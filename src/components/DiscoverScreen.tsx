@@ -513,6 +513,7 @@ const DiscoverScreen = ({ selectedCity, onCityChange, onOpenDM, onNavigate }: Di
 
       <CityConciergeChat city={selectedCity} open={showConcierge} onClose={() => setShowConcierge(false)} />
     </div>
+  );
 };
 
 /* ─── Person Card ─── */
