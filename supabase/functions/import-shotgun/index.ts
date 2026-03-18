@@ -40,7 +40,7 @@ Deno.serve(async (req) => {
     let keyword = "afrobeats";
     try {
       const body = await req.json();
-      if (body.city) city = body.city;
+      if (body.city) city = body.city.toLowerCase().replace(/[\s\-_]+/g, "");
       if (body.keyword) keyword = body.keyword;
     } catch { /* defaults */ }
 
