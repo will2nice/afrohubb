@@ -177,7 +177,7 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   };
 
   const handleMessage = async (person: Attendee | SoundclashAttendee) => {
-    if (!isPaid) { setShowSubscription(true); return; }
+    if (!canSeeProfiles) { toast({ title: "Ticket required 🎟️", description: "Get your ticket to connect with attendees." }); return; }
     if (!user) { toast({ title: "Sign in first", variant: "destructive" }); return; }
 
     const personId = String(person.id);
