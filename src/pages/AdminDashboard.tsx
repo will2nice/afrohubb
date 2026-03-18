@@ -7,9 +7,10 @@ import {
   Users, LogOut, ArrowLeft, Search, Trash2,
   TrendingUp, Gift, Clock, RefreshCw, Instagram, MapPin, Filter,
   Flag, ShieldBan, CheckCircle, XCircle, AlertTriangle,
-  BarChart3, Activity, Percent, Globe
+  BarChart3, Activity, Percent, Globe, DollarSign
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import RevenueAnalytics from "@/components/RevenueAnalytics";
 
 interface WaitlistEntry {
   id: string;
@@ -46,7 +47,7 @@ interface EventCount { event_name: string; count: number; }
 interface RetentionEntry { period: string; retention_pct: number | null; }
 interface CityEntry { city: string; user_count: number; }
 
-type AdminTab = "waitlist" | "moderation" | "analytics";
+type AdminTab = "waitlist" | "moderation" | "analytics" | "revenue";
 
 const AdminDashboard = () => {
   const { signOut } = useAuth();
@@ -187,7 +188,7 @@ const AdminDashboard = () => {
       {/* Tab bar */}
       <div className="max-w-2xl mx-auto px-4 pt-4">
         <div className="flex gap-1 bg-secondary rounded-xl p-1">
-          {(["waitlist", "moderation", "analytics"] as AdminTab[]).map((tab) => (
+          {(["waitlist", "moderation", "analytics", "revenue"] as AdminTab[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -357,8 +358,9 @@ const AdminDashboard = () => {
               )}
             </div>
           </>
+        ) : activeTab === "revenue" ? (
+          <RevenueAnalytics />
         ) : (
-          /* ─── ANALYTICS TAB ─── */
           <>
             {analyticsLoading ? (
               <div className="text-center py-12 text-muted-foreground text-sm">Loading analytics...</div>
