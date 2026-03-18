@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Bot, Send, X, Sparkles, Trash2 } from "lucide-react";
+import VoiceInputButton from "@/components/VoiceInputButton";
 import { Button } from "@/components/ui/button";
 import { type City } from "@/data/cityData";
 import { supabase } from "@/integrations/supabase/client";
