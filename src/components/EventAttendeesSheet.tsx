@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Heart, MessageCircle, Users, Sparkles, Lock, Crown, Megaphone, Send, Clock, Check } from "lucide-react";
+import { X, Heart, MessageCircle, Users, Sparkles, Lock, Crown, Megaphone, Send, Clock, Check, Ticket } from "lucide-react";
 import { type EventItem, SOUNDCLASH_EVENT_ID } from "@/data/cityData";
 import { getEventAttendees, type Attendee, ON_APP_WOMEN, ON_APP_MEN, ON_APP_TOTAL, TOTAL_ATTENDING, FREE_ATTENDEE_LIMIT } from "@/data/eventAttendees";
 import { getSoundclashAttendees, SOUNDCLASH_TOTAL, SOUNDCLASH_ON_APP, SOUNDCLASH_WOMEN, SOUNDCLASH_MEN, type SoundclashAttendee } from "@/data/soundclashAttendees";
@@ -13,6 +13,7 @@ import { useLikeRequests } from "@/hooks/useLikeRequests";
 import { useMessages } from "@/hooks/useMessages";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useQuery } from "@tanstack/react-query";
 
 interface EventAttendeesSheetProps {
   event: EventItem;
@@ -45,6 +46,35 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   const soundclashData = isSoundclash ? getSoundclashAttendees() : null;
   const isPaid = userRole === "admin";
 
+  // Check if user has a ticket (order) for this event
+  const eventIdStr = String(event.id);
+  const { data: hasTicket } = useQuery({
+    queryKey: ["user_has_ticket", eventIdStr, user?.id],
+    queryFn: async () => {
+      if (!user || !isUuid(eventIdStr)) return false;
+      const { data, error } = await supabase
+        .from("orders")
+        .select("id")
+        .eq("event_id", eventIdStr)
+        .eq("user_id", user.id)
+        .eq("status", "paid")
+        .limit(1);
+      if (error) return false;
+      // Also check RSVPs as a fallback for free events
+      if (data && data.length > 0) return true;
+      const { data: rsvp } = await supabase
+        .from("event_rsvps")
+        .select("id")
+        .eq("event_id", eventIdStr)
+        .eq("user_id", user.id)
+        .limit(1);
+      return !!(rsvp && rsvp.length > 0);
+    },
+    enabled: !!user && isUuid(eventIdStr),
+  });
+
+  // User can see full profiles if they have a ticket, are a promoter, or are admin
+  const canSeeProfiles = hasTicket || isPromoter || isPaid;
   // Fetch broadcasts
   useEffect(() => {
     const fetchBroadcasts = async () => {
