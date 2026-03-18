@@ -188,7 +188,7 @@ const AdminDashboard = () => {
       {/* Tab bar */}
       <div className="max-w-2xl mx-auto px-4 pt-4">
         <div className="flex gap-1 bg-secondary rounded-xl p-1">
-          {(["waitlist", "moderation", "analytics"] as AdminTab[]).map((tab) => (
+          {(["waitlist", "moderation", "analytics", "revenue"] as AdminTab[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
