@@ -358,8 +358,9 @@ const AdminDashboard = () => {
               )}
             </div>
           </>
+        ) : activeTab === "revenue" ? (
+          <RevenueAnalytics />
         ) : (
-          /* ─── ANALYTICS TAB ─── */
           <>
             {analyticsLoading ? (
               <div className="text-center py-12 text-muted-foreground text-sm">Loading analytics...</div>
