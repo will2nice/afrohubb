@@ -127,8 +127,8 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
     filter === "men" ? males :
     [...females, ...males].sort((a: any, b: any) => (b.mutualFriends || 0) - (a.mutualFriends || 0));
 
-  const visibleAttendees = isPaid ? allAttendees : allAttendees.slice(0, FREE_ATTENDEE_LIMIT);
-  const hiddenCount = isPaid ? 0 : Math.max(0, allAttendees.length - FREE_ATTENDEE_LIMIT);
+  const visibleAttendees = canSeeProfiles ? allAttendees : allAttendees;
+  const hiddenCount = 0; // Everyone can see the list, but photos are blurred without ticket
 
   const formattedAttending = totalAttending >= 1000
     ? `${(totalAttending / 1000).toFixed(1)}K`
