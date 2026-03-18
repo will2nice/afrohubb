@@ -47,7 +47,7 @@ interface EventCount { event_name: string; count: number; }
 interface RetentionEntry { period: string; retention_pct: number | null; }
 interface CityEntry { city: string; user_count: number; }
 
-type AdminTab = "waitlist" | "moderation" | "analytics";
+type AdminTab = "waitlist" | "moderation" | "analytics" | "revenue";
 
 const AdminDashboard = () => {
   const { signOut } = useAuth();
