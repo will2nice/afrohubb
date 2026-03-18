@@ -7,9 +7,10 @@ import {
   Users, LogOut, ArrowLeft, Search, Trash2,
   TrendingUp, Gift, Clock, RefreshCw, Instagram, MapPin, Filter,
   Flag, ShieldBan, CheckCircle, XCircle, AlertTriangle,
-  BarChart3, Activity, Percent, Globe
+  BarChart3, Activity, Percent, Globe, DollarSign
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
+import RevenueAnalytics from "@/components/RevenueAnalytics";
 
 interface WaitlistEntry {
   id: string;
