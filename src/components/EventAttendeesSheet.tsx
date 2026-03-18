@@ -366,7 +366,7 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
 
 const AttendeeCard = ({
   person,
-  isPaid,
+  canSeeProfiles,
   likeStatus,
   onPhotoClick,
   onLike,
@@ -374,7 +374,7 @@ const AttendeeCard = ({
   onLikeBlocked,
 }: {
   person: Attendee | SoundclashAttendee;
-  isPaid: boolean;
+  canSeeProfiles: boolean;
   likeStatus: "none" | "sent" | "received" | "matched";
   onPhotoClick: () => void;
   onLike: () => void;
@@ -383,52 +383,56 @@ const AttendeeCard = ({
 }) => {
   return (
     <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-2xl border border-border">
-      {/* Clickable photo */}
-      <button onClick={onPhotoClick} className="shrink-0 focus:outline-none">
+      {/* Photo — blurred if no ticket */}
+      <button onClick={onPhotoClick} className="shrink-0 focus:outline-none relative">
         <img
           src={person.photo}
           alt={person.name}
-          className="w-16 h-16 rounded-xl object-cover ring-2 ring-border hover:ring-primary transition-all cursor-pointer active:scale-95"
+          className={`w-16 h-16 rounded-xl object-cover ring-2 ring-border transition-all cursor-pointer active:scale-95 ${
+            canSeeProfiles ? "hover:ring-primary" : "blur-lg"
+          }`}
         />
+        {!canSeeProfiles && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Lock size={16} className="text-muted-foreground" />
+          </div>
+        )}
       </button>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          {isPaid ? (
-            <h3 className="font-semibold text-foreground text-sm">{person.name}, {person.age}</h3>
-          ) : (
-            <div className="flex items-center gap-1.5">
-              <div className="w-16 h-4 rounded bg-muted animate-pulse" />
-              <Lock size={12} className="text-muted-foreground" />
-            </div>
-          )}
-          {isPaid && (
+          {/* Names always visible, age hidden without ticket */}
+          <h3 className="font-semibold text-foreground text-sm">
+            {person.name}{canSeeProfiles ? `, ${person.age}` : ""}
+          </h3>
+          {canSeeProfiles && (
             <span className="px-2 py-0.5 rounded-full bg-card text-[10px] font-medium text-muted-foreground border border-border">
               {person.vibe}
             </span>
           )}
         </div>
-        {isPaid ? (
+        {canSeeProfiles ? (
           <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{person.bio}</p>
         ) : (
-          <p className="text-xs text-muted-foreground mt-0.5 italic">Profile hidden</p>
+          <p className="text-xs text-muted-foreground mt-0.5 italic flex items-center gap-1">
+            <Ticket size={10} /> Get ticket to view profile
+          </p>
         )}
         <div className="flex items-center gap-3 mt-1">
-          {isPaid && <span className="text-[10px] text-muted-foreground">📍 {person.distance}</span>}
-          {isPaid && person.mutualFriends > 0 && (
+          {canSeeProfiles && <span className="text-[10px] text-muted-foreground">📍 {person.distance}</span>}
+          {canSeeProfiles && person.mutualFriends > 0 && (
             <span className="text-[10px] text-primary font-medium">👥 {person.mutualFriends} mutual</span>
           )}
-          {/* Like status indicator */}
-          {isPaid && likeStatus === "sent" && (
+          {canSeeProfiles && likeStatus === "sent" && (
             <span className="text-[10px] text-primary font-medium flex items-center gap-0.5">
               <Clock size={10} /> Pending
             </span>
           )}
-          {isPaid && likeStatus === "received" && (
+          {canSeeProfiles && likeStatus === "received" && (
             <span className="text-[10px] text-primary font-medium flex items-center gap-0.5">
               <Heart size={10} className="fill-primary" /> Likes you!
             </span>
           )}
-          {isPaid && likeStatus === "matched" && (
+          {canSeeProfiles && likeStatus === "matched" && (
             <span className="text-[10px] font-medium flex items-center gap-0.5 text-green-500">
               <Check size={10} /> Matched
             </span>
@@ -438,21 +442,21 @@ const AttendeeCard = ({
       <div className="flex flex-col gap-2">
         <button
           onClick={() => {
-            if (!isPaid) { onLikeBlocked(); return; }
+            if (!canSeeProfiles) { onLikeBlocked(); return; }
             onLike();
           }}
           className={`p-2 rounded-full transition-all ${
-            likeStatus === "matched" || likeStatus === "sent" ? "bg-red-500/20" : "hover:bg-secondary"
+            likeStatus === "matched" || likeStatus === "sent" ? "bg-destructive/20" : "hover:bg-secondary"
           }`}
         >
           <Heart
             size={18}
-            className={likeStatus !== "none" ? "text-red-500 fill-red-500" : "text-muted-foreground"}
+            className={likeStatus !== "none" ? "text-destructive fill-destructive" : "text-muted-foreground"}
           />
         </button>
         <button
           onClick={() => {
-            if (!isPaid) { onLikeBlocked(); return; }
+            if (!canSeeProfiles) { onLikeBlocked(); return; }
             onMessage();
           }}
           className={`p-2 rounded-full transition-colors ${
