@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Heart, MessageCircle, Users, Sparkles, Lock, Crown, Megaphone, Send, Clock, Check } from "lucide-react";
+import { X, Heart, MessageCircle, Users, Sparkles, Lock, Crown, Megaphone, Send, Clock, Check, Ticket } from "lucide-react";
 import { type EventItem, SOUNDCLASH_EVENT_ID } from "@/data/cityData";
 import { getEventAttendees, type Attendee, ON_APP_WOMEN, ON_APP_MEN, ON_APP_TOTAL, TOTAL_ATTENDING, FREE_ATTENDEE_LIMIT } from "@/data/eventAttendees";
 import { getSoundclashAttendees, SOUNDCLASH_TOTAL, SOUNDCLASH_ON_APP, SOUNDCLASH_WOMEN, SOUNDCLASH_MEN, type SoundclashAttendee } from "@/data/soundclashAttendees";
@@ -13,6 +13,7 @@ import { useLikeRequests } from "@/hooks/useLikeRequests";
 import { useMessages } from "@/hooks/useMessages";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { useQuery } from "@tanstack/react-query";
 
 interface EventAttendeesSheetProps {
   event: EventItem;
@@ -45,6 +46,35 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   const soundclashData = isSoundclash ? getSoundclashAttendees() : null;
   const isPaid = userRole === "admin";
 
+  // Check if user has a ticket (order) for this event
+  const eventIdStr = String(event.id);
+  const { data: hasTicket } = useQuery({
+    queryKey: ["user_has_ticket", eventIdStr, user?.id],
+    queryFn: async () => {
+      if (!user || !isUuid(eventIdStr)) return false;
+      const { data, error } = await supabase
+        .from("orders")
+        .select("id")
+        .eq("event_id", eventIdStr)
+        .eq("user_id", user.id)
+        .eq("status", "paid")
+        .limit(1);
+      if (error) return false;
+      // Also check RSVPs as a fallback for free events
+      if (data && data.length > 0) return true;
+      const { data: rsvp } = await supabase
+        .from("event_rsvps")
+        .select("id")
+        .eq("event_id", eventIdStr)
+        .eq("user_id", user.id)
+        .limit(1);
+      return !!(rsvp && rsvp.length > 0);
+    },
+    enabled: !!user && isUuid(eventIdStr),
+  });
+
+  // User can see full profiles if they have a ticket, are a promoter, or are admin
+  const canSeeProfiles = hasTicket || isPromoter || isPaid;
   // Fetch broadcasts
   useEffect(() => {
     const fetchBroadcasts = async () => {
@@ -97,8 +127,8 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
     filter === "men" ? males :
     [...females, ...males].sort((a: any, b: any) => (b.mutualFriends || 0) - (a.mutualFriends || 0));
 
-  const visibleAttendees = isPaid ? allAttendees : allAttendees.slice(0, FREE_ATTENDEE_LIMIT);
-  const hiddenCount = isPaid ? 0 : Math.max(0, allAttendees.length - FREE_ATTENDEE_LIMIT);
+  const visibleAttendees = canSeeProfiles ? allAttendees : allAttendees;
+  const hiddenCount = 0; // Everyone can see the list, but photos are blurred without ticket
 
   const formattedAttending = totalAttending >= 1000
     ? `${(totalAttending / 1000).toFixed(1)}K`
@@ -118,7 +148,7 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   };
 
   const handleLike = (person: Attendee | SoundclashAttendee) => {
-    if (!isPaid) { setShowSubscription(true); return; }
+    if (!canSeeProfiles) { setShowSubscription(false); toast({ title: "Ticket required 🎟️", description: "Get your ticket to see who's attending and connect." }); return; }
     if (!user) { toast({ title: "Sign in to like", variant: "destructive" }); return; }
 
     const personId = String(person.id);
@@ -147,7 +177,7 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   };
 
   const handleMessage = async (person: Attendee | SoundclashAttendee) => {
-    if (!isPaid) { setShowSubscription(true); return; }
+    if (!canSeeProfiles) { toast({ title: "Ticket required 🎟️", description: "Get your ticket to connect with attendees." }); return; }
     if (!user) { toast({ title: "Sign in first", variant: "destructive" }); return; }
 
     const personId = String(person.id);
@@ -279,6 +309,18 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
 
         {/* Attendees list */}
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 pb-24">
+          {/* Ticket gate banner */}
+          {!canSeeProfiles && (
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-primary/10 border border-primary/20 mb-2">
+              <Ticket size={24} className="text-primary shrink-0" />
+              <div className="flex-1">
+                <p className="font-semibold text-foreground text-sm">Get your ticket to unlock</p>
+                <p className="text-xs text-muted-foreground mt-0.5">See full profiles, photos, and connect with attendees</p>
+              </div>
+              <Lock size={16} className="text-muted-foreground shrink-0" />
+            </div>
+          )}
+
           {visibleAttendees.map((person) => {
             const personId = String(person.id);
             const status = getLikeStatus(personId);
@@ -287,39 +329,15 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
               <AttendeeCard
                 key={person.id}
                 person={person}
-                isPaid={isPaid}
+                canSeeProfiles={canSeeProfiles}
                 likeStatus={status}
-                onPhotoClick={() => setViewingProfile(person)}
+                onPhotoClick={() => { if (canSeeProfiles) setViewingProfile(person); else toast({ title: "Ticket required 🎟️", description: "Get your ticket to view profiles." }); }}
                 onLike={() => handleLike(person)}
                 onMessage={() => handleMessage(person)}
-                onLikeBlocked={() => { if (!isPaid) setShowSubscription(true); }}
+                onLikeBlocked={() => { toast({ title: "Ticket required 🎟️", description: "Get your ticket to connect." }); }}
               />
             );
           })}
-
-          {/* Paywall */}
-          {hiddenCount > 0 && (
-            <div className="relative mt-4">
-              <div className="space-y-3 blur-md pointer-events-none select-none">
-                {allAttendees.slice(FREE_ATTENDEE_LIMIT, FREE_ATTENDEE_LIMIT + 3).map((person) => (
-                  <AttendeeCard key={person.id} person={person} isPaid={true} likeStatus="none" onPhotoClick={() => {}} onLike={() => {}} onMessage={() => {}} onLikeBlocked={() => {}} />
-                ))}
-              </div>
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/60 backdrop-blur-sm rounded-2xl">
-                <Crown size={32} className="text-primary mb-2" />
-                <p className="font-display font-bold text-foreground text-base">+{hiddenCount.toLocaleString()} more people</p>
-                <p className="text-xs text-muted-foreground mt-1 text-center px-8">
-                  Upgrade to AfroHub Plus to see all attendees, names, ages & connect
-                </p>
-                <button
-                  onClick={() => setShowSubscription(true)}
-                  className="mt-3 px-6 py-2.5 rounded-full gradient-gold text-primary-foreground text-sm font-semibold shadow-gold hover:scale-105 active:scale-95 transition-transform"
-                >
-                  Unlock AfroHub Plus 👑
-                </button>
-              </div>
-            </div>
-          )}
 
           {visibleAttendees.length === 0 && (
             <div className="text-center py-12">
@@ -348,7 +366,7 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
 
 const AttendeeCard = ({
   person,
-  isPaid,
+  canSeeProfiles,
   likeStatus,
   onPhotoClick,
   onLike,
@@ -356,7 +374,7 @@ const AttendeeCard = ({
   onLikeBlocked,
 }: {
   person: Attendee | SoundclashAttendee;
-  isPaid: boolean;
+  canSeeProfiles: boolean;
   likeStatus: "none" | "sent" | "received" | "matched";
   onPhotoClick: () => void;
   onLike: () => void;
@@ -365,52 +383,56 @@ const AttendeeCard = ({
 }) => {
   return (
     <div className="flex items-center gap-3 p-3 bg-secondary/50 rounded-2xl border border-border">
-      {/* Clickable photo */}
-      <button onClick={onPhotoClick} className="shrink-0 focus:outline-none">
+      {/* Photo — blurred if no ticket */}
+      <button onClick={onPhotoClick} className="shrink-0 focus:outline-none relative">
         <img
           src={person.photo}
           alt={person.name}
-          className="w-16 h-16 rounded-xl object-cover ring-2 ring-border hover:ring-primary transition-all cursor-pointer active:scale-95"
+          className={`w-16 h-16 rounded-xl object-cover ring-2 ring-border transition-all cursor-pointer active:scale-95 ${
+            canSeeProfiles ? "hover:ring-primary" : "blur-lg"
+          }`}
         />
+        {!canSeeProfiles && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Lock size={16} className="text-muted-foreground" />
+          </div>
+        )}
       </button>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          {isPaid ? (
-            <h3 className="font-semibold text-foreground text-sm">{person.name}, {person.age}</h3>
-          ) : (
-            <div className="flex items-center gap-1.5">
-              <div className="w-16 h-4 rounded bg-muted animate-pulse" />
-              <Lock size={12} className="text-muted-foreground" />
-            </div>
-          )}
-          {isPaid && (
+          {/* Names always visible, age hidden without ticket */}
+          <h3 className="font-semibold text-foreground text-sm">
+            {person.name}{canSeeProfiles ? `, ${person.age}` : ""}
+          </h3>
+          {canSeeProfiles && (
             <span className="px-2 py-0.5 rounded-full bg-card text-[10px] font-medium text-muted-foreground border border-border">
               {person.vibe}
             </span>
           )}
         </div>
-        {isPaid ? (
+        {canSeeProfiles ? (
           <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{person.bio}</p>
         ) : (
-          <p className="text-xs text-muted-foreground mt-0.5 italic">Profile hidden</p>
+          <p className="text-xs text-muted-foreground mt-0.5 italic flex items-center gap-1">
+            <Ticket size={10} /> Get ticket to view profile
+          </p>
         )}
         <div className="flex items-center gap-3 mt-1">
-          {isPaid && <span className="text-[10px] text-muted-foreground">📍 {person.distance}</span>}
-          {isPaid && person.mutualFriends > 0 && (
+          {canSeeProfiles && <span className="text-[10px] text-muted-foreground">📍 {person.distance}</span>}
+          {canSeeProfiles && person.mutualFriends > 0 && (
             <span className="text-[10px] text-primary font-medium">👥 {person.mutualFriends} mutual</span>
           )}
-          {/* Like status indicator */}
-          {isPaid && likeStatus === "sent" && (
+          {canSeeProfiles && likeStatus === "sent" && (
             <span className="text-[10px] text-primary font-medium flex items-center gap-0.5">
               <Clock size={10} /> Pending
             </span>
           )}
-          {isPaid && likeStatus === "received" && (
+          {canSeeProfiles && likeStatus === "received" && (
             <span className="text-[10px] text-primary font-medium flex items-center gap-0.5">
               <Heart size={10} className="fill-primary" /> Likes you!
             </span>
           )}
-          {isPaid && likeStatus === "matched" && (
+          {canSeeProfiles && likeStatus === "matched" && (
             <span className="text-[10px] font-medium flex items-center gap-0.5 text-green-500">
               <Check size={10} /> Matched
             </span>
@@ -420,21 +442,21 @@ const AttendeeCard = ({
       <div className="flex flex-col gap-2">
         <button
           onClick={() => {
-            if (!isPaid) { onLikeBlocked(); return; }
+            if (!canSeeProfiles) { onLikeBlocked(); return; }
             onLike();
           }}
           className={`p-2 rounded-full transition-all ${
-            likeStatus === "matched" || likeStatus === "sent" ? "bg-red-500/20" : "hover:bg-secondary"
+            likeStatus === "matched" || likeStatus === "sent" ? "bg-destructive/20" : "hover:bg-secondary"
           }`}
         >
           <Heart
             size={18}
-            className={likeStatus !== "none" ? "text-red-500 fill-red-500" : "text-muted-foreground"}
+            className={likeStatus !== "none" ? "text-destructive fill-destructive" : "text-muted-foreground"}
           />
         </button>
         <button
           onClick={() => {
-            if (!isPaid) { onLikeBlocked(); return; }
+            if (!canSeeProfiles) { onLikeBlocked(); return; }
             onMessage();
           }}
           className={`p-2 rounded-full transition-colors ${
