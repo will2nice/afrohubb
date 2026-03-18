@@ -217,6 +217,10 @@ const ConciergeScreen = ({ selectedCity, onBack }: Props) => {
           onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
           className="flex gap-2"
         >
+          <VoiceInputButton
+            onTranscript={(text) => setInput((prev) => (prev ? prev + " " + text : text))}
+            disabled={streaming}
+          />
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
