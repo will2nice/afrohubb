@@ -506,6 +506,111 @@ const userLocationIcon = new L.DivIcon({
   iconAnchor: [9, 9],
 });
 
+// Country bounding boxes: [southLat, westLng, northLat, eastLng]
+const countryBounds: Record<string, { name: string; bounds: [[number, number], [number, number]] }> = {
+  US: { name: "United States", bounds: [[24.5, -125.0], [49.5, -66.5]] },
+  CA: { name: "Canada", bounds: [[41.7, -141.0], [83.1, -52.6]] },
+  GB: { name: "United Kingdom", bounds: [[49.9, -8.6], [60.8, 1.8]] },
+  FR: { name: "France", bounds: [[41.3, -5.1], [51.1, 9.6]] },
+  DE: { name: "Germany", bounds: [[47.3, 5.9], [55.1, 15.0]] },
+  ES: { name: "Spain", bounds: [[36.0, -9.3], [43.8, 3.3]] },
+  PT: { name: "Portugal", bounds: [[36.9, -9.5], [42.2, -6.2]] },
+  NL: { name: "Netherlands", bounds: [[50.8, 3.4], [53.5, 7.2]] },
+  BE: { name: "Belgium", bounds: [[49.5, 2.5], [51.5, 6.4]] },
+  IT: { name: "Italy", bounds: [[36.6, 6.6], [47.1, 18.5]] },
+  SE: { name: "Sweden", bounds: [[55.3, 11.1], [69.1, 24.2]] },
+  NO: { name: "Norway", bounds: [[58.0, 4.5], [71.2, 31.2]] },
+  DK: { name: "Denmark", bounds: [[54.6, 8.1], [57.8, 12.7]] },
+  FI: { name: "Finland", bounds: [[59.8, 20.6], [70.1, 31.6]] },
+  IE: { name: "Ireland", bounds: [[51.4, -10.5], [55.4, -6.0]] },
+  AT: { name: "Austria", bounds: [[46.4, 9.5], [49.0, 17.2]] },
+  CH: { name: "Switzerland", bounds: [[45.8, 5.9], [47.8, 10.5]] },
+  TR: { name: "Turkey", bounds: [[36.0, 26.0], [42.1, 45.0]] },
+  GR: { name: "Greece", bounds: [[34.8, 19.4], [41.7, 29.6]] },
+  NG: { name: "Nigeria", bounds: [[4.3, 2.7], [13.9, 14.7]] },
+  GH: { name: "Ghana", bounds: [[4.7, -3.3], [11.2, 1.2]] },
+  KE: { name: "Kenya", bounds: [[-4.7, 33.9], [5.0, 41.9]] },
+  ZA: { name: "South Africa", bounds: [[-34.8, 16.5], [-22.1, 32.9]] },
+  ET: { name: "Ethiopia", bounds: [[3.4, 33.0], [14.9, 48.0]] },
+  TZ: { name: "Tanzania", bounds: [[-11.7, 29.3], [-1.0, 40.4]] },
+  EG: { name: "Egypt", bounds: [[22.0, 24.7], [31.7, 36.9]] },
+  SN: { name: "Senegal", bounds: [[12.3, -17.5], [16.7, -11.4]] },
+  CM: { name: "Cameroon", bounds: [[1.7, 8.5], [13.1, 16.2]] },
+  CI: { name: "Côte d'Ivoire", bounds: [[4.4, -8.6], [10.7, -2.5]] },
+  CD: { name: "DR Congo", bounds: [[-13.5, 12.2], [5.4, 31.3]] },
+  UG: { name: "Uganda", bounds: [[-1.5, 29.6], [4.2, 35.0]] },
+  RW: { name: "Rwanda", bounds: [[-2.8, 28.9], [-1.1, 30.9]] },
+  MA: { name: "Morocco", bounds: [[27.7, -13.2], [35.9, -1.0]] },
+  AU: { name: "Australia", bounds: [[-43.6, 113.2], [-10.7, 153.6]] },
+  BR: { name: "Brazil", bounds: [[-33.8, -73.9], [5.3, -34.8]] },
+  JM: { name: "Jamaica", bounds: [[17.7, -78.4], [18.5, -76.2]] },
+  TT: { name: "Trinidad & Tobago", bounds: [[10.0, -61.9], [10.9, -60.5]] },
+  CO: { name: "Colombia", bounds: [[-4.2, -79.0], [12.5, -66.9]] },
+  PA: { name: "Panama", bounds: [[7.2, -83.1], [9.6, -77.2]] },
+};
+
+// Map city IDs to country codes
+const cityToCountry: Record<string, string> = {
+  austin: "US", dallas: "US", fortworth: "US", arlington: "US", irving: "US", richardson: "US",
+  carrollton: "US", coppell: "US", houston: "US", sanantonio: "US", nyc: "US", atlanta: "US",
+  miami: "US", orlando: "US", philadelphia: "US", raleigh: "US", nashville: "US", memphis: "US",
+  desmoines: "US", minneapolis: "US", milwaukee: "US", seattle: "US", dc: "US", portland: "US",
+  boston: "US", losangeles: "US", sanfrancisco: "US", sandiego: "US", lasvegas: "US", phoenix: "US",
+  scottsdale: "US", denver: "US", chicago: "US", detroit: "US", grandrapids: "US", lansing: "US",
+  cleveland: "US", kansascity: "US", lincoln: "US", omaha: "US", wichita: "US", lubbock: "US",
+  richmond: "US", norfolk: "US", providence: "US", bridgeport: "US", manchester: "US",
+  siouxfalls: "US", fargo: "US", saltlakecity: "US",
+  toronto: "CA", calgary: "CA", montreal: "CA",
+  paris: "FR", bordeaux: "FR",
+  london: "GB", birmingham: "GB", manchesteruk: "GB", liverpool: "GB", nottingham: "GB", oxford: "GB",
+  brussels: "BE", antwerp: "BE",
+  amsterdam: "NL", rotterdam: "NL",
+  barcelona: "ES", madrid: "ES",
+  portimao: "PT", lisbon: "PT",
+  vienna: "AT", zurich: "CH", stockholm: "SE", rome: "IT", positano: "IT",
+  athens: "GR", istanbul: "TR", berlin: "DE", dublin: "IE", copenhagen: "DK", oslo: "NO", helsinki: "FI",
+  sydney: "AU", melbourne: "AU", brisbane: "AU", perth: "AU", adelaide: "AU",
+  rio: "BR", saopaulo: "BR", salvador: "BR",
+  kingston: "JM", portofspain: "TT", panama: "PA", cartagena: "CO", cali: "CO",
+  cairo: "EG", luxor: "EG", nairobi: "KE", daressalaam: "TZ", zanzibar: "TZ",
+  lagos: "NG", abuja: "NG", accra: "GH", dakar: "SN", johannesburg: "ZA", capetown: "ZA",
+  kinshasa: "CD", marrakech: "MA", kampala: "UG", kigali: "RW", abidjan: "CI",
+  addisababa: "ET", douala: "CM", luanda: "US", maputo: "ZA", harare: "ZA",
+};
+
+const CountryZoomButton = () => {
+  const map = useMap();
+
+  const handleZoomToCountry = useCallback(() => {
+    const center = map.getCenter();
+    // Find nearest city to current map center
+    let nearestCity = "nyc";
+    let minDist = Infinity;
+    for (const [cityId, coords] of Object.entries(cityCoords)) {
+      const dist = Math.hypot(center.lat - coords[0], center.lng - coords[1]);
+      if (dist < minDist) { minDist = dist; nearestCity = cityId; }
+    }
+    const countryCode = cityToCountry[nearestCity];
+    const country = countryCode ? countryBounds[countryCode] : null;
+    if (country) {
+      map.fitBounds(country.bounds, { animate: true, padding: [20, 20] });
+    } else {
+      // Fallback: zoom out to level 5
+      map.setZoom(5, { animate: true });
+    }
+  }, [map]);
+
+  return (
+    <button
+      onClick={handleZoomToCountry}
+      className="absolute bottom-48 right-3 z-[1000] p-2.5 rounded-full bg-card/95 backdrop-blur-lg border border-border shadow-lg text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+      title="Zoom to country"
+    >
+      <Globe size={18} />
+    </button>
+  );
+};
+
 const NearMeButton = ({ onLocated }: { onLocated: (lat: number, lng: number) => void }) => {
   const map = useMap();
   const [loading, setLoading] = useState(false);
