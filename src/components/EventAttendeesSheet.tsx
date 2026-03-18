@@ -309,6 +309,18 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
 
         {/* Attendees list */}
         <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 pb-24">
+          {/* Ticket gate banner */}
+          {!canSeeProfiles && (
+            <div className="flex items-center gap-3 p-4 rounded-2xl bg-primary/10 border border-primary/20 mb-2">
+              <Ticket size={24} className="text-primary shrink-0" />
+              <div className="flex-1">
+                <p className="font-semibold text-foreground text-sm">Get your ticket to unlock</p>
+                <p className="text-xs text-muted-foreground mt-0.5">See full profiles, photos, and connect with attendees</p>
+              </div>
+              <Lock size={16} className="text-muted-foreground shrink-0" />
+            </div>
+          )}
+
           {visibleAttendees.map((person) => {
             const personId = String(person.id);
             const status = getLikeStatus(personId);
@@ -317,39 +329,15 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
               <AttendeeCard
                 key={person.id}
                 person={person}
-                isPaid={isPaid}
+                canSeeProfiles={canSeeProfiles}
                 likeStatus={status}
-                onPhotoClick={() => setViewingProfile(person)}
+                onPhotoClick={() => { if (canSeeProfiles) setViewingProfile(person); else toast({ title: "Ticket required 🎟️", description: "Get your ticket to view profiles." }); }}
                 onLike={() => handleLike(person)}
                 onMessage={() => handleMessage(person)}
-                onLikeBlocked={() => { if (!isPaid) setShowSubscription(true); }}
+                onLikeBlocked={() => { toast({ title: "Ticket required 🎟️", description: "Get your ticket to connect." }); }}
               />
             );
           })}
-
-          {/* Paywall */}
-          {hiddenCount > 0 && (
-            <div className="relative mt-4">
-              <div className="space-y-3 blur-md pointer-events-none select-none">
-                {allAttendees.slice(FREE_ATTENDEE_LIMIT, FREE_ATTENDEE_LIMIT + 3).map((person) => (
-                  <AttendeeCard key={person.id} person={person} isPaid={true} likeStatus="none" onPhotoClick={() => {}} onLike={() => {}} onMessage={() => {}} onLikeBlocked={() => {}} />
-                ))}
-              </div>
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/60 backdrop-blur-sm rounded-2xl">
-                <Crown size={32} className="text-primary mb-2" />
-                <p className="font-display font-bold text-foreground text-base">+{hiddenCount.toLocaleString()} more people</p>
-                <p className="text-xs text-muted-foreground mt-1 text-center px-8">
-                  Upgrade to AfroHub Plus to see all attendees, names, ages & connect
-                </p>
-                <button
-                  onClick={() => setShowSubscription(true)}
-                  className="mt-3 px-6 py-2.5 rounded-full gradient-gold text-primary-foreground text-sm font-semibold shadow-gold hover:scale-105 active:scale-95 transition-transform"
-                >
-                  Unlock AfroHub Plus 👑
-                </button>
-              </div>
-            </div>
-          )}
 
           {visibleAttendees.length === 0 && (
             <div className="text-center py-12">
