@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { ArrowLeft, Send, Sparkles, Crown, Bot } from "lucide-react";
+import VoiceInputButton from "@/components/VoiceInputButton";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
