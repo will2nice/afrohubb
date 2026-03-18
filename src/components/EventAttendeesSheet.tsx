@@ -148,7 +148,7 @@ const EventAttendeesSheet = ({ event, onClose }: EventAttendeesSheetProps) => {
   };
 
   const handleLike = (person: Attendee | SoundclashAttendee) => {
-    if (!isPaid) { setShowSubscription(true); return; }
+    if (!canSeeProfiles) { setShowSubscription(false); toast({ title: "Ticket required 🎟️", description: "Get your ticket to see who's attending and connect." }); return; }
     if (!user) { toast({ title: "Sign in to like", variant: "destructive" }); return; }
 
     const personId = String(person.id);
