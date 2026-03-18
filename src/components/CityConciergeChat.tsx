@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Bot, Send, X, Sparkles, Trash2 } from "lucide-react";
+import VoiceInputButton from "@/components/VoiceInputButton";
 import { Button } from "@/components/ui/button";
 import { type City } from "@/data/cityData";
 import { supabase } from "@/integrations/supabase/client";
@@ -216,6 +217,10 @@ const CityConciergeChat = ({ city, open, onClose }: Props) => {
           onSubmit={(e) => { e.preventDefault(); sendMessage(); }}
           className="flex gap-2"
         >
+          <VoiceInputButton
+            onTranscript={(text) => setInput((prev) => (prev ? prev + " " + text : text))}
+            disabled={streaming}
+          />
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
