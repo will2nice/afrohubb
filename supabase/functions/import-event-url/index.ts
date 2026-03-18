@@ -33,7 +33,8 @@ Deno.serve(async (req) => {
     const { data: { user }, error: authError } = await userClient.auth.getUser();
     if (authError || !user) throw new Error("Not authenticated");
 
-    const { url, city } = await req.json();
+    const { url, city: rawCity } = await req.json();
+    const city = rawCity ? rawCity.toLowerCase().replace(/[\s\-_]+/g, "") : "";
     if (!url) throw new Error("URL is required");
 
     // Step 1: Scrape the event page using Firecrawl
