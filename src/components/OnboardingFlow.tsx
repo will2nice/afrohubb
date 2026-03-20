@@ -257,9 +257,9 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
           <div className="animate-fade-in">
             <div className="mb-6">
               <Heart className="text-primary mb-3" size={32} />
-              <h2 className="text-xl font-bold text-foreground mb-1">What are you looking for?</h2>
+              <h2 className="text-xl font-bold text-foreground mb-1">What brings you here?</h2>
               <p className="text-sm text-muted-foreground">
-                Help us understand what matters most to you
+                Whether it's culture, connection, or community — we've got you
               </p>
             </div>
             <div className="space-y-3">
