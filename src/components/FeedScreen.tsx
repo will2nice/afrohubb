@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Search, Heart, MessageCircle, Share2, Bookmark, Users, Play, Volume2, VolumeX, Maximize2, Newspaper, Megaphone, Film, LayoutGrid, AlertTriangle, Send, BookOpen, PenSquare } from "lucide-react";
+import { Search, Heart, MessageCircle, Share2, Bookmark, Users, Play, Volume2, VolumeX, Maximize2, Newspaper, Megaphone, Film, LayoutGrid, AlertTriangle, Send, BookOpen, PenSquare, Calendar, Flame, ArrowRight, Sparkles } from "lucide-react";
 import NotificationCenter, { NotificationBell } from "@/components/NotificationCenter";
 import { feedPosts, type City, type FeedCategory } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
@@ -11,6 +11,9 @@ import CommentSheet from "@/components/CommentSheet";
 import { usePosts, type PostComment } from "@/hooks/usePosts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useScreenView } from "@/hooks/useAnalytics";
+import { usePersonalizedFeed } from "@/hooks/usePersonalizedFeed";
+import { format, parseISO } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // ─── Feed content-type tabs ───
 const feedTabs = [
