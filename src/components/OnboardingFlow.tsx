@@ -178,7 +178,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
             Step {step + 1} of {totalSteps}
           </span>
           <button
-            onClick={handleFinish}
+            onClick={() => { trackOnboardingDropoff(step, STEP_NAMES[step]); handleFinish(); }}
             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             Skip
