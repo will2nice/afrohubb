@@ -194,9 +194,9 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
           <div className="animate-fade-in">
             <div className="mb-6">
               <MapPin className="text-primary mb-3" size={32} />
-              <h2 className="text-xl font-bold text-foreground mb-1">Where are you based?</h2>
+              <h2 className="text-xl font-bold text-foreground mb-1">Where's home right now?</h2>
               <p className="text-sm text-muted-foreground">
-                We'll show you events and people near you
+                We'll connect you with your local Afro-diaspora community
               </p>
             </div>
             <div className="grid grid-cols-2 gap-2">
