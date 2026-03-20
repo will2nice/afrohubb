@@ -59,6 +59,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const totalSteps = 5;
+  const STEP_NAMES = ["location", "interests", "goals", "photo", "background"];
   const progress = ((step + 1) / totalSteps) * 100;
 
   const toggleInterest = (interest: string) => {
