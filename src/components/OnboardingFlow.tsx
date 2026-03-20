@@ -229,9 +229,9 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
           <div className="animate-fade-in">
             <div className="mb-6">
               <Sparkles className="text-primary mb-3" size={32} />
-              <h2 className="text-xl font-bold text-foreground mb-1">What are you into?</h2>
+              <h2 className="text-xl font-bold text-foreground mb-1">What's your vibe?</h2>
               <p className="text-sm text-muted-foreground">
-                Select at least 2 interests to personalize your feed
+                Pick what resonates — we'll curate your Afro experience
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
