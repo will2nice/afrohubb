@@ -507,7 +507,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
                       {event.price && event.price !== "Free" ? (
                         <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-primary/10 text-primary">{event.price}</span>
                       ) : event.price === "Free" ? (
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-green-500/10 text-green-600">Free</span>
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-accent/10 text-accent">Free</span>
                       ) : <span />}
                     </div>
                   </div>
