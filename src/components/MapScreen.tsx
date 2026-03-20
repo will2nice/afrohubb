@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useScreenView } from "@/hooks/useAnalytics";
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping, Music, Plane, Crosshair, Loader2, Search, Clock, Flame, Ruler } from "lucide-react";
@@ -492,10 +492,22 @@ const MapController = ({ targetCity, onZoomDone }: { targetCity: string | null; 
   const map = useMap();
   useEffect(() => {
     if (targetCity && cityCoords[targetCity]) {
-      map.setView(cityCoords[targetCity], 12, { animate: true });
+      map.flyTo(cityCoords[targetCity], 12, { duration: 1.2 });
       onZoomDone();
     }
   }, [targetCity, map, onZoomDone]);
+  return null;
+};
+
+// Track visible map bounds so we only render markers in view
+const BoundsTracker = ({ onBoundsChange }: { onBoundsChange: (bounds: L.LatLngBounds) => void }) => {
+  const map = useMapEvents({
+    moveend: () => onBoundsChange(map.getBounds()),
+    zoomend: () => onBoundsChange(map.getBounds()),
+  });
+  useEffect(() => {
+    onBoundsChange(map.getBounds());
+  }, [map, onBoundsChange]);
   return null;
 };
 
@@ -593,10 +605,10 @@ const CountryZoomButton = () => {
     const countryCode = cityToCountry[nearestCity];
     const country = countryCode ? countryBounds[countryCode] : null;
     if (country) {
-      map.fitBounds(country.bounds, { animate: true, padding: [20, 20] });
+      map.flyToBounds(country.bounds, { animate: true, padding: [20, 20], duration: 1.5 });
     } else {
       // Fallback: zoom out to level 5
-      map.setZoom(5, { animate: true });
+      map.setZoom(5, { animate: true, duration: 1 });
     }
   }, [map]);
 
@@ -621,7 +633,7 @@ const NearMeButton = ({ onLocated }: { onLocated: (lat: number, lng: number) => 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        map.setView([latitude, longitude], 14, { animate: true });
+        map.flyTo([latitude, longitude], 14, { duration: 1.2 });
         onLocated(latitude, longitude);
         setLoading(false);
       },
@@ -671,6 +683,23 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("all");
   const [distanceFilter, setDistanceFilter] = useState<number | null>(null); // km
   const [showTrending, setShowTrending] = useState(false);
+  const [mapBounds, setMapBounds] = useState<L.LatLngBounds | null>(null);
+
+  const handleBoundsChange = useCallback((bounds: L.LatLngBounds) => {
+    setMapBounds(bounds);
+  }, []);
+
+  // Helper: is a point inside the current viewport (with padding)?
+  const inView = useCallback((lat: number, lng: number) => {
+    if (!mapBounds) return true; // render all until bounds are known
+    const pad = 0.15; // ~15% padding so markers near edges aren't clipped
+    const sw = mapBounds.getSouthWest();
+    const ne = mapBounds.getNorthEast();
+    const latPad = (ne.lat - sw.lat) * pad;
+    const lngPad = (ne.lng - sw.lng) * pad;
+    return lat >= sw.lat - latPad && lat <= ne.lat + latPad &&
+           lng >= sw.lng - lngPad && lng <= ne.lng + lngPad;
+  }, [mapBounds]);
 
   const { events: dbEvents } = useEvents();
   const { places: dbPlaces } = usePlaces();
@@ -1013,12 +1042,31 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         </div>
       </div>
 
-      <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }} zoomControl={false} attributionControl={false} minZoom={2} maxBoundsViscosity={0} worldCopyJump={true}>
+      <MapContainer
+        center={center}
+        zoom={12}
+        style={{ height: "100%", width: "100%" }}
+        zoomControl={false}
+        attributionControl={false}
+        minZoom={2}
+        maxBoundsViscosity={0}
+        worldCopyJump={true}
+        preferCanvas={true}
+        zoomSnap={0.5}
+        zoomDelta={0.5}
+        wheelDebounceTime={80}
+        wheelPxPerZoomLevel={120}
+      >
+        <BoundsTracker onBoundsChange={handleBoundsChange} />
         <MapController targetCity={zoomTarget} onZoomDone={() => setZoomTarget(null)} />
         <CountryZoomButton />
         <NearMeButton onLocated={(lat, lng) => setUserLocation([lat, lng])} />
         {userLocation && <Marker position={userLocation} icon={userLocationIcon}><Popup>You are here</Popup></Marker>}
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          updateWhenZooming={false}
+          updateWhenIdle={true}
+        />
 
         <Marker position={center} icon={youIcon}>
           <Popup className="afro-popup"><div className="text-sm font-semibold">📍 You are here</div></Popup>
@@ -1057,7 +1105,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             </Marker>
           );
         })}
-        {showEvents && allEventPositions.filter(e => !e.host?.toLowerCase().includes("afro nation") && e.source !== "sxsw").map((event) => (
+        {showEvents && allEventPositions.filter(e => !e.host?.toLowerCase().includes("afro nation") && e.source !== "sxsw" && inView(e.lat, e.lng)).map((event) => (
           <Marker key={`event-${event.id}`} position={[event.lat, event.lng]} icon={eventIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
@@ -1076,7 +1124,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* Afro Nation events with custom icon */}
-        {showAfroNation && allEventPositions.filter(e => e.host?.toLowerCase().includes("afro nation")).map((event) => (
+        {showAfroNation && allEventPositions.filter(e => e.host?.toLowerCase().includes("afro nation") && inView(e.lat, e.lng)).map((event) => (
           <Marker key={`an-${event.id}`} position={[event.lat, event.lng]} icon={afroNationMapIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
@@ -1099,7 +1147,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* SXSW events with custom icon */}
-        {showSXSW && allEventPositions.filter(e => e.source === "sxsw").map((event) => (
+        {showSXSW && allEventPositions.filter(e => e.source === "sxsw" && inView(e.lat, e.lng)).map((event) => (
           <Marker key={`sxsw-${event.id}`} position={[event.lat, event.lng]} icon={sxswMapIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
@@ -1121,7 +1169,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </Marker>
         ))}
 
-        {showPeople && allPeople.map((person, i) => (
+        {showPeople && allPeople.filter(p => inView(p.lat, p.lng)).map((person, i) => (
           <Marker key={`person-${i}`} position={[person.lat, person.lng]} icon={personIcon}>
             <Popup className="afro-popup">
               <div className="p-1">
@@ -1132,7 +1180,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </Marker>
         ))}
 
-        {showGroups && allGroups.map((group, i) => (
+        {showGroups && allGroups.filter(g => inView(g.lat, g.lng)).map((group, i) => (
           <Marker key={`group-${i}`} position={[group.lat, group.lng]} icon={groupIcon}>
             <Popup className="afro-popup" maxWidth={260}>
               <div className="p-1">
@@ -1149,7 +1197,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </Marker>
         ))}
 
-        {showResources && allResources.map((resource) => (
+        {showResources && allResources.filter(r => inView(r.lat, r.lng)).map((resource) => (
           <Marker key={`resource-${resource.id}`} position={[resource.lat, resource.lng]} icon={createResourceIcon(resource.category, resource.type)}>
             <Popup className="afro-popup" maxWidth={300}>
               <div className="p-2">
@@ -1214,7 +1262,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </Marker>
         ))}
 
-        {showHubs && hubPositions.map((hub) => (
+        {showHubs && hubPositions.filter(h => inView(h.lat, h.lng)).map((hub) => (
           <Marker key={`hub-${hub.cityId}`} position={[hub.lat, hub.lng]} icon={createHubIcon(hub)} eventHandlers={{ click: () => handleEventClick(hub.cityId) }}>
             <Popup className="afro-popup" maxWidth={300}>
               <div className="p-1">
@@ -1242,7 +1290,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* Eventbrite events from DB */}
-        {showEventbrite && dbEventPositions.filter(e => e.source === "eventbrite").map((event) => (
+        {showEventbrite && dbEventPositions.filter(e => e.source === "eventbrite" && inView(e.lat, e.lng)).map((event) => (
           <Marker key={`eb-${event.id}`} position={[event.lat, event.lng]} icon={eventbriteIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
@@ -1269,7 +1317,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* Posh events from DB */}
-        {showPosh && dbEventPositions.filter(e => e.source === "posh").map((event) => (
+        {showPosh && dbEventPositions.filter(e => e.source === "posh" && inView(e.lat, e.lng)).map((event) => (
           <Marker key={`posh-${event.id}`} position={[event.lat, event.lng]} icon={poshIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
@@ -1296,7 +1344,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* DICE events from DB */}
-        {showEventbrite && dbEventPositions.filter(e => e.source === "dice").map((event) => (
+        {showEventbrite && dbEventPositions.filter(e => e.source === "dice" && inView(e.lat, e.lng)).map((event) => (
           <Marker key={`dice-${event.id}`} position={[event.lat, event.lng]} icon={diceIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
@@ -1323,7 +1371,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* Shotgun events from DB */}
-        {showEventbrite && dbEventPositions.filter(e => e.source === "shotgun").map((event) => (
+        {showEventbrite && dbEventPositions.filter(e => e.source === "shotgun" && inView(e.lat, e.lng)).map((event) => (
           <Marker key={`sg-${event.id}`} position={[event.lat, event.lng]} icon={shotgunIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
@@ -1350,7 +1398,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* Billetto events from DB */}
-        {showEventbrite && dbEventPositions.filter(e => e.source === "billetto").map((event) => (
+        {showEventbrite && dbEventPositions.filter(e => e.source === "billetto" && inView(e.lat, e.lng)).map((event) => (
           <Marker key={`bl-${event.id}`} position={[event.lat, event.lng]} icon={billettoIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
@@ -1377,7 +1425,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* Places from DB */}
-        {showPlaces && dbPlaces.filter(p => p.latitude && p.longitude).map((place) => (
+        {showPlaces && dbPlaces.filter(p => p.latitude && p.longitude && inView(p.latitude!, p.longitude!)).map((place) => (
           <Marker
             key={`place-${place.id}`}
             position={[place.latitude!, place.longitude!]}
