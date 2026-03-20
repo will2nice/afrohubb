@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Search, Heart, MessageCircle, Share2, Bookmark, Users, Play, Volume2, VolumeX, Maximize2, Newspaper, Megaphone, Film, LayoutGrid, AlertTriangle, Send, BookOpen, PenSquare } from "lucide-react";
+import { Search, Heart, MessageCircle, Share2, Bookmark, Users, Play, Volume2, VolumeX, Maximize2, Newspaper, Megaphone, Film, LayoutGrid, AlertTriangle, Send, BookOpen, PenSquare, Calendar, Flame, ArrowRight, Sparkles } from "lucide-react";
 import NotificationCenter, { NotificationBell } from "@/components/NotificationCenter";
 import { feedPosts, type City, type FeedCategory } from "@/data/cityData";
 import CityPicker from "@/components/CityPicker";
@@ -11,6 +11,9 @@ import CommentSheet from "@/components/CommentSheet";
 import { usePosts, type PostComment } from "@/hooks/usePosts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useScreenView } from "@/hooks/useAnalytics";
+import { usePersonalizedFeed } from "@/hooks/usePersonalizedFeed";
+import { format, parseISO } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // ─── Feed content-type tabs ───
 const feedTabs = [
@@ -285,6 +288,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
   const { user } = useAuth();
 
   const { posts: dbPosts, toggleLike: dbToggleLike, addComment, fetchComments, refetch: refetchPosts } = usePosts(selectedCity.id);
+  const { forYouEvents, weekendEvents, hasInterests, loading: feedLoading } = usePersonalizedFeed(selectedCity.id);
 
   const nwePosts = feedPosts.filter((p) => p.city === "_global");
   const cityPosts = feedPosts.filter((p) => p.city === selectedCity.id);
@@ -446,6 +450,92 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
 
       {/* Stories */}
       {(activeFeedTab === "all" || activeFeedTab === "posts") && <FeedStories />}
+
+      {/* ─── Personalized: For You Events ─── */}
+      {activeFeedTab === "all" && forYouEvents.length > 0 && (
+        <section className="pb-3">
+          <div className="flex items-center justify-between px-4 pt-3 pb-2 max-w-lg mx-auto">
+            <div className="flex items-center gap-2">
+              <Sparkles size={16} className="text-primary" />
+              <h2 className="text-sm font-semibold text-foreground">
+                {hasInterests ? "Picked for You" : "Upcoming Near You"}
+              </h2>
+            </div>
+          </div>
+          <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide max-w-lg mx-auto">
+            {feedLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="min-w-[220px]">
+                  <Skeleton className="w-full h-28 rounded-xl mb-2" />
+                  <Skeleton className="h-4 w-3/4 mb-1" />
+                  <Skeleton className="h-3 w-1/2" />
+                </div>
+              ))
+            ) : (
+              forYouEvents.map((event) => (
+                <div
+                  key={event.id}
+                  className="min-w-[220px] max-w-[220px] bg-card border border-border rounded-xl overflow-hidden hover:border-primary/40 transition-all"
+                >
+                  {event.image_url ? (
+                    <img src={event.image_url} alt={event.title} className="w-full h-28 object-cover" loading="lazy" />
+                  ) : (
+                    <div className="w-full h-28 bg-muted flex items-center justify-center">
+                      <Calendar size={20} className="text-muted-foreground" />
+                    </div>
+                  )}
+                  <div className="p-2.5">
+                    <h3 className="text-xs font-semibold text-foreground line-clamp-1">{event.title}</h3>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      {(() => { try { return format(parseISO(event.date), "MMM d · ha"); } catch { return ""; } })()}
+                    </p>
+                    {event.price && event.price !== "Free" && (
+                      <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[9px] font-semibold bg-primary/10 text-primary">{event.price}</span>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ─── Trending This Weekend ─── */}
+      {activeFeedTab === "all" && weekendEvents.length > 0 && (
+        <section className="pb-3">
+          <div className="flex items-center justify-between px-4 pb-2 max-w-lg mx-auto">
+            <div className="flex items-center gap-2">
+              <Flame size={16} className="text-accent" />
+              <h2 className="text-sm font-semibold text-foreground">Trending This Weekend</h2>
+            </div>
+            <span className="text-[10px] font-medium text-accent bg-accent/10 px-2 py-0.5 rounded-full">
+              {weekendEvents.length} event{weekendEvents.length > 1 ? "s" : ""}
+            </span>
+          </div>
+          <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide max-w-lg mx-auto">
+            {weekendEvents.slice(0, 6).map((event) => (
+              <div
+                key={event.id}
+                className="min-w-[180px] max-w-[180px] bg-card border border-accent/20 rounded-xl overflow-hidden hover:border-accent/40 transition-all"
+              >
+                {event.image_url ? (
+                  <img src={event.image_url} alt={event.title} className="w-full h-24 object-cover" loading="lazy" />
+                ) : (
+                  <div className="w-full h-24 bg-accent/5 flex items-center justify-center">
+                    <Flame size={18} className="text-accent" />
+                  </div>
+                )}
+                <div className="p-2.5">
+                  <h3 className="text-xs font-semibold text-foreground line-clamp-1">{event.title}</h3>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                    {(() => { try { return format(parseISO(event.date), "EEE · ha"); } catch { return ""; } })()}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Sub-chips */}
       {(activeFeedTab === "all" || activeFeedTab === "posts") && (
