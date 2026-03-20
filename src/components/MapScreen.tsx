@@ -1197,7 +1197,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </Marker>
         ))}
 
-        {showResources && allResources.map((resource) => (
+        {showResources && allResources.filter(r => inView(r.lat, r.lng)).map((resource) => (
           <Marker key={`resource-${resource.id}`} position={[resource.lat, resource.lng]} icon={createResourceIcon(resource.category, resource.type)}>
             <Popup className="afro-popup" maxWidth={300}>
               <div className="p-2">
