@@ -152,8 +152,14 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
   };
 
   const next = () => {
-    if (step < totalSteps - 1) setStep(step + 1);
-    else handleFinish();
+    trackOnboardingStep(step, STEP_NAMES[step], "completed");
+    if (step < totalSteps - 1) {
+      const nextStep = step + 1;
+      setStep(nextStep);
+      trackOnboardingStep(nextStep, STEP_NAMES[nextStep], "started");
+    } else {
+      handleFinish();
+    }
   };
 
   return (
