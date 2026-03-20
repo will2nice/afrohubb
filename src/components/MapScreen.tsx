@@ -608,7 +608,7 @@ const CountryZoomButton = () => {
       map.flyToBounds(country.bounds, { animate: true, padding: [20, 20], duration: 1.5 });
     } else {
       // Fallback: zoom out to level 5
-      map.setZoom(5, { animate: true });
+      map.setZoom(5, { animate: true, duration: 1 });
     }
   }, [map]);
 
