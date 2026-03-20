@@ -12,6 +12,7 @@ import { usePosts, type PostComment } from "@/hooks/usePosts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useScreenView } from "@/hooks/useAnalytics";
 import { usePersonalizedFeed } from "@/hooks/usePersonalizedFeed";
+import { trackTabSwitched, trackFilterUsed } from "@/lib/analytics";
 import { format, parseISO } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 
