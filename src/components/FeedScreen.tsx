@@ -563,7 +563,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
             {chips.map((chip) => (
               <button
                 key={chip}
-                onClick={() => setActiveChip(chip)}
+                onClick={() => { setActiveChip(chip); trackFilterUsed("feed", "chip", chip); }}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                   activeChip === chip ? "gradient-gold text-primary-foreground shadow-gold" : "bg-secondary text-secondary-foreground hover:bg-muted"
                 }`}
