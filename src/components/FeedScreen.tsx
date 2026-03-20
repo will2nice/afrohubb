@@ -12,6 +12,7 @@ import { usePosts, type PostComment } from "@/hooks/usePosts";
 import { useAuth } from "@/contexts/AuthContext";
 import { useScreenView } from "@/hooks/useAnalytics";
 import { usePersonalizedFeed } from "@/hooks/usePersonalizedFeed";
+import { trackTabSwitched, trackFilterUsed } from "@/lib/analytics";
 import { format, parseISO } from "date-fns";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -436,7 +437,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveFeedTab(tab.id)}
+                onClick={() => { setActiveFeedTab(tab.id); trackTabSwitched("feed", tab.id); }}
                 className={`flex-1 flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-all relative ${isActive ? "text-primary" : "text-muted-foreground"}`}
               >
                 <Icon size={18} />
@@ -562,7 +563,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
             {chips.map((chip) => (
               <button
                 key={chip}
-                onClick={() => setActiveChip(chip)}
+                onClick={() => { setActiveChip(chip); trackFilterUsed("feed", "chip", chip); }}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                   activeChip === chip ? "gradient-gold text-primary-foreground shadow-gold" : "bg-secondary text-secondary-foreground hover:bg-muted"
                 }`}

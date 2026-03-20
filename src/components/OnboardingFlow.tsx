@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { cities } from "@/data/cityData";
 import { trackEvent } from "@/lib/posthog";
-import { trackOnboardingCompleted } from "@/lib/analytics";
+import { trackOnboardingCompleted, trackOnboardingStep, trackOnboardingDropoff } from "@/lib/analytics";
 
 interface OnboardingFlowProps {
   onComplete: () => void;
@@ -59,6 +59,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
   const fileRef = useRef<HTMLInputElement>(null);
 
   const totalSteps = 5;
+  const STEP_NAMES = ["location", "interests", "goals", "photo", "background"];
   const progress = ((step + 1) / totalSteps) * 100;
 
   const toggleInterest = (interest: string) => {
@@ -151,8 +152,14 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
   };
 
   const next = () => {
-    if (step < totalSteps - 1) setStep(step + 1);
-    else handleFinish();
+    trackOnboardingStep(step, STEP_NAMES[step], "completed");
+    if (step < totalSteps - 1) {
+      const nextStep = step + 1;
+      setStep(nextStep);
+      trackOnboardingStep(nextStep, STEP_NAMES[nextStep], "started");
+    } else {
+      handleFinish();
+    }
   };
 
   return (
@@ -171,7 +178,7 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
             Step {step + 1} of {totalSteps}
           </span>
           <button
-            onClick={handleFinish}
+            onClick={() => { trackOnboardingDropoff(step, STEP_NAMES[step]); handleFinish(); }}
             className="text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
             Skip
