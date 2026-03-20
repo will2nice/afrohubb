@@ -492,10 +492,22 @@ const MapController = ({ targetCity, onZoomDone }: { targetCity: string | null; 
   const map = useMap();
   useEffect(() => {
     if (targetCity && cityCoords[targetCity]) {
-      map.setView(cityCoords[targetCity], 12, { animate: true });
+      map.flyTo(cityCoords[targetCity], 12, { duration: 1.2 });
       onZoomDone();
     }
   }, [targetCity, map, onZoomDone]);
+  return null;
+};
+
+// Track visible map bounds so we only render markers in view
+const BoundsTracker = ({ onBoundsChange }: { onBoundsChange: (bounds: L.LatLngBounds) => void }) => {
+  const map = useMapEvents({
+    moveend: () => onBoundsChange(map.getBounds()),
+    zoomend: () => onBoundsChange(map.getBounds()),
+  });
+  useEffect(() => {
+    onBoundsChange(map.getBounds());
+  }, [map, onBoundsChange]);
   return null;
 };
 
