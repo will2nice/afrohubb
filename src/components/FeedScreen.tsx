@@ -437,7 +437,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
             return (
               <button
                 key={tab.id}
-                onClick={() => setActiveFeedTab(tab.id)}
+                onClick={() => { setActiveFeedTab(tab.id); trackTabSwitched("feed", tab.id); }}
                 className={`flex-1 flex flex-col items-center gap-1 py-2.5 text-[11px] font-medium transition-all relative ${isActive ? "text-primary" : "text-muted-foreground"}`}
               >
                 <Icon size={18} />
