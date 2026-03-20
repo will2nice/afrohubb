@@ -1124,7 +1124,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* Afro Nation events with custom icon */}
-        {showAfroNation && allEventPositions.filter(e => e.host?.toLowerCase().includes("afro nation")).map((event) => (
+        {showAfroNation && allEventPositions.filter(e => e.host?.toLowerCase().includes("afro nation") && inView(e.lat, e.lng)).map((event) => (
           <Marker key={`an-${event.id}`} position={[event.lat, event.lng]} icon={afroNationMapIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
