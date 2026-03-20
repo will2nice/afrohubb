@@ -1425,7 +1425,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* Places from DB */}
-        {showPlaces && dbPlaces.filter(p => p.latitude && p.longitude).map((place) => (
+        {showPlaces && dbPlaces.filter(p => p.latitude && p.longitude && inView(p.latitude!, p.longitude!)).map((place) => (
           <Marker
             key={`place-${place.id}`}
             position={[place.latitude!, place.longitude!]}
