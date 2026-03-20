@@ -1147,7 +1147,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* SXSW events with custom icon */}
-        {showSXSW && allEventPositions.filter(e => e.source === "sxsw").map((event) => (
+        {showSXSW && allEventPositions.filter(e => e.source === "sxsw" && inView(e.lat, e.lng)).map((event) => (
           <Marker key={`sxsw-${event.id}`} position={[event.lat, event.lng]} icon={sxswMapIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
