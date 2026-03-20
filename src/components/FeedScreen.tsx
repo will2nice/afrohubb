@@ -461,6 +461,9 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
                 {hasInterests ? "Picked for You" : "Upcoming Near You"}
               </h2>
             </div>
+            {hasInterests && (
+              <span className="text-[10px] text-muted-foreground">Based on your interests</span>
+            )}
           </div>
           <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide max-w-lg mx-auto">
             {feedLoading ? (
@@ -475,23 +478,38 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
               forYouEvents.map((event) => (
                 <div
                   key={event.id}
-                  className="min-w-[220px] max-w-[220px] bg-card border border-border rounded-xl overflow-hidden hover:border-primary/40 transition-all"
+                  className="min-w-[220px] max-w-[220px] bg-card border border-border rounded-xl overflow-hidden hover:border-primary/40 transition-all group"
                 >
-                  {event.image_url ? (
-                    <img src={event.image_url} alt={event.title} className="w-full h-28 object-cover" loading="lazy" />
-                  ) : (
-                    <div className="w-full h-28 bg-muted flex items-center justify-center">
-                      <Calendar size={20} className="text-muted-foreground" />
-                    </div>
-                  )}
+                  <div className="relative">
+                    {event.image_url ? (
+                      <img src={event.image_url} alt={event.title} className="w-full h-28 object-cover group-hover:scale-[1.02] transition-transform duration-300" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-28 bg-muted flex items-center justify-center">
+                        <Calendar size={20} className="text-muted-foreground" />
+                      </div>
+                    )}
+                    {event.matchedInterests.length > 0 && (
+                      <div className="absolute top-2 left-2 flex gap-1 flex-wrap max-w-[calc(100%-16px)]">
+                        {event.matchedInterests.slice(0, 2).map((interest) => (
+                          <span key={interest} className="px-1.5 py-0.5 rounded-full text-[9px] font-semibold bg-primary/90 text-primary-foreground backdrop-blur-sm">
+                            {interest}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                   <div className="p-2.5">
                     <h3 className="text-xs font-semibold text-foreground line-clamp-1">{event.title}</h3>
                     <p className="text-[10px] text-muted-foreground mt-0.5">
                       {(() => { try { return format(parseISO(event.date), "MMM d · ha"); } catch { return ""; } })()}
                     </p>
-                    {event.price && event.price !== "Free" && (
-                      <span className="inline-block mt-1 px-2 py-0.5 rounded-full text-[9px] font-semibold bg-primary/10 text-primary">{event.price}</span>
-                    )}
+                    <div className="flex items-center justify-between mt-1.5">
+                      {event.price && event.price !== "Free" ? (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-primary/10 text-primary">{event.price}</span>
+                      ) : event.price === "Free" ? (
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-semibold bg-accent/10 text-accent">Free</span>
+                      ) : <span />}
+                    </div>
                   </div>
                 </div>
               ))

@@ -14,10 +14,10 @@ interface OnboardingFlowProps {
 }
 
 const INTERESTS = [
-  "🎵 Music", "🎨 Art & Culture", "💼 Business", "🌍 Networking",
-  "🏀 Sports", "🍽️ Food & Dining", "🌙 Nightlife", "📚 Education",
-  "✈️ Travel", "🎬 Film & Media", "💃 Dance", "🧘 Wellness",
-  "👗 Fashion", "💻 Tech", "📸 Photography", "🎤 Comedy",
+  "🥁 Afrobeats", "🎶 Amapiano", "🎉 Parties", "🎪 Festivals",
+  "🌙 Nightlife", "🥂 Brunch", "🎵 Music", "💃 Dance",
+  "🎨 Art & Culture", "💼 Networking", "🍽️ Food & Drink",
+  "🏀 Sports", "👗 Fashion", "💻 Tech", "✈️ Travel", "🧘 Wellness",
 ];
 
 const LOOKING_FOR = [

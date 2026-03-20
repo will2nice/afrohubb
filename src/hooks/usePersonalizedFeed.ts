@@ -5,20 +5,22 @@ import { isThisWeek, isWeekend, isFriday, isToday, isTomorrow, parseISO, differe
 
 /** Map user interests to event categories/keywords for scoring */
 const INTEREST_CATEGORY_MAP: Record<string, string[]> = {
-  "Afrobeats": ["nightlife", "party", "afrobeats", "amapiano", "music"],
-  "Amapiano": ["nightlife", "party", "amapiano", "music"],
-  "Nightlife": ["nightlife", "party", "club"],
-  "Festivals": ["festival", "outdoor", "afro nation"],
-  "Brunch": ["brunch", "day party", "food"],
-  "Networking": ["networking", "professional", "business"],
-  "Music": ["music", "concert", "live"],
-  "Art & Culture": ["art", "culture", "exhibition", "gallery"],
-  "Fashion": ["fashion", "style", "design"],
-  "Sports": ["sports", "football", "basketball"],
-  "Food & Drink": ["food", "restaurant", "brunch", "dining"],
-  "Tech": ["tech", "startup", "hackathon"],
-  "Wellness": ["wellness", "yoga", "fitness"],
-  "Dance": ["dance", "afrobeats", "party", "nightlife"],
+  "Afrobeats": ["afrobeats", "afro", "amapiano", "nightlife", "party", "music", "dj"],
+  "Amapiano": ["amapiano", "afrobeats", "nightlife", "party", "music", "dj"],
+  "Parties": ["party", "nightlife", "club", "day party", "brunch", "afrobeats", "dj"],
+  "Festivals": ["festival", "outdoor", "afro nation", "carnival", "block party", "concert"],
+  "Nightlife": ["nightlife", "party", "club", "lounge", "dj", "after dark"],
+  "Brunch": ["brunch", "day party", "food", "bottomless", "rooftop"],
+  "Music": ["music", "concert", "live", "show", "gig", "dj"],
+  "Dance": ["dance", "afrobeats", "amapiano", "party", "nightlife", "salsa", "kizomba"],
+  "Networking": ["networking", "professional", "business", "mixer", "meetup"],
+  "Art & Culture": ["art", "culture", "exhibition", "gallery", "museum", "theatre"],
+  "Food & Drink": ["food", "restaurant", "brunch", "dining", "supper", "tasting"],
+  "Sports": ["sports", "football", "basketball", "run", "tournament", "match"],
+  "Fashion": ["fashion", "style", "design", "pop-up", "runway"],
+  "Tech": ["tech", "startup", "hackathon", "ai", "innovation"],
+  "Travel": ["travel", "trip", "tour", "getaway", "retreat"],
+  "Wellness": ["wellness", "yoga", "fitness", "meditation", "healing"],
 };
 
 function scoreEvent(event: DbEvent, interests: string[]): number {
@@ -84,16 +86,32 @@ export function getWeekendEvents(events: DbEvent[]): DbEvent[] {
   });
 }
 
+export interface ScoredEvent extends DbEvent {
+  matchedInterests: string[];
+}
+
+/** Returns which user interests matched this event */
+function getMatchedInterests(event: DbEvent, interests: string[]): string[] {
+  const combined = `${event.title} ${event.description || ""} ${event.category}`.toLowerCase();
+  const matched: string[] = [];
+  for (const interest of interests) {
+    const keywords = INTEREST_CATEGORY_MAP[interest] || [interest.toLowerCase()];
+    if (keywords.some((kw) => combined.includes(kw))) {
+      matched.push(interest);
+    }
+  }
+  return matched;
+}
+
 export const usePersonalizedFeed = (cityId?: string) => {
   const { profile } = useProfile();
   const { events, loading } = useEvents(cityId);
   const interests = profile?.interests || [];
 
-  const personalizedEvents = useMemo(() => {
+  const personalizedEvents = useMemo((): ScoredEvent[] => {
     if (!events.length) return [];
 
     const now = new Date();
-    // Filter to future events only
     const futureEvents = events.filter((e) => {
       try {
         return parseISO(e.date) >= now;
@@ -103,16 +121,18 @@ export const usePersonalizedFeed = (cityId?: string) => {
     });
 
     if (!interests.length) {
-      // No interests: sort by date (soonest first)
-      return futureEvents.slice(0, 10);
+      return futureEvents.slice(0, 10).map((e) => ({ ...e, matchedInterests: [] }));
     }
 
-    // Score and sort
     return futureEvents
-      .map((e) => ({ event: e, score: scoreEvent(e, interests) }))
+      .map((e) => ({
+        event: e,
+        score: scoreEvent(e, interests),
+        matchedInterests: getMatchedInterests(e, interests),
+      }))
       .filter((e) => e.score > -50)
       .sort((a, b) => b.score - a.score)
-      .map((e) => e.event)
+      .map((e) => ({ ...e.event, matchedInterests: e.matchedInterests }))
       .slice(0, 10);
   }, [events, interests]);
 
