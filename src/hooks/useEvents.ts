@@ -60,9 +60,11 @@ export const useEvents = (city?: string) => {
         .maybeSingle();
       if (existing) {
         await supabase.from("event_rsvps").delete().eq("id", existing.id);
+        trackRsvp(eventId, "removed");
       } else {
         const { error } = await supabase.from("event_rsvps").insert({ event_id: eventId, user_id: user.id });
         if (error) throw error;
+        trackRsvp(eventId, "added");
       }
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["rsvps"] }),
