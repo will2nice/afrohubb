@@ -288,6 +288,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
   const { user } = useAuth();
 
   const { posts: dbPosts, toggleLike: dbToggleLike, addComment, fetchComments, refetch: refetchPosts } = usePosts(selectedCity.id);
+  const { forYouEvents, weekendEvents, hasInterests, loading: feedLoading } = usePersonalizedFeed(selectedCity.id);
 
   const nwePosts = feedPosts.filter((p) => p.city === "_global");
   const cityPosts = feedPosts.filter((p) => p.city === selectedCity.id);
