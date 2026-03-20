@@ -1317,7 +1317,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* Posh events from DB */}
-        {showPosh && dbEventPositions.filter(e => e.source === "posh").map((event) => (
+        {showPosh && dbEventPositions.filter(e => e.source === "posh" && inView(e.lat, e.lng)).map((event) => (
           <Marker key={`posh-${event.id}`} position={[event.lat, event.lng]} icon={poshIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
