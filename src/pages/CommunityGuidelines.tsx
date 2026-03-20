@@ -80,7 +80,7 @@ const CommunityGuidelines = () => {
           </div>
           <h2 className="font-display text-xl font-bold text-foreground">Our Community Standards</h2>
           <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-            AfroHub is built on trust, respect, and unity. These guidelines help keep our community safe for everyone.
+            AfroHub is built on culture, community, and identity. These guidelines protect our global Afro-diaspora space.
           </p>
         </div>
 

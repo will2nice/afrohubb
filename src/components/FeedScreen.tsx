@@ -459,7 +459,7 @@ const FeedScreen = ({ selectedCity, onCityChange }: FeedScreenProps) => {
             <div className="flex items-center gap-2">
               <Sparkles size={16} className="text-primary" />
               <h2 className="text-sm font-semibold text-foreground">
-                {hasInterests ? "Picked for You" : "Upcoming Near You"}
+                {hasInterests ? "Your Afro Experience" : "Trending This Weekend"}
               </h2>
             </div>
             {hasInterests && (

@@ -30,7 +30,7 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
           {profile?.display_name ? `Hey ${profile.display_name.split(" ")[0]} 👋` : "Welcome 👋"}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Find your people. Discover events. Connect with the diaspora.
+          Culture. Community. Identity. Your global Afro experience starts here.
         </p>
       </div>
 
@@ -38,9 +38,9 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
       <div className="px-5 mb-6">
         <div className="grid grid-cols-3 gap-3">
           {[
-            { icon: Users, label: "Community", action: "discover", color: "text-primary" },
-            { icon: Calendar, label: "Events", action: "events", color: "text-accent" },
-            { icon: Star, label: "Profile", action: "profile", color: "text-primary" },
+            { icon: Users, label: "My People", action: "discover", color: "text-primary" },
+            { icon: Calendar, label: "Experiences", action: "events", color: "text-accent" },
+            { icon: Star, label: "Identity", action: "profile", color: "text-primary" },
           ].map((item) => (
             <button
               key={item.label}

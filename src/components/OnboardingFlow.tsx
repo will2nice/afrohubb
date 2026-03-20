@@ -194,9 +194,9 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
           <div className="animate-fade-in">
             <div className="mb-6">
               <MapPin className="text-primary mb-3" size={32} />
-              <h2 className="text-xl font-bold text-foreground mb-1">Where are you based?</h2>
+              <h2 className="text-xl font-bold text-foreground mb-1">Where's home right now?</h2>
               <p className="text-sm text-muted-foreground">
-                We'll show you events and people near you
+                We'll connect you with your local Afro-diaspora community
               </p>
             </div>
             <div className="grid grid-cols-2 gap-2">
@@ -229,9 +229,9 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
           <div className="animate-fade-in">
             <div className="mb-6">
               <Sparkles className="text-primary mb-3" size={32} />
-              <h2 className="text-xl font-bold text-foreground mb-1">What are you into?</h2>
+              <h2 className="text-xl font-bold text-foreground mb-1">What's your vibe?</h2>
               <p className="text-sm text-muted-foreground">
-                Select at least 2 interests to personalize your feed
+                Pick what resonates — we'll curate your Afro experience
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -257,9 +257,9 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
           <div className="animate-fade-in">
             <div className="mb-6">
               <Heart className="text-primary mb-3" size={32} />
-              <h2 className="text-xl font-bold text-foreground mb-1">What are you looking for?</h2>
+              <h2 className="text-xl font-bold text-foreground mb-1">What brings you here?</h2>
               <p className="text-sm text-muted-foreground">
-                Help us understand what matters most to you
+                Whether it's culture, connection, or community — we've got you
               </p>
             </div>
             <div className="space-y-3">
@@ -289,9 +289,9 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
           <div className="animate-fade-in">
             <div className="mb-6">
               <Camera className="text-primary mb-3" size={32} />
-              <h2 className="text-xl font-bold text-foreground mb-1">Add a profile photo</h2>
+              <h2 className="text-xl font-bold text-foreground mb-1">Show your face to the world</h2>
               <p className="text-sm text-muted-foreground">
-                People are more likely to connect with real faces
+                Your community wants to see you — real faces build real bonds
               </p>
             </div>
             <div className="flex flex-col items-center">
