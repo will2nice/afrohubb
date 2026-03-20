@@ -86,16 +86,32 @@ export function getWeekendEvents(events: DbEvent[]): DbEvent[] {
   });
 }
 
+export interface ScoredEvent extends DbEvent {
+  matchedInterests: string[];
+}
+
+/** Returns which user interests matched this event */
+function getMatchedInterests(event: DbEvent, interests: string[]): string[] {
+  const combined = `${event.title} ${event.description || ""} ${event.category}`.toLowerCase();
+  const matched: string[] = [];
+  for (const interest of interests) {
+    const keywords = INTEREST_CATEGORY_MAP[interest] || [interest.toLowerCase()];
+    if (keywords.some((kw) => combined.includes(kw))) {
+      matched.push(interest);
+    }
+  }
+  return matched;
+}
+
 export const usePersonalizedFeed = (cityId?: string) => {
   const { profile } = useProfile();
   const { events, loading } = useEvents(cityId);
   const interests = profile?.interests || [];
 
-  const personalizedEvents = useMemo(() => {
+  const personalizedEvents = useMemo((): ScoredEvent[] => {
     if (!events.length) return [];
 
     const now = new Date();
-    // Filter to future events only
     const futureEvents = events.filter((e) => {
       try {
         return parseISO(e.date) >= now;
@@ -105,16 +121,18 @@ export const usePersonalizedFeed = (cityId?: string) => {
     });
 
     if (!interests.length) {
-      // No interests: sort by date (soonest first)
-      return futureEvents.slice(0, 10);
+      return futureEvents.slice(0, 10).map((e) => ({ ...e, matchedInterests: [] }));
     }
 
-    // Score and sort
     return futureEvents
-      .map((e) => ({ event: e, score: scoreEvent(e, interests) }))
+      .map((e) => ({
+        event: e,
+        score: scoreEvent(e, interests),
+        matchedInterests: getMatchedInterests(e, interests),
+      }))
       .filter((e) => e.score > -50)
       .sort((a, b) => b.score - a.score)
-      .map((e) => e.event)
+      .map((e) => ({ ...e.event, matchedInterests: e.matchedInterests }))
       .slice(0, 10);
   }, [events, interests]);
 
