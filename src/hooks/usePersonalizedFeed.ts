@@ -5,20 +5,22 @@ import { isThisWeek, isWeekend, isFriday, isToday, isTomorrow, parseISO, differe
 
 /** Map user interests to event categories/keywords for scoring */
 const INTEREST_CATEGORY_MAP: Record<string, string[]> = {
-  "Afrobeats": ["nightlife", "party", "afrobeats", "amapiano", "music"],
-  "Amapiano": ["nightlife", "party", "amapiano", "music"],
-  "Nightlife": ["nightlife", "party", "club"],
-  "Festivals": ["festival", "outdoor", "afro nation"],
-  "Brunch": ["brunch", "day party", "food"],
-  "Networking": ["networking", "professional", "business"],
-  "Music": ["music", "concert", "live"],
-  "Art & Culture": ["art", "culture", "exhibition", "gallery"],
-  "Fashion": ["fashion", "style", "design"],
-  "Sports": ["sports", "football", "basketball"],
-  "Food & Drink": ["food", "restaurant", "brunch", "dining"],
-  "Tech": ["tech", "startup", "hackathon"],
-  "Wellness": ["wellness", "yoga", "fitness"],
-  "Dance": ["dance", "afrobeats", "party", "nightlife"],
+  "Afrobeats": ["afrobeats", "afro", "amapiano", "nightlife", "party", "music", "dj"],
+  "Amapiano": ["amapiano", "afrobeats", "nightlife", "party", "music", "dj"],
+  "Parties": ["party", "nightlife", "club", "day party", "brunch", "afrobeats", "dj"],
+  "Festivals": ["festival", "outdoor", "afro nation", "carnival", "block party", "concert"],
+  "Nightlife": ["nightlife", "party", "club", "lounge", "dj", "after dark"],
+  "Brunch": ["brunch", "day party", "food", "bottomless", "rooftop"],
+  "Music": ["music", "concert", "live", "show", "gig", "dj"],
+  "Dance": ["dance", "afrobeats", "amapiano", "party", "nightlife", "salsa", "kizomba"],
+  "Networking": ["networking", "professional", "business", "mixer", "meetup"],
+  "Art & Culture": ["art", "culture", "exhibition", "gallery", "museum", "theatre"],
+  "Food & Drink": ["food", "restaurant", "brunch", "dining", "supper", "tasting"],
+  "Sports": ["sports", "football", "basketball", "run", "tournament", "match"],
+  "Fashion": ["fashion", "style", "design", "pop-up", "runway"],
+  "Tech": ["tech", "startup", "hackathon", "ai", "innovation"],
+  "Travel": ["travel", "trip", "tour", "getaway", "retreat"],
+  "Wellness": ["wellness", "yoga", "fitness", "meditation", "healing"],
 };
 
 function scoreEvent(event: DbEvent, interests: string[]): number {
