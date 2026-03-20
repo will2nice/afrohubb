@@ -1042,12 +1042,31 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         </div>
       </div>
 
-      <MapContainer center={center} zoom={12} style={{ height: "100%", width: "100%" }} zoomControl={false} attributionControl={false} minZoom={2} maxBoundsViscosity={0} worldCopyJump={true}>
+      <MapContainer
+        center={center}
+        zoom={12}
+        style={{ height: "100%", width: "100%" }}
+        zoomControl={false}
+        attributionControl={false}
+        minZoom={2}
+        maxBoundsViscosity={0}
+        worldCopyJump={true}
+        preferCanvas={true}
+        zoomSnap={0.5}
+        zoomDelta={0.5}
+        wheelDebounceTime={80}
+        wheelPxPerZoomLevel={120}
+      >
+        <BoundsTracker onBoundsChange={handleBoundsChange} />
         <MapController targetCity={zoomTarget} onZoomDone={() => setZoomTarget(null)} />
         <CountryZoomButton />
         <NearMeButton onLocated={(lat, lng) => setUserLocation([lat, lng])} />
         {userLocation && <Marker position={userLocation} icon={userLocationIcon}><Popup>You are here</Popup></Marker>}
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" />
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          updateWhenZooming={false}
+          updateWhenIdle={true}
+        />
 
         <Marker position={center} icon={youIcon}>
           <Popup className="afro-popup"><div className="text-sm font-semibold">📍 You are here</div></Popup>
