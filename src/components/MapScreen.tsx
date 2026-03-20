@@ -633,7 +633,7 @@ const NearMeButton = ({ onLocated }: { onLocated: (lat: number, lng: number) => 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         const { latitude, longitude } = pos.coords;
-        map.setView([latitude, longitude], 14, { animate: true });
+        map.flyTo([latitude, longitude], 14, { duration: 1.2 });
         onLocated(latitude, longitude);
         setLoading(false);
       },
