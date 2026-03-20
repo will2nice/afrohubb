@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { cities } from "@/data/cityData";
 import { trackEvent } from "@/lib/posthog";
-import { trackOnboardingCompleted } from "@/lib/analytics";
+import { trackOnboardingCompleted, trackOnboardingStep, trackOnboardingDropoff } from "@/lib/analytics";
 
 interface OnboardingFlowProps {
   onComplete: () => void;
