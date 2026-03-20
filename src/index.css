@@ -220,3 +220,25 @@
   from { width: 0%; }
   to { width: 100%; }
 }
+
+/* Smoother Leaflet animations */
+.leaflet-fade-anim .leaflet-popup {
+  transition: opacity 0.15s ease-out;
+}
+
+.leaflet-zoom-anim .leaflet-zoom-animated {
+  will-change: transform;
+}
+
+.leaflet-container {
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.leaflet-tile-pane {
+  will-change: transform;
+}
+
+.leaflet-marker-pane {
+  will-change: transform;
+}
