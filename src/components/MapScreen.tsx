@@ -1290,7 +1290,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* Eventbrite events from DB */}
-        {showEventbrite && dbEventPositions.filter(e => e.source === "eventbrite").map((event) => (
+        {showEventbrite && dbEventPositions.filter(e => e.source === "eventbrite" && inView(e.lat, e.lng)).map((event) => (
           <Marker key={`eb-${event.id}`} position={[event.lat, event.lng]} icon={eventbriteIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
