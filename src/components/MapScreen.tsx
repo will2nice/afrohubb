@@ -683,6 +683,23 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("all");
   const [distanceFilter, setDistanceFilter] = useState<number | null>(null); // km
   const [showTrending, setShowTrending] = useState(false);
+  const [mapBounds, setMapBounds] = useState<L.LatLngBounds | null>(null);
+
+  const handleBoundsChange = useCallback((bounds: L.LatLngBounds) => {
+    setMapBounds(bounds);
+  }, []);
+
+  // Helper: is a point inside the current viewport (with padding)?
+  const inView = useCallback((lat: number, lng: number) => {
+    if (!mapBounds) return true; // render all until bounds are known
+    const pad = 0.15; // ~15% padding so markers near edges aren't clipped
+    const sw = mapBounds.getSouthWest();
+    const ne = mapBounds.getNorthEast();
+    const latPad = (ne.lat - sw.lat) * pad;
+    const lngPad = (ne.lng - sw.lng) * pad;
+    return lat >= sw.lat - latPad && lat <= ne.lat + latPad &&
+           lng >= sw.lng - lngPad && lng <= ne.lng + lngPad;
+  }, [mapBounds]);
 
   const { events: dbEvents } = useEvents();
   const { places: dbPlaces } = usePlaces();
