@@ -1262,7 +1262,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </Marker>
         ))}
 
-        {showHubs && hubPositions.map((hub) => (
+        {showHubs && hubPositions.filter(h => inView(h.lat, h.lng)).map((hub) => (
           <Marker key={`hub-${hub.cityId}`} position={[hub.lat, hub.lng]} icon={createHubIcon(hub)} eventHandlers={{ click: () => handleEventClick(hub.cityId) }}>
             <Popup className="afro-popup" maxWidth={300}>
               <div className="p-1">
