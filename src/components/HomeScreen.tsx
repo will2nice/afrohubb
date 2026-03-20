@@ -30,7 +30,7 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
           {profile?.display_name ? `Hey ${profile.display_name.split(" ")[0]} 👋` : "Welcome 👋"}
         </h1>
         <p className="text-sm text-muted-foreground">
-          Find your people. Discover events. Connect with the diaspora.
+          Culture. Community. Identity. Your global Afro experience starts here.
         </p>
       </div>
 
