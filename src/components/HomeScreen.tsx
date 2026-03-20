@@ -38,9 +38,9 @@ const HomeScreen = ({ onNavigate }: HomeScreenProps) => {
       <div className="px-5 mb-6">
         <div className="grid grid-cols-3 gap-3">
           {[
-            { icon: Users, label: "Community", action: "discover", color: "text-primary" },
-            { icon: Calendar, label: "Events", action: "events", color: "text-accent" },
-            { icon: Star, label: "Profile", action: "profile", color: "text-primary" },
+            { icon: Users, label: "My People", action: "discover", color: "text-primary" },
+            { icon: Calendar, label: "Experiences", action: "events", color: "text-accent" },
+            { icon: Star, label: "Identity", action: "profile", color: "text-primary" },
           ].map((item) => (
             <button
               key={item.label}

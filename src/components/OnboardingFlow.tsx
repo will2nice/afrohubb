@@ -289,9 +289,9 @@ const OnboardingFlow = ({ onComplete }: OnboardingFlowProps) => {
           <div className="animate-fade-in">
             <div className="mb-6">
               <Camera className="text-primary mb-3" size={32} />
-              <h2 className="text-xl font-bold text-foreground mb-1">Add a profile photo</h2>
+              <h2 className="text-xl font-bold text-foreground mb-1">Show your face to the world</h2>
               <p className="text-sm text-muted-foreground">
-                People are more likely to connect with real faces
+                Your community wants to see you — real faces build real bonds
               </p>
             </div>
             <div className="flex flex-col items-center">
