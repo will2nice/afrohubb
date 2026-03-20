@@ -1180,7 +1180,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </Marker>
         ))}
 
-        {showGroups && allGroups.map((group, i) => (
+        {showGroups && allGroups.filter(g => inView(g.lat, g.lng)).map((group, i) => (
           <Marker key={`group-${i}`} position={[group.lat, group.lng]} icon={groupIcon}>
             <Popup className="afro-popup" maxWidth={260}>
               <div className="p-1">
