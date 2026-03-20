@@ -1371,7 +1371,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* Shotgun events from DB */}
-        {showEventbrite && dbEventPositions.filter(e => e.source === "shotgun").map((event) => (
+        {showEventbrite && dbEventPositions.filter(e => e.source === "shotgun" && inView(e.lat, e.lng)).map((event) => (
           <Marker key={`sg-${event.id}`} position={[event.lat, event.lng]} icon={shotgunIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
