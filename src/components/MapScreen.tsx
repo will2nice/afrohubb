@@ -1344,7 +1344,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
 
         {/* DICE events from DB */}
-        {showEventbrite && dbEventPositions.filter(e => e.source === "dice").map((event) => (
+        {showEventbrite && dbEventPositions.filter(e => e.source === "dice" && inView(e.lat, e.lng)).map((event) => (
           <Marker key={`dice-${event.id}`} position={[event.lat, event.lng]} icon={diceIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
             <Popup className="afro-popup" maxWidth={280}>
               <div className="p-1">
