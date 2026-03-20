@@ -605,7 +605,7 @@ const CountryZoomButton = () => {
     const countryCode = cityToCountry[nearestCity];
     const country = countryCode ? countryBounds[countryCode] : null;
     if (country) {
-      map.fitBounds(country.bounds, { animate: true, padding: [20, 20] });
+      map.flyToBounds(country.bounds, { animate: true, padding: [20, 20], duration: 1.5 });
     } else {
       // Fallback: zoom out to level 5
       map.setZoom(5, { animate: true });
