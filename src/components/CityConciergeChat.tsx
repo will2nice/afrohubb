@@ -180,7 +180,7 @@ const CityConciergeChat = ({ city, open, onClose }: Props) => {
               ].map((q) => (
                 <button
                   key={q}
-                  onClick={() => { setInput(q); }}
+                  onClick={() => sendMessage(q)}
                   className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition"
                 >
                   {q}
