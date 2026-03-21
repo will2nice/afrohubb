@@ -1635,7 +1635,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
       )}
 
       {/* Bottom info card - collapsible */}
-      <div className="absolute bottom-20 left-4 right-4 z-[1000] max-w-lg mx-auto">
+      <div className="absolute bottom-20 left-4 right-16 z-[999] max-w-lg">
         <div className="bg-card/95 backdrop-blur-md rounded-2xl border border-border shadow-elevated overflow-hidden">
           <button
             onClick={() => setNearbyCollapsed(!nearbyCollapsed)}
