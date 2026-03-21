@@ -225,20 +225,18 @@ const CityConciergeChat = ({ city, open, onClose }: Props) => {
         >
           <VoiceInputButton
             onTranscript={(text) => setInput((prev) => (prev ? prev + " " + text : text))}
-            disabled={streaming}
           />
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={`Ask about ${city.name}...`}
             className="flex-1 bg-muted rounded-full px-4 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary/30"
-            disabled={streaming}
           />
           <Button
             type="submit"
             size="icon"
             className="rounded-full shrink-0"
-            disabled={streaming || !input.trim()}
+            disabled={!input.trim()}
           >
             <Send className="w-4 h-4" />
           </Button>
