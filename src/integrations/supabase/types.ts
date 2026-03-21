@@ -14,6 +14,89 @@ export type Database = {
   }
   public: {
     Tables: {
+      activities: {
+        Row: {
+          category: string
+          created_at: string
+          creator_id: string
+          description: string
+          expires_at: string
+          id: string
+          is_public: boolean
+          latitude: number
+          location_label: string | null
+          longitude: number
+          max_spots: number | null
+          starts_at: string
+          status: string
+          title: string
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          creator_id: string
+          description?: string
+          expires_at?: string
+          id?: string
+          is_public?: boolean
+          latitude: number
+          location_label?: string | null
+          longitude: number
+          max_spots?: number | null
+          starts_at?: string
+          status?: string
+          title?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          creator_id?: string
+          description?: string
+          expires_at?: string
+          id?: string
+          is_public?: boolean
+          latitude?: number
+          location_label?: string | null
+          longitude?: number
+          max_spots?: number | null
+          starts_at?: string
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      activity_participants: {
+        Row: {
+          activity_id: string
+          created_at: string
+          id: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          activity_id: string
+          created_at?: string
+          id?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          activity_id?: string
+          created_at?: string
+          id?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "activity_participants_activity_id_fkey"
+            columns: ["activity_id"]
+            isOneToOne: false
+            referencedRelation: "activities"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       analytics_events: {
         Row: {
           created_at: string

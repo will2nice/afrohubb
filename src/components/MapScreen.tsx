@@ -3,7 +3,7 @@ import { useScreenView } from "@/hooks/useAnalytics";
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping, Music, Plane, Crosshair, Loader2, Search, Clock, Flame, Ruler } from "lucide-react";
+import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping, Music, Plane, Crosshair, Loader2, Search, Clock, Flame, Ruler, Plus, Lock } from "lucide-react";
 import { events as allEvents, cities, type City, AFRO_NATION_EVENT_ID, SXSW_EVENT_ID } from "@/data/cityData";
 import afroNationIcon from "@/assets/afro-nation-icon.webp";
 import sxswIcon from "@/assets/sxsw-icon.png";
@@ -13,6 +13,9 @@ import { diasporaHubs, type DiasporaHub } from "@/data/diasporaHubs";
 import { useEvents } from "@/hooks/useEvents";
 import { usePlaces } from "@/hooks/usePlaces";
 import { getFlightRoutes } from "@/data/flightData";
+import { useActivities, type Activity } from "@/hooks/useActivities";
+import { useAuth } from "@/contexts/AuthContext";
+import CreateActivitySheet from "@/components/CreateActivitySheet";
 
 // City coordinates - includes Brazil
 const cityCoords: Record<string, [number, number]> = {
@@ -488,6 +491,26 @@ const allPeople = getAllPeople();
 const allGroups = getAllGroups();
 const allResources = getResourcePositions();
 
+const createActivityMapIcon = (emoji: string, isPrivate: boolean) => {
+  const border = isPrivate ? "3px solid hsl(45,90%,50%)" : "3px solid white";
+  return new L.DivIcon({
+    className: "custom-marker",
+    html: `<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,hsl(340,80%,55%),hsl(350,70%,50%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,0.4);border:${border};position:relative;">
+      <span style="font-size:18px;line-height:1;">${emoji}</span>
+      ${isPrivate ? '<div style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:hsl(45,90%,50%);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>' : ''}
+    </div>`,
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -40],
+  });
+};
+
+const CATEGORY_EMOJI: Record<string, string> = {
+  food: "🍽️", nightlife: "🎉", outdoor: "🥾", sightseeing: "🗺️",
+  entertainment: "🎭", shopping: "🛍️", wellness: "🧘", rideshare: "🚗",
+  social: "💬", other: "✨",
+};
+
 const MapController = ({ targetCity, onZoomDone }: { targetCity: string | null; onZoomDone: () => void }) => {
   const map = useMap();
   useEffect(() => {
@@ -684,6 +707,11 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [distanceFilter, setDistanceFilter] = useState<number | null>(null); // km
   const [showTrending, setShowTrending] = useState(false);
   const [mapBounds, setMapBounds] = useState<L.LatLngBounds | null>(null);
+  const [showCreateActivity, setShowCreateActivity] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+
+  const { user } = useAuth();
+  const { activities, createActivity, joinActivity, myParticipation } = useActivities();
 
   const handleBoundsChange = useCallback((bounds: L.LatLngBounds) => {
     setMapBounds(bounds);
@@ -1452,7 +1480,126 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             </Popup>
           </Marker>
         ))}
+        {/* Activity hangouts from DB */}
+        {activities.filter(a => inView(a.latitude, a.longitude)).map((activity) => (
+          <Marker
+            key={`activity-${activity.id}`}
+            position={[activity.latitude, activity.longitude]}
+            icon={createActivityMapIcon(CATEGORY_EMOJI[activity.category] || "✨", !activity.is_public)}
+            eventHandlers={{ click: () => setSelectedActivity(activity) }}
+          >
+            <Popup className="afro-popup" maxWidth={280}>
+              <div className="p-1">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="text-lg">{CATEGORY_EMOJI[activity.category] || "✨"}</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-pink-100 text-pink-700">
+                    {activity.is_public ? "Public" : "Private"}
+                  </span>
+                </div>
+                <h3 className="font-bold text-sm leading-tight">{activity.description || activity.title}</h3>
+                {activity.creator && (
+                  <p className="text-xs text-gray-500 mt-1">by {activity.creator.display_name}</p>
+                )}
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
+                  <Users size={12} />
+                  <span>{activity.participant_count || 0} joined{activity.max_spots ? ` / ${activity.max_spots} spots` : ""}</span>
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
       </MapContainer>
+
+      {/* FAB - Create Activity */}
+      <button
+        onClick={() => setShowCreateActivity(true)}
+        className="absolute bottom-36 right-3 z-[1000] w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition-transform active:scale-95"
+        style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.3)" }}
+      >
+        <Plus size={24} />
+      </button>
+
+      {/* Create Activity Sheet */}
+      <CreateActivitySheet
+        open={showCreateActivity}
+        onClose={() => setShowCreateActivity(false)}
+        onSubmit={(data) => {
+          createActivity.mutate(data);
+          setShowCreateActivity(false);
+        }}
+        initialCenter={[center[0], center[1]]}
+        isPending={createActivity.isPending}
+      />
+
+      {/* Selected activity detail overlay */}
+      {selectedActivity && (
+        <>
+          <div className="fixed inset-0 z-[1001] bg-background/40" onClick={() => setSelectedActivity(null)} />
+          <div className="absolute bottom-20 left-4 right-4 z-[1002] max-w-lg mx-auto animate-slide-up">
+            <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-elevated">
+              <div className="p-5">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">
+                      {CATEGORY_EMOJI[selectedActivity.category] || "✨"}
+                    </div>
+                    <div>
+                      <h3 className="font-display font-bold text-foreground text-lg leading-tight">{selectedActivity.description || selectedActivity.title}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${selectedActivity.is_public ? "bg-primary/10 text-primary" : "bg-amber-100 text-amber-700"}`}>
+                          {selectedActivity.is_public ? "Public" : "Private"}
+                        </span>
+                        {selectedActivity.creator && (
+                          <span className="text-xs text-muted-foreground">by {selectedActivity.creator.display_name}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <button onClick={() => setSelectedActivity(null)} className="p-1.5 rounded-full hover:bg-secondary">
+                    <X size={16} className="text-muted-foreground" />
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Users size={14} className="text-primary" />
+                    <span>{selectedActivity.participant_count || 0} joined{selectedActivity.max_spots ? ` / ${selectedActivity.max_spots} spots` : ""}</span>
+                  </div>
+                </div>
+
+                {/* Join / Request button */}
+                {user && selectedActivity.creator_id !== user.id && (
+                  <div className="mt-4">
+                    {(() => {
+                      const myStatus = myParticipation.find(p => p.activity_id === selectedActivity.id);
+                      if (myStatus?.status === "joined") {
+                        return <div className="w-full py-3 rounded-xl bg-primary/10 text-primary text-center text-sm font-bold">You're in! 🎉</div>;
+                      }
+                      if (myStatus?.status === "pending") {
+                        return <div className="w-full py-3 rounded-xl bg-amber-100 text-amber-700 text-center text-sm font-bold">Request pending ⏳</div>;
+                      }
+                      return (
+                        <button
+                          onClick={() => {
+                            joinActivity.mutate({ activityId: selectedActivity.id, isPublic: selectedActivity.is_public });
+                          }}
+                          disabled={joinActivity.isPending}
+                          className="w-full py-3 rounded-xl gradient-gold text-primary-foreground text-sm font-bold shadow-gold disabled:opacity-50"
+                        >
+                          {selectedActivity.is_public ? "Join Activity" : "Request to Join"}
+                        </button>
+                      );
+                    })()}
+                  </div>
+                )}
+                {user && selectedActivity.creator_id === user.id && (
+                  <div className="w-full py-3 mt-4 rounded-xl bg-secondary text-muted-foreground text-center text-sm font-bold">Your Activity</div>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Selected event detail overlay */}
       {selectedNearbyEvent && (
