@@ -92,7 +92,7 @@ const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <>
       <div className="fixed inset-0 bg-background/50 backdrop-blur-sm z-[2000]" onClick={handleClose} />
       <div className="fixed inset-0 z-[2001] flex items-end sm:items-end justify-center">
