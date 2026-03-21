@@ -1,9 +1,10 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
-import { X, ChevronLeft, MapPin, Lock, Globe, Users, Sparkles } from "lucide-react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { X, ChevronLeft, MapPin, Lock, Globe, Users, Sparkles, Search } from "lucide-react";
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const CATEGORIES = [
   { id: "food", emoji: "🍽️", label: "Food & Drinks", desc: "Restaurants, cafes, bars" },
