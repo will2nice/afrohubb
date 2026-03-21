@@ -685,6 +685,7 @@ interface MapScreenProps {
 type TimeFilter = "all" | "tonight" | "weekend" | "thisweek";
 
 const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
+  const { theme } = useTheme();
   useScreenView("map", { city: selectedCity.id });
   const [showEvents, setShowEvents] = useState(true);
   const [showPeople, setShowPeople] = useState(true);
