@@ -56,9 +56,9 @@ const CityConciergeChat = ({ city, open, onClose }: Props) => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = useCallback(async () => {
-    if (!input.trim() || streaming || !user) return;
-    const userMsg: Msg = { role: "user", content: input.trim() };
+  const sendMessage = useCallback(async (text?: string) => {
+    const msgText = text || input.trim();
+    if (!msgText || streaming || !user) return;
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setStreaming(true);
