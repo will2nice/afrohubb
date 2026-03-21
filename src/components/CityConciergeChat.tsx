@@ -101,8 +101,9 @@ const CityConciergeChat = ({ city, open, onClose }: Props) => {
       const reader = resp.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
+      let streamComplete = false;
 
-      while (true) {
+      while (!streamComplete) {
         const { done, value } = await reader.read();
         if (done) break;
         buffer += decoder.decode(value, { stream: true });
@@ -114,7 +115,11 @@ const CityConciergeChat = ({ city, open, onClose }: Props) => {
           if (line.endsWith("\r")) line = line.slice(0, -1);
           if (!line.startsWith("data: ")) continue;
           const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") break;
+          if (jsonStr === "[DONE]") {
+            streamComplete = true;
+            await reader.cancel();
+            break;
+          }
           try {
             const parsed = JSON.parse(jsonStr);
             const content = parsed.choices?.[0]?.delta?.content;
