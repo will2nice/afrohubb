@@ -1480,7 +1480,126 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             </Popup>
           </Marker>
         ))}
+        {/* Activity hangouts from DB */}
+        {activities.filter(a => inView(a.latitude, a.longitude)).map((activity) => (
+          <Marker
+            key={`activity-${activity.id}`}
+            position={[activity.latitude, activity.longitude]}
+            icon={createActivityMapIcon(CATEGORY_EMOJI[activity.category] || "✨", !activity.is_public)}
+            eventHandlers={{ click: () => setSelectedActivity(activity) }}
+          >
+            <Popup className="afro-popup" maxWidth={280}>
+              <div className="p-1">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="text-lg">{CATEGORY_EMOJI[activity.category] || "✨"}</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-pink-100 text-pink-700">
+                    {activity.is_public ? "Public" : "Private"}
+                  </span>
+                </div>
+                <h3 className="font-bold text-sm leading-tight">{activity.description || activity.title}</h3>
+                {activity.creator && (
+                  <p className="text-xs text-gray-500 mt-1">by {activity.creator.display_name}</p>
+                )}
+                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
+                  <Users size={12} />
+                  <span>{activity.participant_count || 0} joined{activity.max_spots ? ` / ${activity.max_spots} spots` : ""}</span>
+                </div>
+              </div>
+            </Popup>
+          </Marker>
+        ))}
       </MapContainer>
+
+      {/* FAB - Create Activity */}
+      <button
+        onClick={() => setShowCreateActivity(true)}
+        className="absolute bottom-36 right-3 z-[1000] w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition-transform active:scale-95"
+        style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.3)" }}
+      >
+        <Plus size={24} />
+      </button>
+
+      {/* Create Activity Sheet */}
+      <CreateActivitySheet
+        open={showCreateActivity}
+        onClose={() => setShowCreateActivity(false)}
+        onSubmit={(data) => {
+          createActivity.mutate(data);
+          setShowCreateActivity(false);
+        }}
+        initialCenter={[center[0], center[1]]}
+        isPending={createActivity.isPending}
+      />
+
+      {/* Selected activity detail overlay */}
+      {selectedActivity && (
+        <>
+          <div className="fixed inset-0 z-[1001] bg-background/40" onClick={() => setSelectedActivity(null)} />
+          <div className="absolute bottom-20 left-4 right-4 z-[1002] max-w-lg mx-auto animate-slide-up">
+            <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-elevated">
+              <div className="p-5">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-2xl">
+                      {CATEGORY_EMOJI[selectedActivity.category] || "✨"}
+                    </div>
+                    <div>
+                      <h3 className="font-display font-bold text-foreground text-lg leading-tight">{selectedActivity.description || selectedActivity.title}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${selectedActivity.is_public ? "bg-primary/10 text-primary" : "bg-amber-100 text-amber-700"}`}>
+                          {selectedActivity.is_public ? "Public" : "Private"}
+                        </span>
+                        {selectedActivity.creator && (
+                          <span className="text-xs text-muted-foreground">by {selectedActivity.creator.display_name}</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <button onClick={() => setSelectedActivity(null)} className="p-1.5 rounded-full hover:bg-secondary">
+                    <X size={16} className="text-muted-foreground" />
+                  </button>
+                </div>
+
+                <div className="flex items-center gap-4 mt-4 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Users size={14} className="text-primary" />
+                    <span>{selectedActivity.participant_count || 0} joined{selectedActivity.max_spots ? ` / ${selectedActivity.max_spots} spots` : ""}</span>
+                  </div>
+                </div>
+
+                {/* Join / Request button */}
+                {user && selectedActivity.creator_id !== user.id && (
+                  <div className="mt-4">
+                    {(() => {
+                      const myStatus = myParticipation.find(p => p.activity_id === selectedActivity.id);
+                      if (myStatus?.status === "joined") {
+                        return <div className="w-full py-3 rounded-xl bg-primary/10 text-primary text-center text-sm font-bold">You're in! 🎉</div>;
+                      }
+                      if (myStatus?.status === "pending") {
+                        return <div className="w-full py-3 rounded-xl bg-amber-100 text-amber-700 text-center text-sm font-bold">Request pending ⏳</div>;
+                      }
+                      return (
+                        <button
+                          onClick={() => {
+                            joinActivity.mutate({ activityId: selectedActivity.id, isPublic: selectedActivity.is_public });
+                          }}
+                          disabled={joinActivity.isPending}
+                          className="w-full py-3 rounded-xl gradient-gold text-primary-foreground text-sm font-bold shadow-gold disabled:opacity-50"
+                        >
+                          {selectedActivity.is_public ? "Join Activity" : "Request to Join"}
+                        </button>
+                      );
+                    })()}
+                  </div>
+                )}
+                {user && selectedActivity.creator_id === user.id && (
+                  <div className="w-full py-3 mt-4 rounded-xl bg-secondary text-muted-foreground text-center text-sm font-bold">Your Activity</div>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
       {/* Selected event detail overlay */}
       {selectedNearbyEvent && (
