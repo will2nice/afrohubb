@@ -65,20 +65,57 @@ const LocationPicker = ({ position, onPositionChange }: { position: [number, num
 };
 
 const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672, -97.7431], isPending }: Props) => {
+  const { theme } = useTheme();
   const [step, setStep] = useState<Step>("describe");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [position, setPosition] = useState<[number, number]>(initialCenter);
+  const [locationLabel, setLocationLabel] = useState("");
   const [isPublic, setIsPublic] = useState(true);
   const [maxSpots, setMaxSpots] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Array<{ display_name: string; lat: string; lon: string }>>([]);
+  const [searching, setSearching] = useState(false);
+  const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
+
+  const searchPlaces = useCallback(async (query: string) => {
+    if (query.length < 3) { setSearchResults([]); return; }
+    setSearching(true);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`
+      );
+      const data = await res.json();
+      setSearchResults(data);
+    } catch { setSearchResults([]); }
+    setSearching(false);
+  }, []);
+
+  const handleSearchInput = useCallback((val: string) => {
+    setSearchQuery(val);
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    searchTimeout.current = setTimeout(() => searchPlaces(val), 400);
+  }, [searchPlaces]);
+
+  const selectPlace = useCallback((place: { display_name: string; lat: string; lon: string }) => {
+    const lat = parseFloat(place.lat);
+    const lng = parseFloat(place.lon);
+    setPosition([lat, lng]);
+    setLocationLabel(place.display_name.split(",").slice(0, 2).join(","));
+    setSearchQuery(place.display_name.split(",").slice(0, 2).join(", "));
+    setSearchResults([]);
+  }, []);
 
   const reset = useCallback(() => {
     setStep("describe");
     setDescription("");
     setCategory("");
     setPosition(initialCenter);
+    setLocationLabel("");
     setIsPublic(true);
     setMaxSpots("");
+    setSearchQuery("");
+    setSearchResults([]);
   }, [initialCenter]);
 
   const handleClose = () => {
