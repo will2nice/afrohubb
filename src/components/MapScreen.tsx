@@ -1510,13 +1510,14 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
       </MapContainer>
 
-      {/* FAB - Create Activity */}
+      {/* FAB - Create Activity — top-left below filters */}
       <button
         onClick={() => setShowCreateActivity(true)}
-        className="absolute bottom-36 right-3 z-[1000] w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition-transform active:scale-95"
+        className="absolute top-[13.5rem] left-4 z-[1000] w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition-transform active:scale-95"
         style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.3)" }}
+        title="Create Activity"
       >
-        <Plus size={24} />
+        <Plus size={22} />
       </button>
 
       {/* Create Activity Sheet */}
