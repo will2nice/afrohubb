@@ -1,9 +1,10 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
-import { X, ChevronLeft, MapPin, Lock, Globe, Users, Sparkles } from "lucide-react";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { X, ChevronLeft, MapPin, Lock, Globe, Users, Sparkles, Search } from "lucide-react";
+import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const CATEGORIES = [
   { id: "food", emoji: "🍽️", label: "Food & Drinks", desc: "Restaurants, cafes, bars" },
@@ -44,6 +45,16 @@ interface Props {
 
 type Step = "describe" | "category" | "location" | "visibility";
 
+const FlyToPosition = ({ position }: { position: [number, number] }) => {
+  const map = useMap();
+  const prevPos = useRef(position);
+  if (prevPos.current[0] !== position[0] || prevPos.current[1] !== position[1]) {
+    prevPos.current = position;
+    map.flyTo(position, 16, { duration: 0.8 });
+  }
+  return null;
+};
+
 const LocationPicker = ({ position, onPositionChange }: { position: [number, number]; onPositionChange: (pos: [number, number]) => void }) => {
   useMapEvents({
     click(e) {
@@ -54,20 +65,57 @@ const LocationPicker = ({ position, onPositionChange }: { position: [number, num
 };
 
 const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672, -97.7431], isPending }: Props) => {
+  const { theme } = useTheme();
   const [step, setStep] = useState<Step>("describe");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [position, setPosition] = useState<[number, number]>(initialCenter);
+  const [locationLabel, setLocationLabel] = useState("");
   const [isPublic, setIsPublic] = useState(true);
   const [maxSpots, setMaxSpots] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Array<{ display_name: string; lat: string; lon: string }>>([]);
+  const [searching, setSearching] = useState(false);
+  const searchTimeout = useRef<ReturnType<typeof setTimeout>>();
+
+  const searchPlaces = useCallback(async (query: string) => {
+    if (query.length < 3) { setSearchResults([]); return; }
+    setSearching(true);
+    try {
+      const res = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`
+      );
+      const data = await res.json();
+      setSearchResults(data);
+    } catch { setSearchResults([]); }
+    setSearching(false);
+  }, []);
+
+  const handleSearchInput = useCallback((val: string) => {
+    setSearchQuery(val);
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
+    searchTimeout.current = setTimeout(() => searchPlaces(val), 400);
+  }, [searchPlaces]);
+
+  const selectPlace = useCallback((place: { display_name: string; lat: string; lon: string }) => {
+    const lat = parseFloat(place.lat);
+    const lng = parseFloat(place.lon);
+    setPosition([lat, lng]);
+    setLocationLabel(place.display_name.split(",").slice(0, 2).join(","));
+    setSearchQuery(place.display_name.split(",").slice(0, 2).join(", "));
+    setSearchResults([]);
+  }, []);
 
   const reset = useCallback(() => {
     setStep("describe");
     setDescription("");
     setCategory("");
     setPosition(initialCenter);
+    setLocationLabel("");
     setIsPublic(true);
     setMaxSpots("");
+    setSearchQuery("");
+    setSearchResults([]);
   }, [initialCenter]);
 
   const handleClose = () => {
@@ -83,7 +131,7 @@ const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672
       category,
       latitude: position[0],
       longitude: position[1],
-      location_label: "",
+      location_label: locationLabel,
       is_public: isPublic,
       max_spots: maxSpots ? parseInt(maxSpots) : null,
     });
@@ -193,13 +241,49 @@ const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672
             {/* Step 3: Location picker */}
             {step === "location" && (
               <div className="space-y-3">
+                {/* Search bar */}
+                <div className="relative">
+                  <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => handleSearchInput(e.target.value)}
+                    placeholder="Search for a place, bar, restaurant..."
+                    className="w-full pl-9 pr-4 py-3 rounded-xl bg-secondary text-foreground placeholder:text-muted-foreground border border-border text-sm focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
+                  />
+                  {searching && (
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  )}
+                </div>
+
+                {/* Search results dropdown */}
+                {searchResults.length > 0 && (
+                  <div className="bg-card border border-border rounded-xl overflow-hidden shadow-lg max-h-48 overflow-y-auto">
+                    {searchResults.map((place, i) => (
+                      <button
+                        key={i}
+                        onClick={() => selectPlace(place)}
+                        className="w-full text-left px-4 py-3 flex items-start gap-3 hover:bg-secondary/50 transition-colors border-b border-border last:border-0"
+                      >
+                        <MapPin size={14} className="text-primary mt-0.5 shrink-0" />
+                        <span className="text-sm text-foreground line-clamp-2">{place.display_name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+
                 <div className="bg-secondary/50 rounded-xl p-3 flex items-start gap-2">
                   <MapPin size={18} className="text-primary mt-0.5 shrink-0" />
                   <div>
-                    <p className="text-sm font-semibold text-foreground">Tap the map to set location</p>
-                    <p className="text-xs text-muted-foreground">Choose a general area for your hangout</p>
+                    <p className="text-sm font-semibold text-foreground">
+                      {locationLabel || "Tap the map or search above"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">Pin a spot for your hangout</p>
                   </div>
                 </div>
+
                 <div className="rounded-2xl overflow-hidden border border-border h-64">
                   <MapContainer
                     center={initialCenter}
@@ -207,10 +291,21 @@ const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672
                     style={{ height: "100%", width: "100%" }}
                     zoomControl={false}
                   >
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    <LocationPicker position={position} onPositionChange={setPosition} />
+                    <TileLayer
+                      url={theme === "dark"
+                        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                        : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                      }
+                    />
+                    <LocationPicker position={position} onPositionChange={(pos) => {
+                      setPosition(pos);
+                      setLocationLabel("");
+                      setSearchQuery("");
+                    }} />
+                    <FlyToPosition position={position} />
                   </MapContainer>
                 </div>
+
                 <button
                   onClick={() => setStep("visibility")}
                   className="w-full py-4 rounded-2xl bg-primary text-primary-foreground font-bold text-base"
