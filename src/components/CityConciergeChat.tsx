@@ -56,9 +56,10 @@ const CityConciergeChat = ({ city, open, onClose }: Props) => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = useCallback(async () => {
-    if (!input.trim() || streaming || !user) return;
-    const userMsg: Msg = { role: "user", content: input.trim() };
+  const sendMessage = useCallback(async (text?: string) => {
+    const msgText = text || input.trim();
+    if (!msgText || streaming || !user) return;
+    const userMsg: Msg = { role: "user", content: msgText };
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setStreaming(true);
@@ -179,7 +180,7 @@ const CityConciergeChat = ({ city, open, onClose }: Props) => {
               ].map((q) => (
                 <button
                   key={q}
-                  onClick={() => { setInput(q); }}
+                  onClick={() => sendMessage(q)}
                   className="text-xs px-3 py-1.5 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition"
                 >
                   {q}
