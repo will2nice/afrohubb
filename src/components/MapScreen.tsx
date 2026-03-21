@@ -1093,7 +1093,10 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         <NearMeButton onLocated={(lat, lng) => setUserLocation([lat, lng])} />
         {userLocation && <Marker position={userLocation} icon={userLocationIcon}><Popup>You are here</Popup></Marker>}
         <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+          url={theme === "dark"
+            ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          }
           updateWhenZooming={false}
           updateWhenIdle={true}
         />
