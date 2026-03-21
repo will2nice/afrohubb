@@ -91,6 +91,7 @@ const NotificationItem = ({
 
 const PreferencesPanel = ({ onBack }: { onBack: () => void }) => {
   const { preferences, loading, updatePreferences } = useNotificationPreferences();
+  const { isSupported, isSubscribed, permission, loading: pushLoading, subscribe, unsubscribe } = usePushNotifications();
 
   if (loading || !preferences) {
     return (
@@ -115,6 +116,33 @@ const PreferencesPanel = ({ onBack }: { onBack: () => void }) => {
         </button>
         <h3 className="text-base font-semibold text-foreground">Notification Settings</h3>
       </div>
+
+      {/* Push notification toggle */}
+      {isSupported && (
+        <div className="px-4 py-3.5 border-b border-border bg-secondary/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <Smartphone className="w-4 h-4 text-primary" />
+              </div>
+              <div>
+                <p className="text-sm font-medium text-foreground">Browser Push</p>
+                <p className="text-xs text-muted-foreground">
+                  {permission === "denied"
+                    ? "Blocked in browser settings"
+                    : "Get alerts even when the app is closed"}
+                </p>
+              </div>
+            </div>
+            <Switch
+              checked={isSubscribed}
+              disabled={pushLoading || permission === "denied"}
+              onCheckedChange={(checked) => (checked ? subscribe() : unsubscribe())}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="divide-y divide-border">
         {toggles.map(({ key, label, desc }) => (
           <div key={key} className="flex items-center justify-between px-4 py-3.5">
