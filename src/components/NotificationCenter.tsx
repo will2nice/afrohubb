@@ -13,8 +13,10 @@ import {
   Settings,
   ArrowLeft,
   X,
+  Smartphone,
 } from "lucide-react";
 import { useNotifications, useNotificationPreferences, type Notification } from "@/hooks/useNotifications";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { Switch } from "@/components/ui/switch";
 import { formatDistanceToNow } from "date-fns";
 
