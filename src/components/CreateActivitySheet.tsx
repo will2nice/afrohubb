@@ -286,5 +286,6 @@ const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672
     </>,
     document.body
   );
+};
 
 export default CreateActivitySheet;
