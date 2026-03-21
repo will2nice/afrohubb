@@ -491,6 +491,26 @@ const allPeople = getAllPeople();
 const allGroups = getAllGroups();
 const allResources = getResourcePositions();
 
+const createActivityMapIcon = (emoji: string, isPrivate: boolean) => {
+  const border = isPrivate ? "3px solid hsl(45,90%,50%)" : "3px solid white";
+  return new L.DivIcon({
+    className: "custom-marker",
+    html: `<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,hsl(340,80%,55%),hsl(350,70%,50%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,0.4);border:${border};position:relative;">
+      <span style="font-size:18px;line-height:1;">${emoji}</span>
+      ${isPrivate ? '<div style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:hsl(45,90%,50%);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>' : ''}
+    </div>`,
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -40],
+  });
+};
+
+const CATEGORY_EMOJI: Record<string, string> = {
+  food: "🍽️", nightlife: "🎉", outdoor: "🥾", sightseeing: "🗺️",
+  entertainment: "🎭", shopping: "🛍️", wellness: "🧘", rideshare: "🚗",
+  social: "💬", other: "✨",
+};
+
 const MapController = ({ targetCity, onZoomDone }: { targetCity: string | null; onZoomDone: () => void }) => {
   const map = useMap();
   useEffect(() => {
