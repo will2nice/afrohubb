@@ -38,6 +38,7 @@ const Index = () => {
       {activeTab === "events" && <EventsScreen selectedCity={selectedCity} onCityChange={setSelectedCity} />}
       {activeTab === "messages" && <MessagesScreen />}
       {activeTab === "profile" && <ProfileScreen />}
+      <PushNotificationPrompt />
       <BottomNav activeTab={activeTab} onTabChange={setActiveTab} unreadMessages={unreadMessages} />
     </div>
   );
