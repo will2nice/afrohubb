@@ -7,6 +7,7 @@ import EventsScreen from "@/components/EventsScreen";
 import MessagesScreen from "@/components/MessagesScreen";
 import ProfileScreen from "@/components/ProfileScreen";
 import OnboardingFlow from "@/components/OnboardingFlow";
+import PushNotificationPrompt from "@/components/PushNotificationPrompt";
 import { cities, type City } from "@/data/cityData";
 import { useMessages } from "@/hooks/useMessages";
 import { useProfile } from "@/hooks/useProfile";
