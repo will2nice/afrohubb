@@ -94,15 +94,15 @@ const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672
   return (
     <>
       <div className="fixed inset-0 bg-background/50 backdrop-blur-sm z-[2000]" onClick={handleClose} />
-      <div className="fixed bottom-0 left-0 right-0 z-[2001] animate-slide-up">
-        <div className="max-w-lg mx-auto bg-card rounded-t-3xl border border-border shadow-elevated overflow-hidden max-h-[85vh] flex flex-col">
+      <div className="fixed inset-x-0 bottom-0 z-[2001] flex items-end justify-center">
+        <div className="w-full max-w-lg bg-card rounded-t-3xl border border-border border-b-0 shadow-elevated flex flex-col" style={{ maxHeight: "90vh" }}>
           {/* Handle */}
-          <div className="flex justify-center pt-3 pb-1">
+          <div className="flex justify-center pt-3 pb-1 shrink-0">
             <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
           </div>
 
           {/* Header */}
-          <div className="flex items-center justify-between px-4 pb-3">
+          <div className="flex items-center justify-between px-5 pb-3 shrink-0">
             {step !== "describe" ? (
               <button
                 onClick={() => {
@@ -129,23 +129,26 @@ const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672
           </div>
 
           {/* Steps */}
-          <div className="flex-1 overflow-y-auto px-4 pb-4">
+          <div className="flex-1 overflow-y-auto px-5 pb-8 min-h-0">
             {/* Step 1: Describe */}
             {step === "describe" && (
-              <div className="space-y-4">
+              <div className="space-y-5 py-2">
                 <div className="flex justify-center">
                   <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center">
                     <Sparkles size={28} className="text-primary" />
                   </div>
                 </div>
-                <input
+                <p className="text-center text-sm text-muted-foreground">Describe what you want to do — keep it casual!</p>
+                <textarea
                   autoFocus
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="grab coffee, hang out at the park, e..."
-                  className="w-full text-lg text-foreground placeholder:text-muted-foreground bg-transparent border-b-2 border-primary/50 focus:border-primary outline-none pb-2 transition-colors"
+                  placeholder="grab coffee, hang out at the park, explore the city..."
+                  rows={3}
+                  className="w-full text-base text-foreground placeholder:text-muted-foreground bg-secondary/50 rounded-2xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none p-4 resize-none transition-colors"
                   maxLength={200}
                 />
+                <p className="text-right text-[10px] text-muted-foreground">{description.length}/200</p>
                 <button
                   onClick={() => description.trim() && setStep("category")}
                   disabled={!description.trim()}
