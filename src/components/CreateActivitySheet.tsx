@@ -45,6 +45,16 @@ interface Props {
 
 type Step = "describe" | "category" | "location" | "visibility";
 
+const FlyToPosition = ({ position }: { position: [number, number] }) => {
+  const map = useMap();
+  const prevPos = useRef(position);
+  if (prevPos.current[0] !== position[0] || prevPos.current[1] !== position[1]) {
+    prevPos.current = position;
+    map.flyTo(position, 16, { duration: 0.8 });
+  }
+  return null;
+};
+
 const LocationPicker = ({ position, onPositionChange }: { position: [number, number]; onPositionChange: (pos: [number, number]) => void }) => {
   useMapEvents({
     click(e) {
