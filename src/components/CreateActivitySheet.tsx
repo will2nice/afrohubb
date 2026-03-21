@@ -129,7 +129,7 @@ const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672
           </div>
 
           {/* Steps */}
-          <div className="flex-1 overflow-y-auto px-5 pb-8 min-h-0">
+          <div className="flex-1 overflow-y-auto px-5 pb-24 sm:pb-8 min-h-0">
             {/* Step 1: Describe */}
             {step === "describe" && (
               <div className="space-y-5 py-2">
