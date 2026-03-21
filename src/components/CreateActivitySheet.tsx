@@ -131,7 +131,7 @@ const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672
       category,
       latitude: position[0],
       longitude: position[1],
-      location_label: "",
+      location_label: locationLabel,
       is_public: isPublic,
       max_spots: maxSpots ? parseInt(maxSpots) : null,
     });
