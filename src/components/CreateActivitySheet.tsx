@@ -94,8 +94,8 @@ const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672
   return (
     <>
       <div className="fixed inset-0 bg-background/50 backdrop-blur-sm z-[2000]" onClick={handleClose} />
-      <div className="fixed inset-x-0 bottom-0 z-[2001] flex items-end justify-center">
-        <div className="w-full max-w-lg bg-card rounded-t-3xl border border-border border-b-0 shadow-elevated flex flex-col" style={{ maxHeight: "90vh" }}>
+      <div className="fixed inset-0 z-[2001] flex items-end sm:items-end justify-center">
+        <div className="w-full h-full sm:h-auto sm:max-h-[90vh] max-w-lg bg-card sm:rounded-t-3xl border-0 sm:border sm:border-border sm:border-b-0 shadow-elevated flex flex-col">
           {/* Handle */}
           <div className="flex justify-center pt-3 pb-1 shrink-0">
             <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
