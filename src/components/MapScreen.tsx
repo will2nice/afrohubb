@@ -638,7 +638,7 @@ const CountryZoomButton = () => {
   return (
     <button
       onClick={handleZoomToCountry}
-      className="absolute bottom-48 right-3 z-[1000] p-2.5 rounded-full bg-card/95 backdrop-blur-lg border border-border shadow-lg text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+      className="absolute bottom-24 right-3 z-[1000] p-2.5 rounded-full bg-card/95 backdrop-blur-lg border border-border shadow-lg text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
       title="Zoom to country"
     >
       <Globe size={18} />
