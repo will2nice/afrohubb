@@ -638,7 +638,7 @@ const CountryZoomButton = () => {
   return (
     <button
       onClick={handleZoomToCountry}
-      className="absolute bottom-48 right-3 z-[1000] p-2.5 rounded-full bg-card/95 backdrop-blur-lg border border-border shadow-lg text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
+      className="absolute bottom-24 right-3 z-[1000] p-2.5 rounded-full bg-card/95 backdrop-blur-lg border border-border shadow-lg text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
       title="Zoom to country"
     >
       <Globe size={18} />
@@ -1510,13 +1510,14 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         ))}
       </MapContainer>
 
-      {/* FAB - Create Activity */}
+      {/* FAB - Create Activity — top-left below filters */}
       <button
         onClick={() => setShowCreateActivity(true)}
-        className="absolute bottom-36 right-3 z-[1000] w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition-transform active:scale-95"
+        className="absolute top-[13.5rem] left-4 z-[1000] w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition-transform active:scale-95"
         style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.3)" }}
+        title="Create Activity"
       >
-        <Plus size={24} />
+        <Plus size={22} />
       </button>
 
       {/* Create Activity Sheet */}
@@ -1634,7 +1635,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
       )}
 
       {/* Bottom info card - collapsible */}
-      <div className="absolute bottom-20 left-4 right-4 z-[1000] max-w-lg mx-auto">
+      <div className="absolute bottom-20 left-4 right-16 z-[999] max-w-lg">
         <div className="bg-card/95 backdrop-blur-md rounded-2xl border border-border shadow-elevated overflow-hidden">
           <button
             onClick={() => setNearbyCollapsed(!nearbyCollapsed)}
