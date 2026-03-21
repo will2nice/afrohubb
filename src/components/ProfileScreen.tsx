@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, Image, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Handshake, Trophy, Briefcase, Sun, Moon, Ticket, BookOpen, Share2, Smartphone } from "lucide-react";
+import { Settings, ChevronRight, Shield, Edit3, Heart, Calendar, Users, Crown, LogOut, X, Camera, MapPin, Heart as HeartIcon, MessageCircle, Grid3X3, Bookmark, Trophy, Briefcase, Sun, Ticket, BookOpen, Share2, Smartphone, Image, Plus, CalendarCheck, CalendarClock } from "lucide-react";
 import InviteFriends from "@/components/InviteFriends";
 import TapShareCard from "@/components/TapShareCard";
 import { useNavigate } from "react-router-dom";
@@ -9,33 +9,14 @@ import CheckInScreen from "@/components/CheckInScreen";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
+import { useEvents } from "@/hooks/useEvents";
 import { useToast } from "@/hooks/use-toast";
+import { usePosts } from "@/hooks/usePosts";
 import SubscriptionModal from "@/components/SubscriptionModal";
 import VerifiedBadge from "@/components/VerifiedBadge";
 import ProfileCompleteness from "@/components/ProfileCompleteness";
 import profileMan1 from "@/assets/profile-man-1.jpg";
-
-// Dating mode removed - keeping imports for potential future use
-
-// Community mode photos - activities, sports, hangouts
-import communityBasketball from "@/assets/community-basketball.jpg";
-import communityGamenight from "@/assets/community-gamenight.jpg";
-import communityNightout from "@/assets/community-nightout.jpg";
-import communitySoccer from "@/assets/community-soccer.jpg";
-import communityFifa from "@/assets/community-fifa.jpg";
-
-// Networking mode photos - professional, headshots, conferences
-import networkingHeadshot from "@/assets/networking-headshot.jpg";
-import networkingCollege from "@/assets/networking-college.jpg";
-import networkingConference from "@/assets/networking-conference.jpg";
-import networkingPanel from "@/assets/networking-panel.jpg";
-import networkingTeam from "@/assets/networking-team.jpg";
-
-const stats = [
-  { label: "Posts", value: "24" },
-  { label: "Followers", value: "1.2K" },
-  { label: "Following", value: "348" },
-];
+import { format, isPast, isFuture } from "date-fns";
 
 const menuItems = [
   { icon: Edit3, label: "Edit Profile", desc: "Photos, bio, prompts" },
@@ -51,60 +32,22 @@ const menuItems = [
   { icon: LogOut, label: "Log Out", desc: "", danger: true, action: "logout" },
 ];
 
-const interests = ["Afrobeats", "Tech", "Soccer", "Travel", "Fashion", "Cooking", "Entrepreneurship"];
-
-interface FeedPost {
-  id: number;
-  photo: string;
-  caption: string;
-  location: string;
-  likes: number;
-  comments: number;
-  timeAgo: string;
-}
-
-const modeFeedPosts: Record<string, FeedPost[]> = {
-  community: [
-    { id: 1, photo: communityBasketball, caption: "Pickup game with the boys. We don't lose 😤🏀 Who's pulling up next weekend?", location: "San Antonio, TX", likes: 378, comments: 48, timeAgo: "3h" },
-    { id: 2, photo: communityGamenight, caption: "Game night got intense! Football on the screen, wings on the table 🏈🍗", location: "Houston, TX", likes: 298, comments: 37, timeAgo: "6h" },
-    { id: 3, photo: communityNightout, caption: "Boys night out. Good vibes, good drinks, good company 🍻🤝", location: "Dallas, TX", likes: 442, comments: 53, timeAgo: "1d" },
-    { id: 4, photo: communitySoccer, caption: "Sunday league action. Left the defender in the dust ⚽💨", location: "Austin, TX", likes: 367, comments: 42, timeAgo: "2d" },
-    { id: 5, photo: communityFifa, caption: "FIFA tournament at the crib. I went undefeated 🎮😂 No cap", location: "Houston, TX", likes: 289, comments: 64, timeAgo: "4d" },
-  ],
-  networking: [
-    { id: 1, photo: networkingHeadshot, caption: "New headshot just dropped. Ready for what's next 💼📸", location: "Houston, TX", likes: 534, comments: 78, timeAgo: "4h" },
-    { id: 2, photo: networkingCollege, caption: "Campus days shaped the vision. Forever grateful for the foundation 🎓📚", location: "Dallas, TX", likes: 287, comments: 45, timeAgo: "1d" },
-    { id: 3, photo: networkingConference, caption: "AfroTech conference was insane. Made connections that'll change the trajectory 🚀🤝", location: "Austin, TX", likes: 678, comments: 112, timeAgo: "2d" },
-    { id: 4, photo: networkingPanel, caption: "Spoke on a panel about Black tech founders today. Representation matters in every room 🎤💡", location: "Houston, TX", likes: 723, comments: 96, timeAgo: "3d" },
-    { id: 5, photo: networkingTeam, caption: "Team meeting energy. Building something special with these brilliant minds 🖥️🔥", location: "Atlanta, GA", likes: 456, comments: 67, timeAgo: "5d" },
-  ],
-};
-
-type ProfileMode = "community" | "networking";
-
-const modeBios: Record<ProfileMode, string> = {
-  community: "Looking for pickup basketball, soccer, and guys to hang with. Brotherhood first 🏀⚽🤝",
-  networking: "Entrepreneur & startup founder. Looking to connect with mentors, investors & ambitious minds 💼🚀",
-};
-
-const modeInterests: Record<ProfileMode, string[]> = {
-  community: ["Basketball", "Soccer", "Gym", "Hiking", "Game Nights", "Pickup Sports", "Brotherhood"],
-  networking: ["Startups", "Tech", "Investing", "Mentorship", "Real Estate", "Marketing", "Leadership"],
-};
+type ProfileTab = "events" | "posts";
 
 const ProfileScreen = () => {
-  // ProfileMode type is defined above the component
   const [showSettings, setShowSettings] = useState(false);
-  const [profileMode, setProfileMode] = useState<ProfileMode>("community");
-  const [viewMode, setViewMode] = useState<"feed" | "grid" | "invite">("feed");
+  const [activeTab, setActiveTab] = useState<ProfileTab>("events");
+  const [eventFilter, setEventFilter] = useState<"upcoming" | "past">("upcoming");
   const [showTapCard, setShowTapCard] = useState(false);
-  const [likedPosts, setLikedPosts] = useState<Set<number>>(new Set());
   const [showEditProfile, setShowEditProfile] = useState(false);
-  const { signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { profile, updateProfile, uploadAvatar } = useProfile();
+  const { events, rsvpEventIds } = useEvents();
+  const { posts, createPost } = usePosts();
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const postImageRef = useRef<HTMLInputElement>(null);
 
   const [editName, setEditName] = useState("");
   const [editBio, setEditBio] = useState("");
@@ -126,7 +69,6 @@ const ProfileScreen = () => {
         bio: editBio,
         city: editCity,
         age: editAge ? parseInt(editAge) : null,
-        profile_mode: profileMode,
       });
       setShowEditProfile(false);
       toast({ title: "Profile updated! ✨" });
@@ -143,6 +85,17 @@ const ProfileScreen = () => {
       toast({ title: "Photo updated! 📸" });
     } catch (err: any) {
       toast({ title: "Upload failed", description: err.message, variant: "destructive" });
+    }
+  };
+
+  const handlePostImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      await createPost("", file, profile?.city || undefined);
+      toast({ title: "Posted! 🔥" });
+    } catch (err: any) {
+      toast({ title: "Post failed", description: err.message, variant: "destructive" });
     }
   };
 
@@ -171,55 +124,46 @@ const ProfileScreen = () => {
     }
   };
 
-  if (showPromoter) {
-    return <PromoterDashboard onBack={() => setShowPromoter(false)} />;
-  }
-  if (showMyTickets) {
-    return <MyTicketsScreen onBack={() => setShowMyTickets(false)} />;
-  }
-  if (showCheckIn) {
-    return <CheckInScreen onBack={() => setShowCheckIn(false)} />;
-  }
+  if (showPromoter) return <PromoterDashboard onBack={() => setShowPromoter(false)} />;
+  if (showMyTickets) return <MyTicketsScreen onBack={() => setShowMyTickets(false)} />;
+  if (showCheckIn) return <CheckInScreen onBack={() => setShowCheckIn(false)} />;
 
   const displayName = profile?.display_name || "Your Name";
   const displayCity = profile?.city || "Set your city";
-  const displayBio = profile?.bio || modeBios[profileMode];
+  const displayBio = profile?.bio || "Living my best life 🌍✨";
   const avatarUrl = profile?.avatar_url || profileMan1;
 
-  const profileModes: { key: ProfileMode; icon: React.ReactNode; label: string; desc: string; color: string }[] = [
-    { key: "community", icon: <Trophy size={18} />, label: "Community", desc: "Friends, sports, hangouts", color: "from-emerald-500 to-teal-500" },
-    { key: "networking", icon: <Briefcase size={18} />, label: "Networking", desc: "Mentors & professionals", color: "from-blue-500 to-indigo-500" },
+  // Filter events user is attending (RSVP'd)
+  const myEvents = events.filter((e) => rsvpEventIds.includes(e.id));
+  const upcomingEvents = myEvents.filter((e) => isFuture(new Date(e.date)));
+  const pastEvents = myEvents.filter((e) => isPast(new Date(e.date)));
+  const filteredEvents = eventFilter === "upcoming" ? upcomingEvents : pastEvents;
+
+  // User's posts
+  const myPosts = posts.filter((p) => p.user_id === user?.id);
+
+  // Stats
+  const stats = [
+    { label: "Events", value: myEvents.length.toString() },
+    { label: "Views", value: "5" },
+    { label: "Followers", value: "0" },
+    { label: "Following", value: "0" },
   ];
 
-  const activeMode = profileModes.find(m => m.key === profileMode)!;
-
-  // modeBios and modeInterests are defined above the component
-
-  const toggleLike = (postId: number) => {
-    setLikedPosts(prev => {
-      const next = new Set(prev);
-      if (next.has(postId)) next.delete(postId);
-      else next.add(postId);
-      return next;
-    });
-  };
-
   return (
-    <div className="min-h-screen pb-24">
+    <div className="min-h-screen pb-24 bg-background">
       {/* Header */}
       <header className="sticky top-0 z-40 glass border-b border-border px-4 py-3">
         <div className="flex items-center justify-between max-w-lg mx-auto">
-          <h1 className="font-display text-xl font-bold text-gradient-gold">Profile</h1>
-          <button
-            onClick={() => setShowSettings(!showSettings)}
-            className="p-2 rounded-full hover:bg-secondary transition-colors"
-          >
+          <Share2 size={20} className="text-muted-foreground cursor-pointer hover:text-foreground transition-colors" onClick={() => setShowTapCard(true)} />
+          <h1 className="font-display text-lg font-bold text-foreground">{profile?.username || displayName}</h1>
+          <button onClick={() => setShowSettings(!showSettings)} className="p-1 rounded-full hover:bg-secondary transition-colors">
             <Settings size={20} className="text-muted-foreground" />
           </button>
         </div>
       </header>
 
-      {/* Settings dropdown sheet */}
+      {/* Settings dropdown */}
       {showSettings && (
         <>
           <div className="fixed inset-0 bg-background/60 backdrop-blur-sm z-50" onClick={() => setShowSettings(false)} />
@@ -238,22 +182,14 @@ const ProfileScreen = () => {
                     <button
                       key={item.label}
                       onClick={() => { handleMenuAction((item as any).action); setShowSettings(false); }}
-                      className={`w-full flex items-center gap-3 px-4 py-3.5 hover:bg-secondary/50 transition-colors ${
-                        i > 0 ? "border-t border-border/50" : ""
-                      }`}
+                      className={`w-full flex items-center gap-3 px-4 py-3.5 hover:bg-secondary/50 transition-colors ${i > 0 ? "border-t border-border/50" : ""}`}
                     >
-                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${
-                        item.gold ? "gradient-gold" : "bg-secondary"
-                      }`}>
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${item.gold ? "gradient-gold" : "bg-secondary"}`}>
                         <Icon size={18} className={item.gold ? "text-primary-foreground" : item.danger ? "text-destructive" : "text-muted-foreground"} />
                       </div>
                       <div className="flex-1 text-left">
-                        <p className={`text-sm font-medium ${item.gold ? "text-primary" : item.danger ? "text-destructive" : "text-foreground"}`}>
-                          {item.label}
-                        </p>
-                        {item.desc && (
-                          <p className="text-xs text-muted-foreground">{item.desc}</p>
-                        )}
+                        <p className={`text-sm font-medium ${item.gold ? "text-primary" : item.danger ? "text-destructive" : "text-foreground"}`}>{item.label}</p>
+                        {item.desc && <p className="text-xs text-muted-foreground">{item.desc}</p>}
                       </div>
                       <ChevronRight size={16} className="text-muted-foreground" />
                     </button>
@@ -266,195 +202,190 @@ const ProfileScreen = () => {
       )}
 
       <div className="max-w-lg mx-auto">
-        {/* Profile card */}
-        <div className="px-4 pt-6 pb-4">
-          <div className="flex flex-col items-center">
-            <div className="relative">
-              <img
-                src={avatarUrl}
-                alt="Your profile"
-                className="w-24 h-24 rounded-full object-cover ring-4 ring-primary shadow-gold"
-              />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                className="absolute bottom-0 right-0 w-7 h-7 rounded-full gradient-gold flex items-center justify-center ring-2 ring-card"
-              >
-                <Camera size={12} className="text-primary-foreground" />
-              </button>
-              <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
-            </div>
-            <div className="flex items-center gap-1.5 mt-3">
-              <h2 className="font-display text-xl font-bold text-foreground">{displayName}</h2>
-              {profile?.is_verified && <VerifiedBadge size={18} />}
-            </div>
-            <p className="text-sm text-muted-foreground mt-0.5">{displayCity}</p>
-            <p className="text-sm text-foreground/70 mt-2 text-center max-w-[280px]">{displayBio}</p>
+        {/* Profile hero */}
+        <div className="relative">
+          {/* Large avatar / cover area */}
+          <div className="aspect-[4/3] w-full overflow-hidden bg-secondary">
+            <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+          </div>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="absolute bottom-3 right-3 w-9 h-9 rounded-full gradient-gold flex items-center justify-center ring-2 ring-background shadow-lg"
+          >
+            <Camera size={16} className="text-primary-foreground" />
+          </button>
+          <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+        </div>
 
-            {/* Stats */}
-            <div className="flex items-center gap-8 mt-5">
-              {stats.map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <p className="text-lg font-bold text-foreground">{stat.value}</p>
-                  <p className="text-xs text-muted-foreground">{stat.label}</p>
-                </div>
-              ))}
-            </div>
+        {/* Name & stats */}
+        <div className="px-4 pt-4 pb-3">
+          <div className="flex items-center gap-2">
+            <h2 className="font-display text-2xl font-bold text-foreground">{displayName}</h2>
+            {profile?.is_verified && <VerifiedBadge size={20} />}
+          </div>
 
-            {/* Profile completeness */}
-            <div className="w-full mt-4 px-2">
-              <ProfileCompleteness profile={profile} compact onEditProfile={openEditProfile} />
-            </div>
+          {/* Stats row */}
+          <div className="flex items-center gap-6 mt-3">
+            {stats.map((stat) => (
+              <div key={stat.label} className="text-left">
+                <span className="text-sm font-bold text-primary">{stat.value}</span>
+                <span className="text-sm text-muted-foreground ml-1">{stat.label}</span>
+              </div>
+            ))}
+          </div>
 
-            {/* Edit profile button */}
-            <button onClick={openEditProfile} className="mt-3 px-8 py-2 rounded-full border border-border bg-secondary text-sm font-semibold text-foreground hover:bg-secondary/80 transition-colors">
+          {/* Profile completeness */}
+          <div className="mt-3">
+            <ProfileCompleteness profile={profile} compact onEditProfile={openEditProfile} />
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-2 mt-4">
+            <button onClick={openEditProfile} className="flex-1 py-2.5 rounded-xl border border-border bg-secondary text-sm font-semibold text-foreground hover:bg-secondary/80 transition-colors">
               Edit Profile
+            </button>
+            <button onClick={() => setShowSettings(true)} className="flex-1 py-2.5 rounded-xl border border-border bg-secondary text-sm font-semibold text-foreground hover:bg-secondary/80 transition-colors">
+              Settings
             </button>
           </div>
         </div>
 
-        {/* Profile Mode Switcher */}
-        <div className="px-4 pb-3">
-          <div className="bg-card border border-border rounded-2xl p-1.5 flex gap-1">
-            {profileModes.map((mode) => (
-              <button
-                key={mode.key}
-                onClick={() => setProfileMode(mode.key)}
-                className={`flex-1 flex flex-col items-center gap-1 py-3 rounded-xl transition-all ${
-                  profileMode === mode.key
-                    ? `bg-gradient-to-br ${mode.color} text-white shadow-lg`
-                    : "text-muted-foreground hover:bg-secondary/50"
-                }`}
-              >
-                {mode.icon}
-                <span className="text-[11px] font-bold">{mode.label}</span>
-              </button>
-            ))}
-          </div>
-          <p className="text-xs text-muted-foreground text-center mt-2">{activeMode.desc}</p>
-        </div>
-
-        {/* Interests */}
-        <div className="px-4 pb-3">
-          <div className="flex flex-wrap gap-2 justify-center">
-            {modeInterests[profileMode].map((interest) => (
-              <span
-                key={interest}
-                className="px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-xs font-medium text-foreground"
-              >
-                {interest}
-              </span>
-            ))}
-          </div>
-        </div>
-
-        {/* Feed/Grid/Invite toggle */}
+        {/* Tab Switcher: Events / Posts */}
         <div className="border-t border-border">
           <div className="flex">
             <button
-              onClick={() => setViewMode("feed")}
-              className={`flex-1 py-3 flex items-center justify-center transition-colors border-b-2 ${
-                viewMode === "feed" ? "border-primary text-primary" : "border-transparent text-muted-foreground"
+              onClick={() => setActiveTab("events")}
+              className={`flex-1 py-3 flex items-center justify-center gap-2 transition-colors border-b-2 ${
+                activeTab === "events" ? "border-primary text-primary" : "border-transparent text-muted-foreground"
               }`}
             >
-              <Bookmark size={20} />
+              <Calendar size={20} />
+              <span className="text-sm font-semibold">Events</span>
             </button>
             <button
-              onClick={() => setViewMode("grid")}
-              className={`flex-1 py-3 flex items-center justify-center transition-colors border-b-2 ${
-                viewMode === "grid" ? "border-primary text-primary" : "border-transparent text-muted-foreground"
+              onClick={() => setActiveTab("posts")}
+              className={`flex-1 py-3 flex items-center justify-center gap-2 transition-colors border-b-2 ${
+                activeTab === "posts" ? "border-primary text-primary" : "border-transparent text-muted-foreground"
               }`}
             >
               <Grid3X3 size={20} />
-            </button>
-            <button
-              onClick={() => setViewMode("invite")}
-              className={`flex-1 py-3 flex items-center justify-center transition-colors border-b-2 ${
-                viewMode === "invite" ? "border-primary text-primary" : "border-transparent text-muted-foreground"
-              }`}
-            >
-              <Share2 size={20} />
-            </button>
-            <button
-              onClick={() => setShowTapCard(true)}
-              className="flex-1 py-3 flex items-center justify-center transition-colors border-b-2 border-transparent text-muted-foreground hover:text-primary"
-            >
-              <Smartphone size={20} />
+              <span className="text-sm font-semibold">Posts</span>
             </button>
           </div>
         </div>
 
-        {/* ─── INVITE VIEW ─── */}
-        {viewMode === "invite" ? (
-          <InviteFriends />
-        ) : viewMode === "grid" ? (
-          /* ─── GRID VIEW ─── */
-          <div className="grid grid-cols-3 gap-0.5">
-            {(modeFeedPosts[profileMode] || []).map((post) => (
-              <button key={post.id} onClick={() => setViewMode("feed")} className="aspect-square overflow-hidden">
-                <img src={post.photo} alt="" className="w-full h-full object-cover hover:opacity-80 transition-opacity" />
+        {/* ─── EVENTS TAB ─── */}
+        {activeTab === "events" && (
+          <div>
+            {/* Upcoming / Past filter */}
+            <div className="flex gap-2 px-4 py-3">
+              <button
+                onClick={() => setEventFilter("upcoming")}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold transition-all ${
+                  eventFilter === "upcoming"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+                }`}
+              >
+                <CalendarClock size={14} />
+                Upcoming ({upcomingEvents.length})
               </button>
-            ))}
-          </div>
-        ) : (
-          /* ─── FEED VIEW ─── */
-          <div className="space-y-0">
-            {(modeFeedPosts[profileMode] || []).map((post) => {
-              const isLiked = likedPosts.has(post.id);
-              return (
-                <div key={post.id} className="border-b border-border">
-                  {/* Post header */}
-                  <div className="flex items-center gap-3 px-4 py-3">
-                    <img src={profileMan1} alt="" className="w-9 h-9 rounded-full object-cover ring-2 ring-primary/30" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-foreground">Kofi Asante</p>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                        <MapPin size={10} />
-                        <span>{post.location}</span>
+              <button
+                onClick={() => setEventFilter("past")}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-semibold transition-all ${
+                  eventFilter === "past"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-secondary text-muted-foreground hover:bg-secondary/80"
+                }`}
+              >
+                <CalendarCheck size={14} />
+                Attended ({pastEvents.length})
+              </button>
+            </div>
+
+            {filteredEvents.length === 0 ? (
+              <div className="px-4 py-16 text-center">
+                <Calendar size={48} className="mx-auto text-muted-foreground/30 mb-3" />
+                <p className="text-muted-foreground font-medium">
+                  {eventFilter === "upcoming" ? "No upcoming events" : "No past events"}
+                </p>
+                <p className="text-xs text-muted-foreground/70 mt-1">
+                  {eventFilter === "upcoming" ? "RSVP to events to see them here" : "Events you've attended will show here"}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-0.5">
+                {filteredEvents.map((event) => (
+                  <div key={event.id} className="aspect-square overflow-hidden relative group">
+                    {event.image_url ? (
+                      <img src={event.image_url} alt={event.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                        <Calendar size={24} className="text-primary/50" />
                       </div>
+                    )}
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2">
+                      <p className="text-white text-[10px] font-bold leading-tight line-clamp-2">{event.title}</p>
+                      <p className="text-white/70 text-[9px] mt-0.5">{format(new Date(event.date), "MMM d")}</p>
                     </div>
-                    <span className="text-xs text-muted-foreground">{post.timeAgo}</span>
                   </div>
-
-                  {/* Photo */}
-                  <img
-                    src={post.photo}
-                    alt=""
-                    className="w-full aspect-[4/3] object-cover"
-                    onDoubleClick={() => toggleLike(post.id)}
-                  />
-
-                  {/* Actions */}
-                  <div className="px-4 py-2.5">
-                    <div className="flex items-center gap-4">
-                      <button onClick={() => toggleLike(post.id)} className="transition-transform hover:scale-110 active:scale-90">
-                        <HeartIcon
-                          size={24}
-                          className={isLiked ? "text-red-500" : "text-foreground"}
-                          fill={isLiked ? "currentColor" : "none"}
-                        />
-                      </button>
-                      <button className="transition-transform hover:scale-110">
-                        <MessageCircle size={24} className="text-foreground" />
-                      </button>
-                    </div>
-                    <p className="text-sm font-semibold text-foreground mt-1.5">
-                      {isLiked ? (post.likes + 1).toLocaleString() : post.likes.toLocaleString()} likes
-                    </p>
-                    <p className="text-sm text-foreground mt-1">
-                      <span className="font-semibold">Kofi Asante</span>{" "}
-                      {post.caption}
-                    </p>
-                    <button className="text-xs text-muted-foreground mt-1">
-                      View all {post.comments} comments
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
+                ))}
+              </div>
+            )}
           </div>
         )}
 
-        {/* App version */}
+        {/* ─── POSTS TAB ─── */}
+        {activeTab === "posts" && (
+          <div>
+            {/* Upload button */}
+            <div className="px-4 py-3">
+              <button
+                onClick={() => postImageRef.current?.click()}
+                className="w-full py-3 rounded-xl border-2 border-dashed border-primary/30 text-primary flex items-center justify-center gap-2 hover:bg-primary/5 transition-colors"
+              >
+                <Plus size={18} />
+                <span className="text-sm font-semibold">Post a Photo</span>
+              </button>
+              <input ref={postImageRef} type="file" accept="image/*,video/*" className="hidden" onChange={handlePostImage} />
+            </div>
+
+            {myPosts.length === 0 ? (
+              <div className="px-4 py-16 text-center">
+                <Image size={48} className="mx-auto text-muted-foreground/30 mb-3" />
+                <p className="text-muted-foreground font-medium">No posts yet</p>
+                <p className="text-xs text-muted-foreground/70 mt-1">Share your moments with the community</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-0.5">
+                {myPosts.map((post) => (
+                  <div key={post.id} className="aspect-square overflow-hidden relative group">
+                    {post.image_url ? (
+                      <img src={post.image_url} alt="" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    ) : (
+                      <div className="w-full h-full bg-secondary flex items-center justify-center p-2">
+                        <p className="text-xs text-muted-foreground line-clamp-4 text-center">{post.content}</p>
+                      </div>
+                    )}
+                    {/* Overlay with likes/comments */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
+                      <div className="flex items-center gap-1 text-white text-xs font-bold">
+                        <HeartIcon size={14} fill="white" />
+                        {post.likes_count}
+                      </div>
+                      <div className="flex items-center gap-1 text-white text-xs font-bold">
+                        <MessageCircle size={14} fill="white" />
+                        {post.comments_count}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         <p className="text-center text-xs text-muted-foreground mt-6 mb-4">AfroHub v1.0.0</p>
       </div>
 
