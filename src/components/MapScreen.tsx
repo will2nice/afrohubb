@@ -687,6 +687,11 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [distanceFilter, setDistanceFilter] = useState<number | null>(null); // km
   const [showTrending, setShowTrending] = useState(false);
   const [mapBounds, setMapBounds] = useState<L.LatLngBounds | null>(null);
+  const [showCreateActivity, setShowCreateActivity] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+
+  const { user } = useAuth();
+  const { activities, createActivity, joinActivity, myParticipation } = useActivities();
 
   const handleBoundsChange = useCallback((bounds: L.LatLngBounds) => {
     setMapBounds(bounds);
