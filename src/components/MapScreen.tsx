@@ -1082,10 +1082,14 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         maxBoundsViscosity={0}
         worldCopyJump={true}
         preferCanvas={true}
-        zoomSnap={0.5}
+        zoomSnap={0.25}
         zoomDelta={0.5}
-        wheelDebounceTime={80}
-        wheelPxPerZoomLevel={120}
+        wheelDebounceTime={40}
+        wheelPxPerZoomLevel={100}
+        inertia={true}
+        inertiaDeceleration={3000}
+        fadeAnimation={true}
+        markerZoomAnimation={true}
       >
         <BoundsTracker onBoundsChange={handleBoundsChange} />
         <MapController targetCity={zoomTarget} onZoomDone={() => setZoomTarget(null)} />
@@ -1095,10 +1099,13 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         <TileLayer
           url={theme === "dark"
             ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+            : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
           }
           updateWhenZooming={false}
           updateWhenIdle={true}
+          keepBuffer={4}
+          tileSize={256}
+          detectRetina={true}
         />
 
         <Marker position={center} icon={youIcon}>

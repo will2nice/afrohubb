@@ -294,7 +294,7 @@ const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672
                     <TileLayer
                       url={theme === "dark"
                         ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                        : "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                        : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
                       }
                     />
                     <LocationPicker position={position} onPositionChange={(pos) => {
