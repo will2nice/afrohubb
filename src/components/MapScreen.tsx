@@ -490,7 +490,7 @@ const FlightPolylines = ({ center, routes }: { center: [number, number]; routes:
   const polylinesRef = useRef<any[]>([]);
 
   useEffect(() => {
-    if (!map || !window.google?.maps) return;
+    if (!map || !(window as any).google?.maps) return;
     // Clean up old polylines
     polylinesRef.current.forEach(p => p.setMap(null));
     polylinesRef.current = [];
@@ -500,7 +500,7 @@ const FlightPolylines = ({ center, routes }: { center: [number, number]; routes:
         lat: (center[0] + route.coords[0]) / 2 + Math.abs(center[1] - route.coords[1]) * 0.15,
         lng: (center[1] + route.coords[1]) / 2,
       };
-      const polyline = new window.google.maps.Polyline({
+      const polyline = new (window as any).google.maps.Polyline({
         path: [
           { lat: center[0], lng: center[1] },
           mid,
