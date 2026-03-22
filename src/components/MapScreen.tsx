@@ -487,10 +487,10 @@ const MapController = ({ targetCity, onZoomDone }: { targetCity: string | null; 
 
 const FlightPolylines = ({ center, routes }: { center: [number, number]; routes: { coords: [number, number]; destinationCity: string; destinationName: string; destinationFlag: string; price: number }[] }) => {
   const map = useMap();
-  const polylinesRef = useRef<google.maps.Polyline[]>([]);
+  const polylinesRef = useRef<any[]>([]);
 
   useEffect(() => {
-    if (!map) return;
+    if (!map || !window.google?.maps) return;
     // Clean up old polylines
     polylinesRef.current.forEach(p => p.setMap(null));
     polylinesRef.current = [];
@@ -500,7 +500,7 @@ const FlightPolylines = ({ center, routes }: { center: [number, number]; routes:
         lat: (center[0] + route.coords[0]) / 2 + Math.abs(center[1] - route.coords[1]) * 0.15,
         lng: (center[1] + route.coords[1]) / 2,
       };
-      const polyline = new google.maps.Polyline({
+      const polyline = new window.google.maps.Polyline({
         path: [
           { lat: center[0], lng: center[1] },
           mid,
