@@ -1,9 +1,8 @@
 import { useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X, ChevronLeft, MapPin, Lock, Globe, Users, Sparkles, Search } from "lucide-react";
-import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import { APIProvider, Map, AdvancedMarker, useMap } from "@vis.gl/react-google-maps";
+import { GOOGLE_MAPS_API_KEY, GOOGLE_MAPS_MAP_ID } from "@/lib/googleMaps";
 import { useTheme } from "@/contexts/ThemeContext";
 
 const CATEGORIES = [
@@ -18,13 +17,6 @@ const CATEGORIES = [
   { id: "social", emoji: "💬", label: "Social", desc: "Hangout, chat, meet up" },
   { id: "other", emoji: "✨", label: "Other", desc: "Something else" },
 ];
-
-const activityPinIcon = new L.DivIcon({
-  className: "",
-  html: `<div style="width:28px;height:28px;border-radius:50%;background:hsl(340,80%,55%);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);"></div>`,
-  iconSize: [28, 28],
-  iconAnchor: [14, 14],
-});
 
 interface Props {
   open: boolean;
@@ -50,18 +42,12 @@ const FlyToPosition = ({ position }: { position: [number, number] }) => {
   const prevPos = useRef(position);
   if (prevPos.current[0] !== position[0] || prevPos.current[1] !== position[1]) {
     prevPos.current = position;
-    map.flyTo(position, 16, { duration: 0.8 });
+    if (map) {
+      map.panTo({ lat: position[0], lng: position[1] });
+      map.setZoom(16);
+    }
   }
   return null;
-};
-
-const LocationPicker = ({ position, onPositionChange }: { position: [number, number]; onPositionChange: (pos: [number, number]) => void }) => {
-  useMapEvents({
-    click(e) {
-      onPositionChange([e.latlng.lat, e.latlng.lng]);
-    },
-  });
-  return <Marker position={position} icon={activityPinIcon} />;
 };
 
 const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672, -97.7431], isPending }: Props) => {
@@ -285,25 +271,30 @@ const CreateActivitySheet = ({ open, onClose, onSubmit, initialCenter = [30.2672
                 </div>
 
                 <div className="rounded-2xl overflow-hidden border border-border h-64">
-                  <MapContainer
-                    center={initialCenter}
-                    zoom={13}
-                    style={{ height: "100%", width: "100%" }}
-                    zoomControl={false}
-                  >
-                    <TileLayer
-                      url={theme === "dark"
-                        ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-                        : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-                      }
-                    />
-                    <LocationPicker position={position} onPositionChange={(pos) => {
-                      setPosition(pos);
-                      setLocationLabel("");
-                      setSearchQuery("");
-                    }} />
-                    <FlyToPosition position={position} />
-                  </MapContainer>
+                  <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
+                    <Map
+                      defaultCenter={{ lat: initialCenter[0], lng: initialCenter[1] }}
+                      defaultZoom={13}
+                      mapId={GOOGLE_MAPS_MAP_ID}
+                      gestureHandling="greedy"
+                      disableDefaultUI={true}
+                      colorScheme={theme === "dark" ? "DARK" : "LIGHT"}
+                      style={{ height: "100%", width: "100%" }}
+                      onClick={(e) => {
+                        if (e.detail.latLng) {
+                          setPosition([e.detail.latLng.lat, e.detail.latLng.lng]);
+                          setLocationLabel("");
+                          setSearchQuery("");
+                        }
+                      }}
+                    >
+                      <AdvancedMarker position={{ lat: position[0], lng: position[1] }}>
+                        <div className="w-7 h-7 rounded-full border-[3px] border-white shadow-lg"
+                          style={{ background: "hsl(340,80%,55%)", boxShadow: "0 2px 8px rgba(0,0,0,0.3)" }} />
+                      </AdvancedMarker>
+                      <FlyToPosition position={position} />
+                    </Map>
+                  </APIProvider>
                 </div>
 
                 <button
