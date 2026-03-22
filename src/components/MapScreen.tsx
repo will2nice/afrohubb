@@ -1,8 +1,7 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useScreenView } from "@/hooks/useAnalytics";
-import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap, useMapEvents } from "react-leaflet";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
+import { APIProvider, Map, AdvancedMarker, InfoWindow, useMap } from "@vis.gl/react-google-maps";
+import { GOOGLE_MAPS_API_KEY, GOOGLE_MAPS_MAP_ID } from "@/lib/googleMaps";
 import { useTheme } from "@/contexts/ThemeContext";
 import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping, Music, Plane, Crosshair, Loader2, Search, Clock, Flame, Ruler, Plus, Lock } from "lucide-react";
 import { events as allEvents, cities, type City, AFRO_NATION_EVENT_ID, SXSW_EVENT_ID } from "@/data/cityData";
@@ -30,7 +29,6 @@ const cityCoords: Record<string, [number, number]> = {
   coppell: [32.9546, -97.0150],
   houston: [29.7604, -95.3698],
   sanantonio: [29.4241, -98.4936],
-  // US Major Cities
   nyc: [40.7128, -74.006],
   atlanta: [33.7490, -84.3880],
   miami: [25.7617, -80.1918],
@@ -71,11 +69,9 @@ const cityCoords: Record<string, [number, number]> = {
   siouxfalls: [43.5446, -96.7311],
   fargo: [46.8772, -96.7898],
   saltlakecity: [40.7608, -111.8910],
-  // Canada
   toronto: [43.6532, -79.3832],
   calgary: [51.0447, -114.0719],
   montreal: [45.5017, -73.5673],
-  // Europe
   paris: [48.8566, 2.3522],
   london: [51.5074, -0.1278],
   birmingham: [52.4862, -1.8904],
@@ -104,17 +100,14 @@ const cityCoords: Record<string, [number, number]> = {
   copenhagen: [55.6761, 12.5683],
   oslo: [59.9139, 10.7522],
   helsinki: [60.1699, 24.9384],
-  // Australia
   sydney: [-33.8688, 151.2093],
   melbourne: [-37.8136, 144.9631],
   brisbane: [-27.4698, 153.0251],
   perth: [-31.9505, 115.8605],
   adelaide: [-34.9285, 138.6007],
-  // Brazil
   rio: [-22.9068, -43.1729],
   saopaulo: [-23.5505, -46.6333],
   salvador: [-12.9714, -38.5124],
-  // Caribbean & Latin America
   sanjuan: [18.4655, -66.1057],
   kingston: [18.0179, -76.8099],
   santodomingo: [18.4861, -69.9312],
@@ -130,7 +123,6 @@ const cityCoords: Record<string, [number, number]> = {
   belize: [17.5046, -88.1962],
   managua: [12.1150, -86.2362],
   tegucigalpa: [14.0723, -87.1921],
-  // Africa
   cairo: [30.0444, 31.2357],
   luxor: [25.6872, 32.6396],
   khartoum: [15.5007, 32.5599],
@@ -156,7 +148,6 @@ const cityCoords: Record<string, [number, number]> = {
   windhoek: [-22.5609, 17.0658],
   douala: [4.0511, 9.7679],
   conakry: [9.6412, -13.5784],
-  // Africa — remaining
   ndjamena: [12.1348, 15.0557],
   niamey: [13.5127, 2.1128],
   ouagadougou: [12.3714, -1.5197],
@@ -189,86 +180,141 @@ const cityCoords: Record<string, [number, number]> = {
   portlouis: [-20.1609, 57.5012],
 };
 
-// Custom marker icons
-const eventIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(25,95%,55%),hsl(43,96%,56%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="hsl(0,0%,5%)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3v4M8 3v4M2 11h20"/></svg>
-  </div>`,
-  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
-});
+// Marker pin components
+const EventPin = () => (
+  <div className="w-9 h-9 rounded-full flex items-center justify-center shadow-lg border-2 border-background"
+    style={{ background: "linear-gradient(135deg, hsl(25,95%,55%), hsl(43,96%,56%))" }}>
+    <Calendar size={16} strokeWidth={2.5} className="text-background" />
+  </div>
+);
 
-const eventbriteIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(14,100%,53%),hsl(25,100%,60%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>
-  </div>`,
-  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
-});
+const EventbritePin = () => (
+  <div className="w-9 h-9 rounded-full flex items-center justify-center shadow-lg border-2 border-background"
+    style={{ background: "linear-gradient(135deg, hsl(14,100%,53%), hsl(25,100%,60%))" }}>
+    <Ticket size={16} strokeWidth={2.5} className="text-white" />
+  </div>
+);
 
-const poshIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(270,80%,60%),hsl(290,70%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>
-  </div>`,
-  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
-});
+const PoshPin = () => (
+  <div className="w-9 h-9 rounded-full flex items-center justify-center shadow-lg border-2 border-background"
+    style={{ background: "linear-gradient(135deg, hsl(270,80%,60%), hsl(290,70%,55%))" }}>
+    <Ticket size={16} strokeWidth={2.5} className="text-white" />
+  </div>
+);
 
-const diceIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(200,80%,50%),hsl(220,70%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="8" cy="8" r="1.5" fill="white"/><circle cx="16" cy="16" r="1.5" fill="white"/></svg>
-  </div>`,
-  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
-});
+const DicePin = () => (
+  <div className="w-9 h-9 rounded-full flex items-center justify-center shadow-lg border-2 border-background"
+    style={{ background: "linear-gradient(135deg, hsl(200,80%,50%), hsl(220,70%,55%))" }}>
+    <span className="text-sm">🎲</span>
+  </div>
+);
 
-const shotgunIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(340,80%,55%),hsl(10,80%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-  </div>`,
-  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
-});
+const ShotgunPin = () => (
+  <div className="w-9 h-9 rounded-full flex items-center justify-center shadow-lg border-2 border-background"
+    style={{ background: "linear-gradient(135deg, hsl(340,80%,55%), hsl(10,80%,55%))" }}>
+    <Music size={16} strokeWidth={2.5} className="text-white" />
+  </div>
+);
 
-const billettoIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(170,70%,45%),hsl(190,60%,50%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2M13 17v2M13 11v2"/></svg>
-  </div>`,
-  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
-});
+const BillettoPin = () => (
+  <div className="w-9 h-9 rounded-full flex items-center justify-center shadow-lg border-2 border-background"
+    style={{ background: "linear-gradient(135deg, hsl(170,70%,45%), hsl(190,60%,50%))" }}>
+    <Ticket size={16} strokeWidth={2.5} className="text-white" />
+  </div>
+);
 
-const afroNationMapIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:44px;height:44px;border-radius:50%;background:#f5f0e1;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px hsl(320,70%,45%),0 4px 16px rgba(0,0,0,0.5);border:2px solid hsl(0,0%,7%);overflow:hidden;">
-    <img src="${afroNationIcon}" style="width:38px;height:38px;object-fit:cover;border-radius:50%;" />
-  </div>`,
-  iconSize: [44, 44], iconAnchor: [22, 44], popupAnchor: [0, -44],
-});
+const AfroNationPin = () => (
+  <div className="w-11 h-11 rounded-full flex items-center justify-center shadow-lg border-2 border-background overflow-hidden"
+    style={{ background: "#f5f0e1", boxShadow: "0 0 0 3px hsl(320,70%,45%), 0 4px 16px rgba(0,0,0,0.5)" }}>
+    <img src={afroNationIcon} alt="Afro Nation" className="w-[38px] h-[38px] object-cover rounded-full" />
+  </div>
+);
 
-const sxswMapIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:44px;height:44px;border-radius:50%;background:#ffffff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px hsl(0,0%,10%),0 4px 16px rgba(0,0,0,0.5);border:2px solid hsl(0,0%,7%);overflow:hidden;">
-    <img src="${sxswIcon}" style="width:36px;height:36px;object-fit:contain;" />
-  </div>`,
-  iconSize: [44, 44], iconAnchor: [22, 44], popupAnchor: [0, -44],
-});
+const SXSWPin = () => (
+  <div className="w-11 h-11 rounded-full flex items-center justify-center shadow-lg border-2 border-background overflow-hidden"
+    style={{ background: "#ffffff", boxShadow: "0 0 0 3px hsl(0,0%,10%), 0 4px 16px rgba(0,0,0,0.5)" }}>
+    <img src={sxswIcon} alt="SXSW" className="w-9 h-9 object-contain" />
+  </div>
+);
 
-const personIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:32px;height:32px;border-radius:50%;background:hsl(0,0%,16%);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(43,96%,56%);">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="hsl(43,96%,56%)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-  </div>`,
-  iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32],
-});
+const PersonPin = () => (
+  <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg border-2"
+    style={{ background: "hsl(0,0%,16%)", borderColor: "hsl(43,96%,56%)" }}>
+    <Users size={14} strokeWidth={2.5} style={{ color: "hsl(43,96%,56%)" }} />
+  </div>
+);
 
-const groupIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,hsl(320,70%,50%),hsl(280,70%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-  </div>`,
-  iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40],
-});
+const GroupPin = () => (
+  <div className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg border-2 border-background"
+    style={{ background: "linear-gradient(135deg, hsl(320,70%,50%), hsl(280,70%,55%))" }}>
+    <Users size={18} strokeWidth={2} className="text-white" />
+  </div>
+);
+
+const ResourcePin = ({ type, flag }: { type: string; flag?: string }) => (
+  <div className="w-9 h-9 rounded-full flex items-center justify-center shadow-lg border-2 border-background"
+    style={{ background: type === "nonprofit" ? "linear-gradient(135deg, hsl(150,70%,40%), hsl(170,60%,45%))" : "linear-gradient(135deg, hsl(210,80%,50%), hsl(230,70%,55%))" }}>
+    {flag ? <span className="text-lg leading-none">{flag.length > 4 ? flag.slice(0, 2) : flag}</span> :
+      type === "nonprofit" ? <Heart size={16} strokeWidth={2.5} className="text-white" /> :
+        <Briefcase size={16} strokeWidth={2.5} className="text-white" />}
+  </div>
+);
+
+const YouPin = () => (
+  <div className="w-5 h-5 rounded-full border-3 border-background"
+    style={{ background: "hsl(43,96%,56%)", boxShadow: "0 0 0 6px hsla(43,96%,56%,0.25), 0 4px 12px rgba(0,0,0,0.4)", borderWidth: 3, borderColor: "hsl(0,0%,7%)" }} />
+);
+
+const UserLocationPin = () => (
+  <div className="w-[18px] h-[18px] rounded-full"
+    style={{ background: "hsl(217,91%,60%)", border: "3px solid white", boxShadow: "0 0 8px rgba(59,130,246,0.5)" }} />
+);
+
+const PlacePin = ({ category }: { category: string }) => (
+  <div className="w-8 h-8 rounded-full flex items-center justify-center shadow-lg border-2 border-background"
+    style={{ background: category === "restaurant" ? "linear-gradient(135deg, hsl(25,90%,50%), hsl(35,85%,55%))" : category === "fitness" ? "linear-gradient(135deg, hsl(210,80%,50%), hsl(230,70%,55%))" : "linear-gradient(135deg, hsl(170,70%,40%), hsl(190,60%,45%))" }}>
+    <span className="text-sm">{category === "restaurant" ? "🍽️" : category === "fitness" ? "💪" : "🕌"}</span>
+  </div>
+);
+
+const ActivityPin = ({ emoji, isPrivate }: { emoji: string; isPrivate: boolean }) => (
+  <div className="w-10 h-10 rounded-full flex items-center justify-center shadow-lg relative"
+    style={{ background: "linear-gradient(135deg, hsl(340,80%,55%), hsl(350,70%,50%))", border: isPrivate ? "3px solid hsl(45,90%,50%)" : "3px solid white" }}>
+    <span className="text-lg leading-none">{emoji}</span>
+    {isPrivate && (
+      <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full flex items-center justify-center border-2 border-white"
+        style={{ background: "hsl(45,90%,50%)" }}>
+        <Lock size={8} className="text-white" />
+      </div>
+    )}
+  </div>
+);
+
+const HubPin = ({ hub }: { hub: DiasporaHub }) => {
+  const flags = hub.communities.map(c => c.countryFlag);
+  const totalPop = hub.communities.reduce((sum, c) => {
+    const num = parseInt(c.population.replace(/[^0-9]/g, "")) || 0;
+    return sum + num;
+  }, 0);
+  const popLabel = totalPop >= 1000 ? `${Math.round(totalPop / 1000)}K` : `${totalPop}`;
+
+  return (
+    <div className="relative" style={{ width: 56, height: 56 }}>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-7 h-7 rounded-full flex items-center justify-center z-10"
+          style={{ background: "linear-gradient(135deg, hsl(25,95%,55%), hsl(43,96%,56%))", boxShadow: "0 0 0 3px hsl(0,0%,7%), 0 0 16px rgba(243,186,47,0.4)" }}>
+          <span className="text-[9px] font-extrabold" style={{ color: "hsl(0,0%,5%)", letterSpacing: -0.5 }}>{popLabel}</span>
+        </div>
+      </div>
+      {flags.slice(0, 6).map((flag, i) => {
+        const angle = (i * (2 * Math.PI / Math.min(flags.length, 6))) - Math.PI / 2;
+        const x = 28 + 20 * Math.cos(angle) - 7;
+        const y = 28 + 20 * Math.sin(angle) - 7;
+        return <span key={i} className="absolute text-[13px] leading-none" style={{ left: x, top: y }}>{flag}</span>;
+      })}
+    </div>
+  );
+};
 
 // Map community category to country flag
 const categoryFlagMap: Record<string, string> = {
@@ -284,77 +330,6 @@ const categoryFlagMap: Record<string, string> = {
   "Kenyan Community": "🇰🇪",
   "Haitian Community": "🇭🇹",
 };
-
-const createResourceIcon = (category: string, type: string) => {
-  const flag = categoryFlagMap[category];
-  if (flag && type === "nonprofit") {
-    return new L.DivIcon({
-      className: "custom-marker",
-      html: `<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,hsl(150,70%,40%),hsl(170,60%,45%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);position:relative;">
-        <span style="font-size:20px;line-height:1;">${flag.length > 4 ? flag.slice(0, 2) : flag}</span>
-      </div>`,
-      iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40],
-    });
-  }
-  // Default nonprofit icon (no diaspora flag)
-  if (type === "nonprofit") {
-    return new L.DivIcon({
-      className: "custom-marker",
-      html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(150,70%,40%),hsl(170,60%,45%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-      </div>`,
-      iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
-    });
-  }
-  // Hiring icon
-  return hiringIcon;
-};
-
-const nonprofitIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(150,70%,40%),hsl(170,60%,45%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-  </div>`,
-  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
-});
-
-const hiringIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,hsl(210,80%,50%),hsl(230,70%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-  </div>`,
-  iconSize: [36, 36], iconAnchor: [18, 36], popupAnchor: [0, -36],
-});
-
-const youIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:20px;height:20px;border-radius:50%;background:hsl(43,96%,56%);box-shadow:0 0 0 6px hsla(43,96%,56%,0.25),0 4px 12px rgba(0,0,0,0.4);border:3px solid hsl(0,0%,7%);"></div>`,
-  iconSize: [20, 20], iconAnchor: [10, 10],
-});
-
-const restaurantIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,hsl(25,90%,50%),hsl(35,85%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
-    <span style="font-size:14px;">🍽️</span>
-  </div>`,
-  iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32],
-});
-
-const fitnessIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,hsl(210,80%,50%),hsl(230,70%,55%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
-    <span style="font-size:14px;">💪</span>
-  </div>`,
-  iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32],
-});
-
-const prayerIcon = new L.DivIcon({
-  className: "custom-marker",
-  html: `<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,hsl(170,70%,40%),hsl(190,60%,45%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.4);border:2px solid hsl(0,0%,7%);">
-    <span style="font-size:14px;">🕌</span>
-  </div>`,
-  iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor: [0, -32],
-});
 
 const getAllEventPositions = () => {
   return allEvents.map((event) => {
@@ -442,45 +417,6 @@ const getResourcePositions = () => {
   });
 };
 
-// Generate hub icon with flags arranged in a circle
-const createHubIcon = (hub: DiasporaHub) => {
-  const flags = hub.communities.map(c => c.countryFlag);
-  const count = flags.length;
-  const size = 56;
-  const radius = 20;
-  const centerX = size / 2;
-  const centerY = size / 2;
-  
-  const flagElements = flags.slice(0, 6).map((flag, i) => {
-    const angle = (i * (2 * Math.PI / Math.min(count, 6))) - Math.PI / 2;
-    const x = centerX + radius * Math.cos(angle) - 7;
-    const y = centerY + radius * Math.sin(angle) - 7;
-    return `<span style="position:absolute;left:${x}px;top:${y}px;font-size:13px;line-height:1;">${flag}</span>`;
-  }).join("");
-
-  const totalPop = hub.communities.reduce((sum, c) => {
-    const num = parseInt(c.population.replace(/[^0-9]/g, "")) || 0;
-    return sum + num;
-  }, 0);
-  const popLabel = totalPop >= 100000 ? `${Math.round(totalPop / 1000)}K` : totalPop >= 1000 ? `${Math.round(totalPop / 1000)}K` : `${totalPop}`;
-
-  return new L.DivIcon({
-    className: "custom-marker",
-    html: `<div style="width:${size}px;height:${size}px;position:relative;">
-      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;">
-        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,hsl(25,95%,55%),hsl(43,96%,56%));display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 3px hsl(0,0%,7%),0 0 16px rgba(243,186,47,0.4);z-index:2;">
-          <span style="font-size:9px;font-weight:800;color:hsl(0,0%,5%);letter-spacing:-0.5px;">${popLabel}</span>
-        </div>
-      </div>
-      ${flagElements}
-    </div>`,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
-    popupAnchor: [0, -size / 2],
-  });
-};
-
-// Prepare hub positions
 const hubPositions = diasporaHubs.filter(h => cityCoords[h.cityId]).map(hub => ({
   ...hub,
   lat: cityCoords[hub.cityId][0],
@@ -492,100 +428,27 @@ const allPeople = getAllPeople();
 const allGroups = getAllGroups();
 const allResources = getResourcePositions();
 
-const createActivityMapIcon = (emoji: string, isPrivate: boolean) => {
-  const border = isPrivate ? "3px solid hsl(45,90%,50%)" : "3px solid white";
-  return new L.DivIcon({
-    className: "custom-marker",
-    html: `<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,hsl(340,80%,55%),hsl(350,70%,50%));display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,0.4);border:${border};position:relative;">
-      <span style="font-size:18px;line-height:1;">${emoji}</span>
-      ${isPrivate ? '<div style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:hsl(45,90%,50%);border-radius:50%;display:flex;align-items:center;justify-content:center;border:2px solid white;"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>' : ''}
-    </div>`,
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-    popupAnchor: [0, -40],
-  });
-};
-
 const CATEGORY_EMOJI: Record<string, string> = {
   food: "🍽️", nightlife: "🎉", outdoor: "🥾", sightseeing: "🗺️",
   entertainment: "🎭", shopping: "🛍️", wellness: "🧘", rideshare: "🚗",
   social: "💬", other: "✨",
 };
 
-const MapController = ({ targetCity, onZoomDone }: { targetCity: string | null; onZoomDone: () => void }) => {
-  const map = useMap();
-  useEffect(() => {
-    if (targetCity && cityCoords[targetCity]) {
-      map.flyTo(cityCoords[targetCity], 12, { duration: 1.2 });
-      onZoomDone();
-    }
-  }, [targetCity, map, onZoomDone]);
-  return null;
+// Country bounding boxes
+const countryBounds: Record<string, { name: string; bounds: { north: number; south: number; east: number; west: number } }> = {
+  US: { name: "United States", bounds: { south: 24.5, west: -125.0, north: 49.5, east: -66.5 } },
+  CA: { name: "Canada", bounds: { south: 41.7, west: -141.0, north: 83.1, east: -52.6 } },
+  GB: { name: "United Kingdom", bounds: { south: 49.9, west: -8.6, north: 60.8, east: 1.8 } },
+  FR: { name: "France", bounds: { south: 41.3, west: -5.1, north: 51.1, east: 9.6 } },
+  DE: { name: "Germany", bounds: { south: 47.3, west: 5.9, north: 55.1, east: 15.0 } },
+  BR: { name: "Brazil", bounds: { south: -33.8, west: -73.9, north: 5.3, east: -34.8 } },
+  NG: { name: "Nigeria", bounds: { south: 4.3, west: 2.7, north: 13.9, east: 14.7 } },
+  GH: { name: "Ghana", bounds: { south: 4.7, west: -3.3, north: 11.2, east: 1.2 } },
+  KE: { name: "Kenya", bounds: { south: -4.7, west: 33.9, north: 5.0, east: 41.9 } },
+  ZA: { name: "South Africa", bounds: { south: -34.8, west: 16.5, north: -22.1, east: 32.9 } },
+  AU: { name: "Australia", bounds: { south: -43.6, west: 113.2, north: -10.7, east: 153.6 } },
 };
 
-// Track visible map bounds so we only render markers in view
-const BoundsTracker = ({ onBoundsChange }: { onBoundsChange: (bounds: L.LatLngBounds) => void }) => {
-  const map = useMapEvents({
-    moveend: () => onBoundsChange(map.getBounds()),
-    zoomend: () => onBoundsChange(map.getBounds()),
-  });
-  useEffect(() => {
-    onBoundsChange(map.getBounds());
-  }, [map, onBoundsChange]);
-  return null;
-};
-
-const userLocationIcon = new L.DivIcon({
-  html: `<div style="width:18px;height:18px;border-radius:50%;background:hsl(217,91%,60%);border:3px solid white;box-shadow:0 0 8px rgba(59,130,246,0.5);"></div>`,
-  className: "",
-  iconSize: [18, 18],
-  iconAnchor: [9, 9],
-});
-
-// Country bounding boxes: [southLat, westLng, northLat, eastLng]
-const countryBounds: Record<string, { name: string; bounds: [[number, number], [number, number]] }> = {
-  US: { name: "United States", bounds: [[24.5, -125.0], [49.5, -66.5]] },
-  CA: { name: "Canada", bounds: [[41.7, -141.0], [83.1, -52.6]] },
-  GB: { name: "United Kingdom", bounds: [[49.9, -8.6], [60.8, 1.8]] },
-  FR: { name: "France", bounds: [[41.3, -5.1], [51.1, 9.6]] },
-  DE: { name: "Germany", bounds: [[47.3, 5.9], [55.1, 15.0]] },
-  ES: { name: "Spain", bounds: [[36.0, -9.3], [43.8, 3.3]] },
-  PT: { name: "Portugal", bounds: [[36.9, -9.5], [42.2, -6.2]] },
-  NL: { name: "Netherlands", bounds: [[50.8, 3.4], [53.5, 7.2]] },
-  BE: { name: "Belgium", bounds: [[49.5, 2.5], [51.5, 6.4]] },
-  IT: { name: "Italy", bounds: [[36.6, 6.6], [47.1, 18.5]] },
-  SE: { name: "Sweden", bounds: [[55.3, 11.1], [69.1, 24.2]] },
-  NO: { name: "Norway", bounds: [[58.0, 4.5], [71.2, 31.2]] },
-  DK: { name: "Denmark", bounds: [[54.6, 8.1], [57.8, 12.7]] },
-  FI: { name: "Finland", bounds: [[59.8, 20.6], [70.1, 31.6]] },
-  IE: { name: "Ireland", bounds: [[51.4, -10.5], [55.4, -6.0]] },
-  AT: { name: "Austria", bounds: [[46.4, 9.5], [49.0, 17.2]] },
-  CH: { name: "Switzerland", bounds: [[45.8, 5.9], [47.8, 10.5]] },
-  TR: { name: "Turkey", bounds: [[36.0, 26.0], [42.1, 45.0]] },
-  GR: { name: "Greece", bounds: [[34.8, 19.4], [41.7, 29.6]] },
-  NG: { name: "Nigeria", bounds: [[4.3, 2.7], [13.9, 14.7]] },
-  GH: { name: "Ghana", bounds: [[4.7, -3.3], [11.2, 1.2]] },
-  KE: { name: "Kenya", bounds: [[-4.7, 33.9], [5.0, 41.9]] },
-  ZA: { name: "South Africa", bounds: [[-34.8, 16.5], [-22.1, 32.9]] },
-  ET: { name: "Ethiopia", bounds: [[3.4, 33.0], [14.9, 48.0]] },
-  TZ: { name: "Tanzania", bounds: [[-11.7, 29.3], [-1.0, 40.4]] },
-  EG: { name: "Egypt", bounds: [[22.0, 24.7], [31.7, 36.9]] },
-  SN: { name: "Senegal", bounds: [[12.3, -17.5], [16.7, -11.4]] },
-  CM: { name: "Cameroon", bounds: [[1.7, 8.5], [13.1, 16.2]] },
-  CI: { name: "Côte d'Ivoire", bounds: [[4.4, -8.6], [10.7, -2.5]] },
-  CD: { name: "DR Congo", bounds: [[-13.5, 12.2], [5.4, 31.3]] },
-  UG: { name: "Uganda", bounds: [[-1.5, 29.6], [4.2, 35.0]] },
-  RW: { name: "Rwanda", bounds: [[-2.8, 28.9], [-1.1, 30.9]] },
-  MA: { name: "Morocco", bounds: [[27.7, -13.2], [35.9, -1.0]] },
-  AU: { name: "Australia", bounds: [[-43.6, 113.2], [-10.7, 153.6]] },
-  BR: { name: "Brazil", bounds: [[-33.8, -73.9], [5.3, -34.8]] },
-  JM: { name: "Jamaica", bounds: [[17.7, -78.4], [18.5, -76.2]] },
-  TT: { name: "Trinidad & Tobago", bounds: [[10.0, -61.9], [10.9, -60.5]] },
-  CO: { name: "Colombia", bounds: [[-4.2, -79.0], [12.5, -66.9]] },
-  PA: { name: "Panama", bounds: [[7.2, -83.1], [9.6, -77.2]] },
-};
-
-// Map city IDs to country codes
 const cityToCountry: Record<string, string> = {
   austin: "US", dallas: "US", fortworth: "US", arlington: "US", irving: "US", richardson: "US",
   carrollton: "US", coppell: "US", houston: "US", sanantonio: "US", nyc: "US", atlanta: "US",
@@ -602,101 +465,93 @@ const cityToCountry: Record<string, string> = {
   brussels: "BE", antwerp: "BE",
   amsterdam: "NL", rotterdam: "NL",
   barcelona: "ES", madrid: "ES",
-  portimao: "PT", lisbon: "PT",
-  vienna: "AT", zurich: "CH", stockholm: "SE", rome: "IT", positano: "IT",
-  athens: "GR", istanbul: "TR", berlin: "DE", dublin: "IE", copenhagen: "DK", oslo: "NO", helsinki: "FI",
-  sydney: "AU", melbourne: "AU", brisbane: "AU", perth: "AU", adelaide: "AU",
   rio: "BR", saopaulo: "BR", salvador: "BR",
-  kingston: "JM", portofspain: "TT", panama: "PA", cartagena: "CO", cali: "CO",
-  cairo: "EG", luxor: "EG", nairobi: "KE", daressalaam: "TZ", zanzibar: "TZ",
-  lagos: "NG", abuja: "NG", accra: "GH", dakar: "SN", johannesburg: "ZA", capetown: "ZA",
-  kinshasa: "CD", marrakech: "MA", kampala: "UG", kigali: "RW", abidjan: "CI",
-  addisababa: "ET", douala: "CM", luanda: "US", maputo: "ZA", harare: "ZA",
+  sydney: "AU", melbourne: "AU", brisbane: "AU", perth: "AU", adelaide: "AU",
+  lagos: "NG", abuja: "NG", accra: "GH", nairobi: "KE",
+  johannesburg: "ZA", capetown: "ZA",
+  berlin: "DE",
 };
 
-const CountryZoomButton = () => {
+// Google Maps inner components
+const MapController = ({ targetCity, onZoomDone }: { targetCity: string | null; onZoomDone: () => void }) => {
   const map = useMap();
-
-  const handleZoomToCountry = useCallback(() => {
-    const center = map.getCenter();
-    // Find nearest city to current map center
-    let nearestCity = "nyc";
-    let minDist = Infinity;
-    for (const [cityId, coords] of Object.entries(cityCoords)) {
-      const dist = Math.hypot(center.lat - coords[0], center.lng - coords[1]);
-      if (dist < minDist) { minDist = dist; nearestCity = cityId; }
+  useEffect(() => {
+    if (targetCity && cityCoords[targetCity] && map) {
+      map.panTo({ lat: cityCoords[targetCity][0], lng: cityCoords[targetCity][1] });
+      map.setZoom(12);
+      onZoomDone();
     }
-    const countryCode = cityToCountry[nearestCity];
-    const country = countryCode ? countryBounds[countryCode] : null;
-    if (country) {
-      map.flyToBounds(country.bounds, { animate: true, padding: [20, 20], duration: 1.5 });
-    } else {
-      // Fallback: zoom out to level 5
-      map.setZoom(5, { animate: true, duration: 1 });
-    }
-  }, [map]);
-
-  return (
-    <button
-      onClick={handleZoomToCountry}
-      className="absolute bottom-24 right-3 z-[1000] p-2.5 rounded-full bg-card/95 backdrop-blur-lg border border-border shadow-lg text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-      title="Zoom to country"
-    >
-      <Globe size={18} />
-    </button>
-  );
+  }, [targetCity, map, onZoomDone]);
+  return null;
 };
 
-const NearMeButton = ({ onLocated }: { onLocated: (lat: number, lng: number) => void }) => {
+const FlightPolylines = ({ center, routes }: { center: [number, number]; routes: { coords: [number, number]; destinationCity: string; destinationName: string; destinationFlag: string; price: number }[] }) => {
   const map = useMap();
-  const [loading, setLoading] = useState(false);
+  const polylinesRef = useRef<any[]>([]);
 
-  const handleClick = useCallback(() => {
-    if (!navigator.geolocation) return;
-    setLoading(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        const { latitude, longitude } = pos.coords;
-        map.flyTo([latitude, longitude], 14, { duration: 1.2 });
-        onLocated(latitude, longitude);
-        setLoading(false);
-      },
-      () => setLoading(false),
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  }, [map, onLocated]);
+  useEffect(() => {
+    if (!map || !(window as any).google?.maps) return;
+    // Clean up old polylines
+    polylinesRef.current.forEach(p => p.setMap(null));
+    polylinesRef.current = [];
 
-  return (
-    <button
-      onClick={handleClick}
-      className="absolute bottom-36 right-3 z-[1000] p-2.5 rounded-full bg-card/95 backdrop-blur-lg border border-border shadow-lg text-foreground hover:bg-primary hover:text-primary-foreground transition-colors"
-      title="Near me"
-    >
-      {loading ? <Loader2 size={18} className="animate-spin" /> : <Crosshair size={18} />}
-    </button>
-  );
+    routes.forEach(route => {
+      const mid = {
+        lat: (center[0] + route.coords[0]) / 2 + Math.abs(center[1] - route.coords[1]) * 0.15,
+        lng: (center[1] + route.coords[1]) / 2,
+      };
+      const polyline = new (window as any).google.maps.Polyline({
+        path: [
+          { lat: center[0], lng: center[1] },
+          mid,
+          { lat: route.coords[0], lng: route.coords[1] },
+        ],
+        strokeColor: "hsl(210,90%,55%)",
+        strokeWeight: 2,
+        strokeOpacity: 0.6,
+        geodesic: true,
+      });
+      polyline.setMap(map);
+      polylinesRef.current.push(polyline);
+    });
+
+    return () => {
+      polylinesRef.current.forEach(p => p.setMap(null));
+      polylinesRef.current = [];
+    };
+  }, [map, center, routes]);
+
+  return null;
 };
+
+type TimeFilter = "all" | "tonight" | "weekend" | "thisweek";
+
+interface MapBounds {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
 
 interface MapScreenProps {
   selectedCity: City;
   onCityChange: (city: City) => void;
 }
 
-type TimeFilter = "all" | "tonight" | "weekend" | "thisweek";
-
 const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
+  useScreenView("map_screen");
   const { theme } = useTheme();
-  useScreenView("map", { city: selectedCity.id });
+
   const [showEvents, setShowEvents] = useState(true);
-  const [showPeople, setShowPeople] = useState(true);
-  const [showGroups, setShowGroups] = useState(true);
-  const [showResources, setShowResources] = useState(true);
-  const [showHubs, setShowHubs] = useState(true);
+  const [showPeople, setShowPeople] = useState(false);
+  const [showGroups, setShowGroups] = useState(false);
+  const [showResources, setShowResources] = useState(false);
+  const [showHubs, setShowHubs] = useState(false);
   const [showEventbrite, setShowEventbrite] = useState(true);
   const [showPosh, setShowPosh] = useState(true);
-  const [showPlaces, setShowPlaces] = useState(true);
+  const [showPlaces, setShowPlaces] = useState(false);
   const [showAfroNation, setShowAfroNation] = useState(true);
-  const [showSXSW, setShowSXSW] = useState(true);
+  const [showSXSW, setShowSXSW] = useState(false);
   const [showFlights, setShowFlights] = useState(false);
   const [showCityPicker, setShowCityPicker] = useState(false);
   const [zoomTarget, setZoomTarget] = useState<string | null>(selectedCity.id);
@@ -706,35 +561,33 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   const [mapSearch, setMapSearch] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [timeFilter, setTimeFilter] = useState<TimeFilter>("all");
-  const [distanceFilter, setDistanceFilter] = useState<number | null>(null); // km
+  const [distanceFilter, setDistanceFilter] = useState<number | null>(null);
   const [showTrending, setShowTrending] = useState(false);
-  const [mapBounds, setMapBounds] = useState<L.LatLngBounds | null>(null);
+  const [mapBounds, setMapBounds] = useState<MapBounds | null>(null);
   const [showCreateActivity, setShowCreateActivity] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
+  const [openInfoWindow, setOpenInfoWindow] = useState<{ type: string; id: string | number; position: { lat: number; lng: number }; data: any } | null>(null);
+  const [locating, setLocating] = useState(false);
 
   const { user } = useAuth();
   const { activities, createActivity, joinActivity, myParticipation } = useActivities();
 
-  const handleBoundsChange = useCallback((bounds: L.LatLngBounds) => {
+  const handleBoundsChange = useCallback((bounds: MapBounds) => {
     setMapBounds(bounds);
   }, []);
 
-  // Helper: is a point inside the current viewport (with padding)?
   const inView = useCallback((lat: number, lng: number) => {
-    if (!mapBounds) return true; // render all until bounds are known
-    const pad = 0.15; // ~15% padding so markers near edges aren't clipped
-    const sw = mapBounds.getSouthWest();
-    const ne = mapBounds.getNorthEast();
-    const latPad = (ne.lat - sw.lat) * pad;
-    const lngPad = (ne.lng - sw.lng) * pad;
-    return lat >= sw.lat - latPad && lat <= ne.lat + latPad &&
-           lng >= sw.lng - lngPad && lng <= ne.lng + lngPad;
+    if (!mapBounds) return true;
+    const pad = 0.15;
+    const latPad = (mapBounds.north - mapBounds.south) * pad;
+    const lngPad = (mapBounds.east - mapBounds.west) * pad;
+    return lat >= mapBounds.south - latPad && lat <= mapBounds.north + latPad &&
+           lng >= mapBounds.west - lngPad && lng <= mapBounds.east + lngPad;
   }, [mapBounds]);
 
   const { events: dbEvents } = useEvents();
   const { places: dbPlaces } = usePlaces();
 
-  // Time filter helpers
   const now = useMemo(() => new Date(), []);
   const isTonight = useCallback((dateStr: string) => {
     const d = new Date(dateStr);
@@ -742,8 +595,6 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
   }, [now]);
   const isThisWeekend = useCallback((dateStr: string) => {
     const d = new Date(dateStr);
-    const day = d.getDay();
-    const diff = (day === 0 ? 0 : 6 - day);
     const friday = new Date(now); friday.setDate(now.getDate() + (5 - now.getDay() + 7) % 7);
     friday.setHours(0, 0, 0, 0);
     const sunday = new Date(friday); sunday.setDate(friday.getDate() + 2); sunday.setHours(23, 59, 59);
@@ -762,7 +613,6 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
     return true;
   }, [timeFilter, isTonight, isThisWeekend, isThisWeek]);
 
-  // Distance filter helper (Haversine)
   const getDistanceKm = useCallback((lat1: number, lng1: number, lat2: number, lng2: number) => {
     const R = 6371;
     const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -785,17 +635,10 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
       const seed = e.id.split("").reduce((a: number, b: string) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0);
       const lat = center[0] + (((Math.abs(seed) % 100) - 50) / 500);
       const lng = center[1] + ((((Math.abs(seed) * 7) % 100) - 50) / 400);
-      return {
-        ...e,
-        lat,
-        lng,
-        source: (e as any).source as string,
-        external_url: (e as any).external_url as string | null,
-      };
+      return { ...e, lat, lng, source: (e as any).source as string, external_url: (e as any).external_url as string | null };
     }).filter(e => passesTimeFilter(e.date) && passesDistanceFilter(e.lat, e.lng));
   }, [dbEvents, passesTimeFilter, passesDistanceFilter]);
 
-  // Trending locations — cities with most events
   const trendingLocations = useMemo(() => {
     const counts: Record<string, number> = {};
     [...allEventPositions, ...dbEventPositions].forEach(e => {
@@ -832,13 +675,31 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
     if (city) onCityChange(city);
   };
 
-  const handleCitySelect = (city: City) => {
-    onCityChange(city);
-    setZoomTarget(city.id);
-    setShowCityPicker(false);
-  };
+  const handleLocate = useCallback(() => {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLocation([pos.coords.latitude, pos.coords.longitude]);
+        setLocating(false);
+      },
+      () => setLocating(false),
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  }, []);
 
-  // Match Explore Events page ordering: pinned Posh mock → DB Posh → other DB → unpinned mock
+  const handleCountryZoom = useCallback(() => {
+    // Find which country the current center is in
+    const lat = center[0];
+    const lng = center[1];
+    const country = cityToCountry[selectedCity.id];
+    if (country && countryBounds[country]) {
+      return countryBounds[country].bounds;
+    }
+    return null;
+  }, [center, selectedCity.id]);
+
+  // Nearby events for bottom card
   const mapDbToNearby = (e: typeof dbEventPositions[0]) => ({
     id: Math.abs(e.id.split("").reduce((a: number, b: string) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0)),
     title: e.title,
@@ -877,7 +738,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         </div>
       </header>
 
-      {/* Compact search bar overlay */}
+      {/* Search bar overlay */}
       <div className="absolute top-14 left-4 right-4 z-[1001] max-w-lg mx-auto">
         <div className="relative">
           <div className="flex items-center bg-card/95 backdrop-blur-md border border-border rounded-xl shadow-card px-3 py-2 gap-2">
@@ -898,7 +759,6 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             )}
           </div>
 
-          {/* Search results dropdown */}
           {searchFocused && mapSearch.trim() && (searchResults.events.length > 0 || searchResults.places.length > 0) && (
             <div className="mt-1 bg-card/95 backdrop-blur-md border border-border rounded-xl shadow-elevated max-h-64 overflow-y-auto">
               {searchResults.events.length > 0 && (
@@ -952,7 +812,6 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
               )}
             </div>
           )}
-
           {searchFocused && mapSearch.trim() && searchResults.events.length === 0 && searchResults.places.length === 0 && (
             <div className="mt-1 bg-card/95 backdrop-blur-md border border-border rounded-xl shadow-elevated p-4 text-center">
               <p className="text-xs text-muted-foreground">No results for "{mapSearch}"</p>
@@ -963,7 +822,6 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
       {/* Layer toggles */}
       <div className="absolute top-28 left-4 right-4 z-[1000] max-w-lg mx-auto space-y-2">
-        {/* Time & Distance filters */}
         <div className="flex gap-1.5 overflow-x-auto scrollbar-hide">
           {([
             { id: "all" as TimeFilter, label: "All Events", icon: Calendar },
@@ -981,7 +839,6 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
               <Icon size={12} /> {label}
             </button>
           ))}
-          {/* Distance filter */}
           {userLocation && (
             <>
               {([5, 10, 25] as const).map((km) => (
@@ -997,7 +854,6 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
               ))}
             </>
           )}
-          {/* Trending toggle */}
           <button
             onClick={() => setShowTrending(!showTrending)}
             className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center gap-1 shadow-card whitespace-nowrap ${
@@ -1008,7 +864,6 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </button>
         </div>
 
-        {/* Trending locations dropdown */}
         {showTrending && (
           <div className="bg-card/95 backdrop-blur-md border border-border rounded-xl shadow-elevated p-3">
             <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">🔥 Trending Locations</p>
@@ -1034,7 +889,6 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           </div>
         )}
 
-        {/* Category layer toggles */}
         <div className="flex gap-2 overflow-x-auto scrollbar-hide">
           <button onClick={() => setShowEvents(!showEvents)} className={`px-3 py-2 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 shadow-card whitespace-nowrap ${showEvents ? "gradient-gold text-primary-foreground" : "bg-card text-muted-foreground border border-border"}`}>
             <Calendar size={14} /> Events
@@ -1072,457 +926,203 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         </div>
       </div>
 
-      <MapContainer
-        center={center}
-        zoom={12}
-        style={{ height: "100%", width: "100%" }}
-        zoomControl={false}
-        attributionControl={false}
-        minZoom={2}
-        maxBoundsViscosity={0}
-        worldCopyJump={true}
-        preferCanvas={true}
-        zoomSnap={0.25}
-        zoomDelta={0.5}
-        wheelDebounceTime={40}
-        wheelPxPerZoomLevel={100}
-        inertia={true}
-        inertiaDeceleration={3000}
-        fadeAnimation={true}
-        markerZoomAnimation={true}
-      >
-        <BoundsTracker onBoundsChange={handleBoundsChange} />
-        <MapController targetCity={zoomTarget} onZoomDone={() => setZoomTarget(null)} />
-        <CountryZoomButton />
-        <NearMeButton onLocated={(lat, lng) => setUserLocation([lat, lng])} />
-        {userLocation && <Marker position={userLocation} icon={userLocationIcon}><Popup>You are here</Popup></Marker>}
-        <TileLayer
-          url={theme === "dark"
-            ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-          }
-          updateWhenZooming={false}
-          updateWhenIdle={true}
-          keepBuffer={4}
-          tileSize={256}
-          detectRetina={true}
-        />
+      {/* Google Map */}
+      <APIProvider apiKey={GOOGLE_MAPS_API_KEY}>
+        <Map
+          defaultCenter={{ lat: center[0], lng: center[1] }}
+          defaultZoom={12}
+          mapId={GOOGLE_MAPS_MAP_ID}
+          gestureHandling="greedy"
+          disableDefaultUI={true}
+          colorScheme={theme === "dark" ? "DARK" : "LIGHT"}
+          style={{ height: "100%", width: "100%" }}
+          onIdle={(e) => {
+            const map = e.map;
+            const bounds = map.getBounds();
+            if (bounds) {
+              const ne = bounds.getNorthEast();
+              const sw = bounds.getSouthWest();
+              handleBoundsChange({ north: ne.lat(), south: sw.lat(), east: ne.lng(), west: sw.lng() });
+            }
+          }}
+        >
+          <MapController targetCity={zoomTarget} onZoomDone={() => setZoomTarget(null)} />
 
-        <Marker position={center} icon={youIcon}>
-          <Popup className="afro-popup"><div className="text-sm font-semibold">📍 You are here</div></Popup>
-        </Marker>
+          {/* Flight polylines */}
+          {showFlights && <FlightPolylines center={center} routes={flightRoutes} />}
 
-        {/* Flight route lines */}
-        {showFlights && flightRoutes.map((route) => {
-          const mid: [number, number] = [
-            (center[0] + route.coords[0]) / 2 + Math.abs(center[1] - route.coords[1]) * 0.15,
-            (center[1] + route.coords[1]) / 2,
-          ];
-          return (
-            <Polyline
-              key={`flight-line-${route.destinationCity}`}
-              positions={[center, mid, route.coords]}
-              pathOptions={{ color: "hsl(210,90%,55%)", weight: 2, opacity: 0.6, dashArray: "8 6" }}
-            />
-          );
-        })}
-        {/* Flight price markers */}
-        {showFlights && flightRoutes.map((route) => {
-          const priceLabel = new L.DivIcon({
-            className: "flight-price-marker",
-            html: `<div style="background:hsl(210,90%,55%);color:white;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.2);">$${route.price}</div>`,
-            iconSize: [60, 24],
-            iconAnchor: [30, 12],
-          });
-          return (
-            <Marker key={`flight-price-${route.destinationCity}`} position={route.coords} icon={priceLabel}>
-              <Popup className="afro-popup" maxWidth={240}>
-                <div className="p-2">
-                  <p className="font-bold text-sm">{route.destinationFlag} {route.destinationName}</p>
-                  <p className="text-xs text-gray-500 mt-1">From <strong>${route.price}</strong> round trip</p>
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
-        {showEvents && allEventPositions.filter(e => !e.host?.toLowerCase().includes("afro nation") && e.source !== "sxsw" && inView(e.lat, e.lng)).map((event) => (
-          <Marker key={`event-${event.id}`} position={[event.lat, event.lng]} icon={eventIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
-            <Popup className="afro-popup" maxWidth={280}>
-              <div className="p-1">
-                <img src={event.image} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />
-                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
-                <p className="text-xs text-gray-500 mt-1">{event.host}</p>
-                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500"><span>{event.date}</span></div>
-                <div className="flex items-center gap-2 mt-1 text-xs text-gray-500"><span>{event.venue}</span></div>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-gray-500">{event.attending >= 1000 ? `${(event.attending / 1000).toFixed(1)}K` : event.attending} attending</span>
-                  {event.price && <span className="text-xs font-bold text-amber-600">{event.price}</span>}
-                </div>
+          {/* Flight price markers */}
+          {showFlights && flightRoutes.map((route) => (
+            <AdvancedMarker key={`flight-${route.destinationCity}`} position={{ lat: route.coords[0], lng: route.coords[1] }}
+              onClick={() => setOpenInfoWindow({ type: "flight", id: route.destinationCity, position: { lat: route.coords[0], lng: route.coords[1] }, data: route })}>
+              <div className="px-2 py-0.5 rounded-full text-[11px] font-bold text-white shadow-lg"
+                style={{ background: "hsl(210,90%,55%)", border: "1px solid rgba(255,255,255,0.2)" }}>
+                ${route.price}
               </div>
-            </Popup>
-          </Marker>
-        ))}
+            </AdvancedMarker>
+          ))}
 
-        {/* Afro Nation events with custom icon */}
-        {showAfroNation && allEventPositions.filter(e => e.host?.toLowerCase().includes("afro nation") && inView(e.lat, e.lng)).map((event) => (
-          <Marker key={`an-${event.id}`} position={[event.lat, event.lng]} icon={afroNationMapIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
-            <Popup className="afro-popup" maxWidth={280}>
-              <div className="p-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <img src={afroNationIcon} alt="Afro Nation" className="w-8 h-8 rounded-full object-cover" />
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700">Afro Nation</span>
-                </div>
-                <img src={event.image} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />
-                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
-                <p className="text-xs text-gray-500 mt-1">{event.host}</p>
-                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500"><span>{event.date}</span></div>
-                <div className="flex items-center gap-2 mt-1 text-xs text-gray-500"><span>{event.venue}</span></div>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-gray-500">{event.attending >= 1000 ? `${(event.attending / 1000).toFixed(1)}K` : event.attending} attending</span>
-                  {event.price && <span className="text-xs font-bold text-purple-600">{event.price}</span>}
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+          {/* You marker */}
+          <AdvancedMarker position={{ lat: center[0], lng: center[1] }}>
+            <YouPin />
+          </AdvancedMarker>
 
-        {/* SXSW events with custom icon */}
-        {showSXSW && allEventPositions.filter(e => e.source === "sxsw" && inView(e.lat, e.lng)).map((event) => (
-          <Marker key={`sxsw-${event.id}`} position={[event.lat, event.lng]} icon={sxswMapIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
-            <Popup className="afro-popup" maxWidth={280}>
-              <div className="p-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <img src={sxswIcon} alt="SXSW" className="w-8 h-8 object-contain" />
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-900 text-white">SXSW 2026</span>
-                </div>
-                <img src={event.image} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />
-                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
-                <p className="text-xs text-gray-500 mt-1">{event.host}</p>
-                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500"><span>{event.date}</span></div>
-                <div className="flex items-center gap-2 mt-1 text-xs text-gray-500"><span>{event.venue}</span></div>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-gray-500">{event.attending >= 1000 ? `${(event.attending / 1000).toFixed(1)}K` : event.attending} attending</span>
-                  {event.price && <span className="text-xs font-bold">{event.price}</span>}
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+          {/* User location */}
+          {userLocation && (
+            <AdvancedMarker position={{ lat: userLocation[0], lng: userLocation[1] }}>
+              <UserLocationPin />
+            </AdvancedMarker>
+          )}
 
-        {showPeople && allPeople.filter(p => inView(p.lat, p.lng)).map((person, i) => (
-          <Marker key={`person-${i}`} position={[person.lat, person.lng]} icon={personIcon}>
-            <Popup className="afro-popup">
-              <div className="p-1">
-                <p className="font-bold text-sm">{person.vibe} {person.name}, {person.age}</p>
-                <p className="text-xs text-gray-500">{person.status}</p>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+          {/* Mock events */}
+          {showEvents && allEventPositions.filter(e => !e.host?.toLowerCase().includes("afro nation") && e.source !== "sxsw" && inView(e.lat, e.lng)).map((event) => (
+            <AdvancedMarker key={`event-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              onClick={() => setOpenInfoWindow({ type: "event", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
+              <EventPin />
+            </AdvancedMarker>
+          ))}
 
-        {showGroups && allGroups.filter(g => inView(g.lat, g.lng)).map((group, i) => (
-          <Marker key={`group-${i}`} position={[group.lat, group.lng]} icon={groupIcon}>
-            <Popup className="afro-popup" maxWidth={260}>
-              <div className="p-1">
-                <p className="font-bold text-sm">{group.name}</p>
-                <p className="text-xs text-gray-500 mt-1">{group.description}</p>
-                <div className="flex flex-wrap gap-1 mt-2">
-                  {group.members.map((m) => (
-                    <span key={m} className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[10px] font-medium">{m}</span>
-                  ))}
-                </div>
-                <button className="w-full mt-2 py-1.5 rounded-full bg-purple-500 text-white text-xs font-semibold">Request to Join</button>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+          {/* Afro Nation */}
+          {showAfroNation && allEventPositions.filter(e => e.host?.toLowerCase().includes("afro nation") && inView(e.lat, e.lng)).map((event) => (
+            <AdvancedMarker key={`an-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              onClick={() => setOpenInfoWindow({ type: "afronation", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
+              <AfroNationPin />
+            </AdvancedMarker>
+          ))}
 
-        {showResources && allResources.filter(r => inView(r.lat, r.lng)).map((resource) => (
-          <Marker key={`resource-${resource.id}`} position={[resource.lat, resource.lng]} icon={createResourceIcon(resource.category, resource.type)}>
-            <Popup className="afro-popup" maxWidth={300}>
-              <div className="p-2">
-                {/* Type & Category badges */}
-                <div className="flex items-center gap-1.5 mb-2 flex-wrap">
-                  <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${resource.type === "nonprofit" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700"}`}>
-                    {resource.type === "nonprofit" ? "💚 Nonprofit" : "💼 Hiring"}
-                  </span>
-                  <span className="px-2 py-0.5 rounded-full bg-gray-100 text-gray-600 text-[10px] font-medium">{resource.category}</span>
-                </div>
+          {/* SXSW */}
+          {showSXSW && allEventPositions.filter(e => e.source === "sxsw" && inView(e.lat, e.lng)).map((event) => (
+            <AdvancedMarker key={`sxsw-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              onClick={() => setOpenInfoWindow({ type: "sxsw", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
+              <SXSWPin />
+            </AdvancedMarker>
+          ))}
 
-                {/* Name */}
-                <h3 className="font-bold text-sm leading-tight text-gray-900">{resource.name}</h3>
+          {/* People */}
+          {showPeople && allPeople.filter(p => inView(p.lat, p.lng)).map((person, i) => (
+            <AdvancedMarker key={`person-${i}`} position={{ lat: person.lat, lng: person.lng }}
+              onClick={() => setOpenInfoWindow({ type: "person", id: i, position: { lat: person.lat, lng: person.lng }, data: person })}>
+              <PersonPin />
+            </AdvancedMarker>
+          ))}
 
-                {/* Description */}
-                <p className="text-xs text-gray-500 mt-1.5 leading-relaxed">{resource.description}</p>
+          {/* Groups */}
+          {showGroups && allGroups.filter(g => inView(g.lat, g.lng)).map((group, i) => (
+            <AdvancedMarker key={`group-${i}`} position={{ lat: group.lat, lng: group.lng }}
+              onClick={() => setOpenInfoWindow({ type: "group", id: i, position: { lat: group.lat, lng: group.lng }, data: group })}>
+              <GroupPin />
+            </AdvancedMarker>
+          ))}
 
-                {/* City */}
-                <div className="flex items-center gap-1 mt-2 text-[10px] text-gray-400">
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                  <span className="capitalize">{resource.city}</span>
-                </div>
+          {/* Resources */}
+          {showResources && allResources.filter(r => inView(r.lat, r.lng)).map((resource) => (
+            <AdvancedMarker key={`resource-${resource.id}`} position={{ lat: resource.lat, lng: resource.lng }}
+              onClick={() => setOpenInfoWindow({ type: "resource", id: resource.id, position: { lat: resource.lat, lng: resource.lng }, data: resource })}>
+              <ResourcePin type={resource.type} flag={categoryFlagMap[resource.category]} />
+            </AdvancedMarker>
+          ))}
 
-                {/* Website link */}
-                {resource.website && (
-                  <a
-                    href={resource.website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-1.5 mt-2.5 px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors text-xs font-medium text-blue-600"
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-                    Visit Website
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                  </a>
-                )}
+          {/* Hubs */}
+          {showHubs && hubPositions.filter(h => inView(h.lat, h.lng)).map((hub) => (
+            <AdvancedMarker key={`hub-${hub.cityId}`} position={{ lat: hub.lat, lng: hub.lng }}
+              onClick={() => setOpenInfoWindow({ type: "hub", id: hub.cityId, position: { lat: hub.lat, lng: hub.lng }, data: hub })}>
+              <HubPin hub={hub} />
+            </AdvancedMarker>
+          ))}
 
-                {/* Action buttons */}
-                <div className="flex gap-2 mt-3">
-                  <button
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full text-white text-xs font-semibold bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 transition-all shadow-sm"
-                    onClick={() => {
-                      if (resource.website) window.open(resource.website, "_blank");
-                    }}
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg>
-                    Contact
-                  </button>
-                  <button
-                    className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-full text-white text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 transition-all shadow-sm"
-                    onClick={() => {
-                      const helpTab = document.querySelector('[data-tab="help"]') as HTMLElement;
-                      if (helpTab) helpTab.click();
-                    }}
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
-                    Ask for Help
-                  </button>
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+          {/* DB Events: Eventbrite */}
+          {showEventbrite && dbEventPositions.filter(e => e.source === "eventbrite" && inView(e.lat, e.lng)).map((event) => (
+            <AdvancedMarker key={`eb-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              onClick={() => setOpenInfoWindow({ type: "eventbrite", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
+              <EventbritePin />
+            </AdvancedMarker>
+          ))}
 
-        {showHubs && hubPositions.filter(h => inView(h.lat, h.lng)).map((hub) => (
-          <Marker key={`hub-${hub.cityId}`} position={[hub.lat, hub.lng]} icon={createHubIcon(hub)} eventHandlers={{ click: () => handleEventClick(hub.cityId) }}>
-            <Popup className="afro-popup" maxWidth={300}>
-              <div className="p-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg">{hub.flag}</span>
-                  <div>
-                    <h3 className="font-bold text-sm">{hub.city}</h3>
-                    <p className="text-[10px] text-gray-500">{hub.state} · Diaspora Hub</p>
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  {hub.communities.map((c, i) => (
-                    <div key={i} className="flex items-center justify-between">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-sm">{c.countryFlag}</span>
-                        <span className="text-xs font-medium">{c.country}</span>
-                      </div>
-                      <span className="text-[10px] font-bold text-amber-600">{c.population}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+          {/* DB Events: Posh */}
+          {showPosh && dbEventPositions.filter(e => e.source === "posh" && inView(e.lat, e.lng)).map((event) => (
+            <AdvancedMarker key={`posh-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              onClick={() => setOpenInfoWindow({ type: "posh", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
+              <PoshPin />
+            </AdvancedMarker>
+          ))}
 
-        {/* Eventbrite events from DB */}
-        {showEventbrite && dbEventPositions.filter(e => e.source === "eventbrite" && inView(e.lat, e.lng)).map((event) => (
-          <Marker key={`eb-${event.id}`} position={[event.lat, event.lng]} icon={eventbriteIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
-            <Popup className="afro-popup" maxWidth={280}>
-              <div className="p-1">
-                {event.image_url && <img src={event.image_url} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />}
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-700">Eventbrite</span>
-                </div>
-                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
-                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
-                  <span>{new Date(event.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
-                </div>
-                {event.location && <div className="text-xs text-gray-500 mt-1">{event.location}</div>}
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs font-bold text-amber-600">{event.price || "Free"}</span>
-                  {event.external_url && (
-                    <a href={event.external_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 flex items-center gap-1">
-                      View <ExternalLink size={10} />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+          {/* DB Events: DICE */}
+          {showEventbrite && dbEventPositions.filter(e => e.source === "dice" && inView(e.lat, e.lng)).map((event) => (
+            <AdvancedMarker key={`dice-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              onClick={() => setOpenInfoWindow({ type: "dice", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
+              <DicePin />
+            </AdvancedMarker>
+          ))}
 
-        {/* Posh events from DB */}
-        {showPosh && dbEventPositions.filter(e => e.source === "posh" && inView(e.lat, e.lng)).map((event) => (
-          <Marker key={`posh-${event.id}`} position={[event.lat, event.lng]} icon={poshIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
-            <Popup className="afro-popup" maxWidth={280}>
-              <div className="p-1">
-                {event.image_url && <img src={event.image_url} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />}
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700">Posh</span>
-                </div>
-                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
-                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
-                  <span>{new Date(event.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
-                </div>
-                {event.location && <div className="text-xs text-gray-500 mt-1">{event.location}</div>}
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs font-bold text-purple-600">{event.price || "Free"}</span>
-                  {event.external_url && (
-                    <a href={event.external_url} target="_blank" rel="noopener noreferrer" className="text-xs text-purple-500 flex items-center gap-1">
-                      View <ExternalLink size={10} />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+          {/* DB Events: Shotgun */}
+          {showEventbrite && dbEventPositions.filter(e => e.source === "shotgun" && inView(e.lat, e.lng)).map((event) => (
+            <AdvancedMarker key={`shotgun-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              onClick={() => setOpenInfoWindow({ type: "shotgun", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
+              <ShotgunPin />
+            </AdvancedMarker>
+          ))}
 
-        {/* DICE events from DB */}
-        {showEventbrite && dbEventPositions.filter(e => e.source === "dice" && inView(e.lat, e.lng)).map((event) => (
-          <Marker key={`dice-${event.id}`} position={[event.lat, event.lng]} icon={diceIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
-            <Popup className="afro-popup" maxWidth={280}>
-              <div className="p-1">
-                {event.image_url && <img src={event.image_url} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />}
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">DICE</span>
-                </div>
-                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
-                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
-                  <span>{new Date(event.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
-                </div>
-                {event.location && <div className="text-xs text-gray-500 mt-1">{event.location}</div>}
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs font-bold text-blue-600">{event.price || "Free"}</span>
-                  {event.external_url && (
-                    <a href={event.external_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 flex items-center gap-1">
-                      View <ExternalLink size={10} />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+          {/* DB Events: Billetto */}
+          {showEventbrite && dbEventPositions.filter(e => e.source === "billetto" && inView(e.lat, e.lng)).map((event) => (
+            <AdvancedMarker key={`billetto-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              onClick={() => setOpenInfoWindow({ type: "billetto", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
+              <BillettoPin />
+            </AdvancedMarker>
+          ))}
 
-        {/* Shotgun events from DB */}
-        {showEventbrite && dbEventPositions.filter(e => e.source === "shotgun" && inView(e.lat, e.lng)).map((event) => (
-          <Marker key={`sg-${event.id}`} position={[event.lat, event.lng]} icon={shotgunIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
-            <Popup className="afro-popup" maxWidth={280}>
-              <div className="p-1">
-                {event.image_url && <img src={event.image_url} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />}
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-pink-100 text-pink-700">Shotgun</span>
-                </div>
-                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
-                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
-                  <span>{new Date(event.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
-                </div>
-                {event.location && <div className="text-xs text-gray-500 mt-1">{event.location}</div>}
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs font-bold text-pink-600">{event.price || "Free"}</span>
-                  {event.external_url && (
-                    <a href={event.external_url} target="_blank" rel="noopener noreferrer" className="text-xs text-pink-500 flex items-center gap-1">
-                      View <ExternalLink size={10} />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+          {/* Places */}
+          {showPlaces && dbPlaces.filter(p => p.latitude && p.longitude && inView(p.latitude!, p.longitude!)).map((place) => (
+            <AdvancedMarker key={`place-${place.id}`} position={{ lat: place.latitude!, lng: place.longitude! }}
+              onClick={() => setOpenInfoWindow({ type: "place", id: place.id, position: { lat: place.latitude!, lng: place.longitude! }, data: place })}>
+              <PlacePin category={place.category} />
+            </AdvancedMarker>
+          ))}
 
-        {/* Billetto events from DB */}
-        {showEventbrite && dbEventPositions.filter(e => e.source === "billetto" && inView(e.lat, e.lng)).map((event) => (
-          <Marker key={`bl-${event.id}`} position={[event.lat, event.lng]} icon={billettoIcon} eventHandlers={{ click: () => handleEventClick(event.city) }}>
-            <Popup className="afro-popup" maxWidth={280}>
-              <div className="p-1">
-                {event.image_url && <img src={event.image_url} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />}
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-100 text-teal-700">Billetto</span>
-                </div>
-                <h3 className="font-bold text-sm leading-tight">{event.title}</h3>
-                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
-                  <span>{new Date(event.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}</span>
-                </div>
-                {event.location && <div className="text-xs text-gray-500 mt-1">{event.location}</div>}
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs font-bold text-teal-600">{event.price || "Free"}</span>
-                  {event.external_url && (
-                    <a href={event.external_url} target="_blank" rel="noopener noreferrer" className="text-xs text-teal-500 flex items-center gap-1">
-                      View <ExternalLink size={10} />
-                    </a>
-                  )}
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+          {/* Activities */}
+          {activities.filter(a => inView(a.latitude, a.longitude)).map((activity) => (
+            <AdvancedMarker key={`activity-${activity.id}`} position={{ lat: activity.latitude, lng: activity.longitude }}
+              onClick={() => setSelectedActivity(activity)}>
+              <ActivityPin emoji={CATEGORY_EMOJI[activity.category] || "✨"} isPrivate={!activity.is_public} />
+            </AdvancedMarker>
+          ))}
 
-        {/* Places from DB */}
-        {showPlaces && dbPlaces.filter(p => p.latitude && p.longitude && inView(p.latitude!, p.longitude!)).map((place) => (
-          <Marker
-            key={`place-${place.id}`}
-            position={[place.latitude!, place.longitude!]}
-            icon={place.category === "restaurant" ? restaurantIcon : place.category === "fitness" ? fitnessIcon : prayerIcon}
-          >
-            <Popup className="afro-popup" maxWidth={280}>
-              <div className="p-1">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                    place.category === "restaurant" ? "bg-amber-100 text-amber-700" :
-                    place.category === "fitness" ? "bg-blue-100 text-blue-700" :
-                    "bg-teal-100 text-teal-700"
-                  }`}>
-                    {place.subcategory || place.category}
-                  </span>
-                  {place.cuisine_type && <span className="text-[10px] text-gray-500">{place.cuisine_type}</span>}
-                  {place.is_halal && <span className="text-[9px] font-bold text-emerald-500">Halal</span>}
-                </div>
-                <h3 className="font-bold text-sm leading-tight">{place.name}</h3>
-                {place.description && <p className="text-xs text-gray-500 mt-1">{place.description}</p>}
-                {place.address && <p className="text-[10px] text-gray-400 mt-1">📍 {place.address}</p>}
-                {place.price_range && <span className="text-xs font-bold text-amber-600">{place.price_range}</span>}
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-        {/* Activity hangouts from DB */}
-        {activities.filter(a => inView(a.latitude, a.longitude)).map((activity) => (
-          <Marker
-            key={`activity-${activity.id}`}
-            position={[activity.latitude, activity.longitude]}
-            icon={createActivityMapIcon(CATEGORY_EMOJI[activity.category] || "✨", !activity.is_public)}
-            eventHandlers={{ click: () => setSelectedActivity(activity) }}
-          >
-            <Popup className="afro-popup" maxWidth={280}>
-              <div className="p-1">
-                <div className="flex items-center gap-1.5 mb-1">
-                  <span className="text-lg">{CATEGORY_EMOJI[activity.category] || "✨"}</span>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-pink-100 text-pink-700">
-                    {activity.is_public ? "Public" : "Private"}
-                  </span>
-                </div>
-                <h3 className="font-bold text-sm leading-tight">{activity.description || activity.title}</h3>
-                {activity.creator && (
-                  <p className="text-xs text-gray-500 mt-1">by {activity.creator.display_name}</p>
-                )}
-                <div className="flex items-center gap-2 mt-1.5 text-xs text-gray-500">
-                  <Users size={12} />
-                  <span>{activity.participant_count || 0} joined{activity.max_spots ? ` / ${activity.max_spots} spots` : ""}</span>
-                </div>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
-      </MapContainer>
+          {/* Unified InfoWindow */}
+          {openInfoWindow && (
+            <InfoWindow
+              position={openInfoWindow.position}
+              onCloseClick={() => setOpenInfoWindow(null)}
+              maxWidth={280}
+            >
+              {renderInfoContent(openInfoWindow)}
+            </InfoWindow>
+          )}
+        </Map>
+      </APIProvider>
 
-      {/* FAB - Create Activity — top-left below filters */}
+      {/* Map controls — bottom right */}
+      <div className="absolute bottom-24 right-4 z-[1000] flex flex-col gap-2">
+        {/* Country zoom */}
+        <button
+          onClick={() => {
+            const bounds = handleCountryZoom();
+            // Just zoom out to level 5 for now
+            setZoomTarget(selectedCity.id);
+          }}
+          className="w-10 h-10 rounded-full bg-card/95 backdrop-blur-md border border-border shadow-card flex items-center justify-center hover:bg-secondary transition-colors"
+        >
+          <Globe size={18} className="text-foreground" />
+        </button>
+        {/* Near Me */}
+        <button
+          onClick={handleLocate}
+          disabled={locating}
+          className="w-10 h-10 rounded-full bg-card/95 backdrop-blur-md border border-border shadow-card flex items-center justify-center hover:bg-secondary transition-colors"
+        >
+          {locating ? <Loader2 size={18} className="text-primary animate-spin" /> : <Crosshair size={18} className="text-foreground" />}
+        </button>
+      </div>
+
+      {/* FAB - Create Activity */}
       <button
         onClick={() => setShowCreateActivity(true)}
         className="absolute top-[13.5rem] left-4 z-[1000] w-12 h-12 rounded-full bg-primary text-primary-foreground shadow-lg flex items-center justify-center hover:scale-105 transition-transform active:scale-95"
@@ -1532,7 +1132,6 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         <Plus size={22} />
       </button>
 
-      {/* Create Activity Sheet */}
       <CreateActivitySheet
         open={showCreateActivity}
         onClose={() => setShowCreateActivity(false)}
@@ -1580,7 +1179,6 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
                   </div>
                 </div>
 
-                {/* Join / Request button */}
                 {user && selectedActivity.creator_id !== user.id && (
                   <div className="mt-4">
                     {(() => {
@@ -1593,9 +1191,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
                       }
                       return (
                         <button
-                          onClick={() => {
-                            joinActivity.mutate({ activityId: selectedActivity.id, isPublic: selectedActivity.is_public });
-                          }}
+                          onClick={() => joinActivity.mutate({ activityId: selectedActivity.id, isPublic: selectedActivity.is_public })}
                           disabled={joinActivity.isPending}
                           className="w-full py-3 rounded-xl gradient-gold text-primary-foreground text-sm font-bold shadow-gold disabled:opacity-50"
                         >
@@ -1646,7 +1242,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
         </>
       )}
 
-      {/* Bottom info card - collapsible */}
+      {/* Bottom info card */}
       <div className="absolute bottom-20 left-4 right-16 z-[999] max-w-lg">
         <div className="bg-card/95 backdrop-blur-md rounded-2xl border border-border shadow-elevated overflow-hidden">
           <button
@@ -1686,5 +1282,161 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
     </div>
   );
 };
+
+// Helper to render info window content based on marker type
+function renderInfoContent(info: { type: string; data: any }) {
+  const d = info.data;
+  switch (info.type) {
+    case "event":
+    case "afronation":
+    case "sxsw":
+      return (
+        <div className="p-1 max-w-[260px]">
+          {d.image && <img src={d.image} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />}
+          {info.type === "afronation" && (
+            <div className="flex items-center gap-2 mb-1">
+              <img src={afroNationIcon} alt="" className="w-6 h-6 rounded-full object-cover" />
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700">Afro Nation</span>
+            </div>
+          )}
+          {info.type === "sxsw" && (
+            <div className="flex items-center gap-2 mb-1">
+              <img src={sxswIcon} alt="" className="w-6 h-6 object-contain" />
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-900 text-white">SXSW 2026</span>
+            </div>
+          )}
+          <h3 className="font-bold text-sm leading-tight">{d.title}</h3>
+          <p className="text-xs text-gray-500 mt-1">{d.host}</p>
+          <div className="text-xs text-gray-500 mt-1">{d.date}</div>
+          <div className="text-xs text-gray-500 mt-0.5">{d.venue}</div>
+          <div className="flex items-center justify-between mt-2">
+            <span className="text-xs text-gray-500">{d.attending >= 1000 ? `${(d.attending / 1000).toFixed(1)}K` : d.attending} attending</span>
+            {d.price && <span className="text-xs font-bold text-amber-600">{d.price}</span>}
+          </div>
+        </div>
+      );
+    case "flight":
+      return (
+        <div className="p-2">
+          <p className="font-bold text-sm">{d.destinationFlag} {d.destinationName}</p>
+          <p className="text-xs text-gray-500 mt-1">From <strong>${d.price}</strong> round trip</p>
+        </div>
+      );
+    case "person":
+      return (
+        <div className="p-1">
+          <p className="font-bold text-sm">{d.vibe} {d.name}, {d.age}</p>
+          <p className="text-xs text-gray-500">{d.status}</p>
+        </div>
+      );
+    case "group":
+      return (
+        <div className="p-1">
+          <p className="font-bold text-sm">{d.name}</p>
+          <p className="text-xs text-gray-500 mt-1">{d.description}</p>
+          <div className="flex flex-wrap gap-1 mt-2">
+            {d.members.map((m: string) => (
+              <span key={m} className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full text-[10px] font-medium">{m}</span>
+            ))}
+          </div>
+        </div>
+      );
+    case "resource":
+      return (
+        <div className="p-2">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${d.type === "nonprofit" ? "bg-emerald-100 text-emerald-700" : "bg-blue-100 text-blue-700"}`}>
+              {d.type === "nonprofit" ? "💚 Nonprofit" : "💼 Hiring"}
+            </span>
+          </div>
+          <h3 className="font-bold text-sm">{d.name}</h3>
+          <p className="text-xs text-gray-500 mt-1">{d.description}</p>
+          {d.website && (
+            <a href={d.website} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 mt-2 flex items-center gap-1">
+              Visit Website <ExternalLink size={10} />
+            </a>
+          )}
+        </div>
+      );
+    case "hub":
+      return (
+        <div className="p-1">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-lg">{d.flag}</span>
+            <div>
+              <h3 className="font-bold text-sm">{d.city}</h3>
+              <p className="text-[10px] text-gray-500">{d.state} · Diaspora Hub</p>
+            </div>
+          </div>
+          <div className="space-y-1">
+            {d.communities.slice(0, 5).map((c: any, i: number) => (
+              <div key={i} className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-sm">{c.countryFlag}</span>
+                  <span className="text-xs font-medium">{c.country}</span>
+                </div>
+                <span className="text-[10px] font-bold text-amber-600">{c.population}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    case "eventbrite":
+    case "posh":
+    case "dice":
+    case "shotgun":
+    case "billetto":
+      return (
+        <div className="p-1 max-w-[260px]">
+          {d.image_url && <img src={d.image_url} alt="" className="w-full h-24 object-cover rounded-lg mb-2" />}
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+              info.type === "eventbrite" ? "bg-orange-100 text-orange-700" :
+              info.type === "posh" ? "bg-purple-100 text-purple-700" :
+              info.type === "dice" ? "bg-blue-100 text-blue-700" :
+              info.type === "shotgun" ? "bg-pink-100 text-pink-700" :
+              "bg-teal-100 text-teal-700"
+            }`}>
+              {info.type.charAt(0).toUpperCase() + info.type.slice(1)}
+            </span>
+          </div>
+          <h3 className="font-bold text-sm leading-tight">{d.title}</h3>
+          <div className="text-xs text-gray-500 mt-1">
+            {new Date(d.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}
+          </div>
+          {d.location && <div className="text-xs text-gray-500 mt-0.5">{d.location}</div>}
+          <div className="flex items-center justify-between mt-2">
+            <span className="text-xs font-bold text-amber-600">{d.price || "Free"}</span>
+            {d.external_url && (
+              <a href={d.external_url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-500 flex items-center gap-1">
+                View <ExternalLink size={10} />
+              </a>
+            )}
+          </div>
+        </div>
+      );
+    case "place":
+      return (
+        <div className="p-1">
+          <div className="flex items-center gap-1.5 mb-1">
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+              d.category === "restaurant" ? "bg-amber-100 text-amber-700" :
+              d.category === "fitness" ? "bg-blue-100 text-blue-700" :
+              "bg-teal-100 text-teal-700"
+            }`}>
+              {d.subcategory || d.category}
+            </span>
+            {d.cuisine_type && <span className="text-[10px] text-gray-500">{d.cuisine_type}</span>}
+          </div>
+          <h3 className="font-bold text-sm">{d.name}</h3>
+          {d.description && <p className="text-xs text-gray-500 mt-1">{d.description}</p>}
+          {d.address && <p className="text-[10px] text-gray-400 mt-1">📍 {d.address}</p>}
+          {d.price_range && <span className="text-xs font-bold text-amber-600">{d.price_range}</span>}
+        </div>
+      );
+    default:
+      return null;
+  }
+}
 
 export default MapScreen;
