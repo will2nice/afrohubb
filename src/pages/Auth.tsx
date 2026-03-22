@@ -95,25 +95,20 @@ const Auth = () => {
         });
         if (error) throw error;
 
-        // If admin code provided, try to activate after signup
-        if (adminCode.trim()) {
-          // Need to sign in first to get a session
-          const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-          if (!signInError) {
-            const success = await activateAdmin();
-            if (success) {
-              navigate("/app");
-              return;
-            }
-          }
-        }
-
-        toast({
-          title: "Check your email ✉️",
-          description: "We sent you a verification link. Click it to activate your account.",
-        });
         trackSignUp("email");
         trackUserSignup("email");
+
+        // Auto-confirm is enabled, so sign in immediately
+        const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
+        if (signInError) throw signInError;
+
+        // If admin code provided, activate admin role
+        if (adminCode.trim()) {
+          await activateAdmin();
+        }
+
+        navigate("/app");
+        return;
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
