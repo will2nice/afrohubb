@@ -1,8 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, Users, Gift, Share2, Copy, Check, Sparkles, Camera, Instagram, X, Zap } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
 
 interface SignupResult {
   referral_code: string;
@@ -42,8 +41,7 @@ const Waitlist = () => {
   const [result, setResult] = useState<SignupResult | null>(null);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
-  const [searchParams] = useSearchParams();
-  const refCode = searchParams.get("ref");
+  const refCode = useMemo(() => new URLSearchParams(window.location.search).get("ref"), []);
 
   const handlePhotoSelect = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
