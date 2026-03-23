@@ -1,8 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowRight, Users, Gift, Share2, Copy, Check, Sparkles, Camera, Instagram, X, Zap } from "lucide-react";
-import { useSearchParams } from "react-router-dom";
 
 interface SignupResult {
   referral_code: string;
