@@ -294,11 +294,13 @@ const ActivityPin = ({ emoji, isPrivate }: { emoji: string; isPrivate: boolean }
 // Clustered marker wrapper - registers with MarkerClusterer
 const ClusteredAdvancedMarker = ({ id, ...props }: { id: string } & React.ComponentProps<typeof AdvancedMarker>) => {
   const ctx = useClusterer();
+  const ctxRef = useRef(ctx);
+  ctxRef.current = ctx;
   const handleRef = useCallback(
     (marker: google.maps.marker.AdvancedMarkerElement | null) => {
-      ctx?.setMarkerRef(id, marker as Marker | null);
+      ctxRef.current?.setMarkerRef(id, marker as Marker | null);
     },
-    [id, ctx]
+    [id]
   );
   return <AdvancedMarker ref={handleRef} {...props} />;
 };

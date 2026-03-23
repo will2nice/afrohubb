@@ -4,7 +4,6 @@ import { MarkerClusterer as GMClusterer, type Marker } from "@googlemaps/markerc
 import {
   useEffect,
   useRef,
-  useState,
   useCallback,
   createContext,
   useContext,
@@ -26,7 +25,7 @@ interface ClusteredMarkersProps {
 export default function ClusteredMarkers({ children }: ClusteredMarkersProps) {
   const map = useMap();
   const clusterer = useRef<GMClusterer | null>(null);
-  const [markers, setMarkers] = useState<Record<string, Marker>>({});
+  const markersRef = useRef<Record<string, Marker>>({});
 
   useEffect(() => {
     if (!map) return;
@@ -58,24 +57,20 @@ export default function ClusteredMarkers({ children }: ClusteredMarkersProps) {
     }
   }, [map]);
 
-  // Sync markers dict with clusterer
-  useEffect(() => {
-    if (!clusterer.current) return;
-    clusterer.current.clearMarkers();
-    clusterer.current.addMarkers(Object.values(markers));
-  }, [markers]);
-
   const setMarkerRef = useCallback((id: string, marker: Marker | null) => {
-    setMarkers((prev) => {
-      if (marker) {
-        if (prev[id] === marker) return prev;
-        return { ...prev, [id]: marker };
-      }
-      if (!(id in prev)) return prev;
-      const next = { ...prev };
-      delete next[id];
-      return next;
-    });
+    const current = markersRef.current;
+    if (marker) {
+      if (current[id] === marker) return;
+      current[id] = marker;
+    } else {
+      if (!(id in current)) return;
+      delete current[id];
+    }
+    // Update clusterer directly, no state needed
+    if (clusterer.current) {
+      clusterer.current.clearMarkers();
+      clusterer.current.addMarkers(Object.values(current));
+    }
   }, []);
 
   return (
