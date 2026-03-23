@@ -1,3 +1,4 @@
+/// <reference types="google.maps" />
 import { useMap } from "@vis.gl/react-google-maps";
 import { MarkerClusterer as GMClusterer, type Marker } from "@googlemaps/markerclusterer";
 import {
