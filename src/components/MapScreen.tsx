@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useScreenView } from "@/hooks/useAnalytics";
 import { APIProvider, Map, AdvancedMarker, InfoWindow, useMap } from "@vis.gl/react-google-maps";
 import { GOOGLE_MAPS_API_KEY, GOOGLE_MAPS_MAP_ID } from "@/lib/googleMaps";
+import ClusteredMarkers, { useClusterer, type Marker } from "@/components/MarkerClusterer";
 import { useTheme } from "@/contexts/ThemeContext";
 import { MapPin, Users, Calendar, Navigation, ChevronDown, Check, ChevronUp, X, Heart, Briefcase, ExternalLink, Ticket, UtensilsCrossed, Dumbbell, Moon, Globe, HandHelping, Music, Plane, Crosshair, Loader2, Search, Clock, Flame, Ruler, Plus, Lock } from "lucide-react";
 import { events as allEvents, cities, type City, AFRO_NATION_EVENT_ID, SXSW_EVENT_ID } from "@/data/cityData";
