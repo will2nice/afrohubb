@@ -45,12 +45,12 @@ export default function ClusteredMarkers({ children }: ClusteredMarkersProps) {
             `;
             el.textContent = count >= 1000 ? `${Math.round(count / 1000)}K` : String(count);
 
-            return new google.maps.marker.AdvancedMarkerElement({
+            return new (google.maps.marker.AdvancedMarkerElement as any)({
               map,
               position,
               content: el,
-              zIndex: Number(google.maps.Marker.MAX_ZINDEX) + count,
-            });
+              zIndex: Number((google.maps.Marker as any).MAX_ZINDEX) + count,
+            }) as google.maps.marker.AdvancedMarkerElement;
           },
         },
       });
