@@ -41,8 +41,7 @@ const Waitlist = () => {
   const [result, setResult] = useState<SignupResult | null>(null);
   const [copied, setCopied] = useState(false);
   const { toast } = useToast();
-  const [searchParams] = useSearchParams();
-  const refCode = searchParams.get("ref") || new URLSearchParams(window.location.search).get("ref");
+  const refCode = useMemo(() => new URLSearchParams(window.location.search).get("ref"), []);
 
   const handlePhotoSelect = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
