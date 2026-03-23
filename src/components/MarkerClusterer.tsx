@@ -84,3 +84,5 @@ export default function ClusteredMarkers({ children }: ClusteredMarkersProps) {
     </ClustererContext.Provider>
   );
 }
+
+export { type Marker } from "@googlemaps/markerclusterer";
