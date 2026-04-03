@@ -43,11 +43,10 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Waitlist />} />
-            <Route path="/waitlist" element={<Waitlist />} />
+            <Route path="/" element={<Index />} />
+            <Route path="/app" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/app" element={<ProtectedRoute><Index /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="/install" element={<Install />} />
             <Route path="/community-guidelines" element={<CommunityGuidelines />} />
