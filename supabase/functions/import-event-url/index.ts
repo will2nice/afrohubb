@@ -148,7 +148,7 @@ Return ONLY valid JSON, no markdown formatting.`,
         image_url: eventData.image_url || null,
         capacity: eventData.capacity || null,
         city: city || "london",
-        creator_id: user.id,
+        creator_id: userId,
         source,
         external_url: url,
         is_approved: true, // Auto-approve user-imported events
