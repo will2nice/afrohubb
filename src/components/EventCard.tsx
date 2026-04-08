@@ -1,4 +1,4 @@
-import { Calendar, MapPin, ExternalLink, Share2, Users, UserCheck, Bookmark } from "lucide-react";
+import { Calendar, MapPin, ExternalLink, Share2, UserCheck, Bookmark } from "lucide-react";
 
 interface EventCardProps {
   event: {
@@ -34,7 +34,7 @@ const SOURCE_ICONS: Record<string, string> = {
   partyfoul: "🎉",
 };
 
-const EventCard = ({ event, isGoing, onRsvp, onGetTickets, onTable, onShare, sourceLabel, sourceColor }: EventCardProps) => {
+const EventCard = ({ event, isGoing, onRsvp, onShare, sourceLabel, sourceColor }: EventCardProps) => {
   const handleViewEvent = () => {
     if (event.external_url) {
       window.open(event.external_url, "_blank", "noopener,noreferrer");

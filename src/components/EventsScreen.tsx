@@ -112,7 +112,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const cityEvents: MappedEvent[] = dbEvents.map((e) => ({
     id: e.id,
     title: e.title,
-    host: sourceLabel((e as any).source) ? `via ${sourceLabel((e as any).source)}` : "Community",
+    host: (e as any).location ? `📍 ${(e as any).location}` : (sourceLabel((e as any).source) ? `via ${sourceLabel((e as any).source)}` : "Community"),
     date: new Date(e.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
     rawDate: e.date,
     venue: e.location || "",
