@@ -108,7 +108,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const { events: dbEvents, toggleRsvp, rsvpEventIds, loading } = useEvents(selectedCity.id);
   const { importEvents, importing } = useEventbriteImport();
   const { bulkImport, importing: bulkImporting } = useBulkImport();
-  const { user } = useAuth();
+  useAuth();
   const userRole = useUserRole();
   const { toast } = useToast();
 
