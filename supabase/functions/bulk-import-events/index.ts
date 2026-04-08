@@ -7,11 +7,15 @@ const corsHeaders = {
 };
 
 function sanitizeForAI(text: string): string {
-  return text.replace(/```/g, '').replace(/(system|user|assistant):/gi, '').replace(/<script[^>]*>.*?<\/script>/gi, '').replace(/javascript:/gi, '').substring(0, 10000);
+  return text.replace(/```/g, '').replace(/(system|user|assistant):/gi, '').replace(/<script[^>]*>.*?<\/script>/gi, '').replace(/javascript:/gi, '').substring(0, 12000);
 }
 
 const AI_GATEWAY = "https://ai.gateway.lovable.dev/v1/chat/completions";
 const SYSTEM_USER_ID = "00000000-0000-0000-0000-000000000000";
+
+// Date range: April 9 2025 – July 31 2025
+const DATE_FROM = "2025-04-09";
+const DATE_TO = "2025-07-31";
 
 interface ImportResult {
   city: string;
@@ -40,7 +44,7 @@ async function scrapeAndImport(
       const res = await fetch("https://api.firecrawl.dev/v1/scrape", {
         method: "POST",
         headers: { Authorization: `Bearer ${firecrawlKey}`, "Content-Type": "application/json" },
-        body: JSON.stringify({ url: scrapeUrl, formats: ["markdown"], waitFor: 2000 }),
+        body: JSON.stringify({ url: scrapeUrl, formats: ["markdown"], waitFor: 3000 }),
       });
       if (!res.ok) { result.errors.push(`Scrape failed: ${res.status}`); return result; }
       const data = await res.json();
@@ -55,13 +59,13 @@ async function scrapeAndImport(
       const data = await res.json();
       const results = data?.data || [];
       markdown = results.map((r: any, i: number) =>
-        `--- Result ${i + 1} ---\nURL: ${r.url || ""}\nTitle: ${r.title || ""}\n${(r.markdown || "").substring(0, 1500)}`
+        `--- Result ${i + 1} ---\nURL: ${r.url || ""}\nTitle: ${r.title || ""}\n${(r.markdown || "").substring(0, 2000)}`
       ).join("\n\n");
     }
 
     if (markdown.length < 50) { return result; }
 
-    // AI extraction
+    // AI extraction with date range constraints
     const aiRes = await fetch(AI_GATEWAY, {
       method: "POST",
       headers: { Authorization: `Bearer ${lovableKey}`, "Content-Type": "application/json" },
@@ -69,10 +73,10 @@ async function scrapeAndImport(
         model: "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: "You extract event data from scraped web pages. Return ONLY valid JSON, no markdown code fences." },
-          { role: "user", content: `Extract all individual events from this ${source} content for ${city}. Return a JSON object with an "events" array. Each event should have: title, date (ISO 8601 like 2025-07-15T20:00:00), location (venue name), price (string like "Free" or "$25"), url (the original event URL), image_url (if found), organizer (promoter/host name if found). Only include actual events. Skip duplicates.\n\n[START]\n${sanitizeForAI(markdown)}\n[END]` }
+          { role: "user", content: `Extract all individual events from this ${source} content for ${city}, Texas. ONLY include events happening between ${DATE_FROM} and ${DATE_TO} (April 9 through July 31, 2025). Discard any events outside this date range. Return a JSON object with an "events" array. Each event should have: title, date (ISO 8601 like 2025-07-15T20:00:00), location (venue name), price (string like "Free" or "$25"), url (the original event URL), image_url (if found), organizer (promoter/host name if found), category (one of: Concert, Party, Festival, Brunch, Day Party, Nightlife, Cultural, Sports, Comedy, Other). Only include actual events with real dates. Skip duplicates.\n\n[START]\n${sanitizeForAI(markdown)}\n[END]` }
         ],
         temperature: 0,
-        max_tokens: 4000,
+        max_tokens: 6000,
       }),
     });
 
@@ -88,6 +92,20 @@ async function scrapeAndImport(
 
     for (const ev of events) {
       if (!ev.title || ev.title.length < 3) continue;
+
+      // Validate date is within range
+      try {
+        const eventDate = new Date(ev.date);
+        const fromDate = new Date(DATE_FROM);
+        const toDate = new Date(DATE_TO + "T23:59:59");
+        if (isNaN(eventDate.getTime()) || eventDate < fromDate || eventDate > toDate) {
+          result.skipped++;
+          continue;
+        }
+      } catch {
+        result.skipped++;
+        continue;
+      }
 
       const { data: existing } = await supabase
         .from("events").select("id")
@@ -108,7 +126,7 @@ async function scrapeAndImport(
         location: ev.location || "",
         image_url: ev.image_url || null,
         price: ev.price || "Free",
-        category: "Concert",
+        category: ev.category || "Concert",
         creator_id: SYSTEM_USER_ID,
         source,
         external_id: ev.url || `${source}-${city}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -142,11 +160,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // This function uses a secret token instead of user auth for automated bulk imports
     const authHeader = req.headers.get("Authorization");
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    
-    // Allow service role or admin user
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     
@@ -178,18 +193,18 @@ Deno.serve(async (req) => {
     const allResults: ImportResult[] = [];
 
     for (const city of cities) {
-      console.log(`\n=== Processing ${city} ===`);
+      console.log(`\n=== Processing ${city} (${DATE_FROM} to ${DATE_TO}) ===`);
 
-      // Posh
+      // Posh - search for upcoming events in date range
       const poshResult = await scrapeAndImport(
         supabase, FIRECRAWL_KEY, LOVABLE_KEY, city, "posh",
-        `site:posh.vip events ${city} 2025 2026`,
+        `site:posh.vip events ${city} Texas April May June July 2025`,
         "search"
       );
       allResults.push(poshResult);
       console.log(`Posh ${city}: ${poshResult.imported} imported, ${poshResult.skipped} skipped`);
 
-      // Eventbrite
+      // Eventbrite - scrape with date filter
       const ebSlugs: Record<string, string> = {
         austin: "Austin--TX", dallas: "Dallas--TX", houston: "Houston--TX", sanantonio: "San-Antonio--TX"
       };
@@ -197,27 +212,45 @@ Deno.serve(async (req) => {
         const ebResult = await scrapeAndImport(
           supabase, FIRECRAWL_KEY, LOVABLE_KEY, city, "eventbrite",
           "", "scrape",
-          `https://www.eventbrite.com/d/${ebSlugs[city]}/events/`
+          `https://www.eventbrite.com/d/${ebSlugs[city]}/events--this-month/`
         );
         allResults.push(ebResult);
         console.log(`Eventbrite ${city}: ${ebResult.imported} imported, ${ebResult.skipped} skipped`);
+
+        // Second pass for next months
+        const ebResult2 = await scrapeAndImport(
+          supabase, FIRECRAWL_KEY, LOVABLE_KEY, city, "eventbrite",
+          `site:eventbrite.com ${city} TX events May June July 2025`,
+          "search"
+        );
+        allResults.push(ebResult2);
+        console.log(`Eventbrite search ${city}: ${ebResult2.imported} imported, ${ebResult2.skipped} skipped`);
       }
 
       // Partyfoul / general party search
       const partyResult = await scrapeAndImport(
         supabase, FIRECRAWL_KEY, LOVABLE_KEY, city, "partyfoul",
-        `${city} TX party events nightlife 2025`,
+        `${city} Texas party events nightlife April May June July 2025`,
         "search"
       );
       allResults.push(partyResult);
       console.log(`Partyfoul ${city}: ${partyResult.imported} imported, ${partyResult.skipped} skipped`);
+
+      // DICE events
+      const diceResult = await scrapeAndImport(
+        supabase, FIRECRAWL_KEY, LOVABLE_KEY, city, "dice",
+        `site:dice.fm ${city} events 2025`,
+        "search"
+      );
+      allResults.push(diceResult);
+      console.log(`DICE ${city}: ${diceResult.imported} imported, ${diceResult.skipped} skipped`);
     }
 
     const totalImported = allResults.reduce((s, r) => s + r.imported, 0);
     const totalSkipped = allResults.reduce((s, r) => s + r.skipped, 0);
 
     return new Response(
-      JSON.stringify({ success: true, total_imported: totalImported, total_skipped: totalSkipped, results: allResults }),
+      JSON.stringify({ success: true, total_imported: totalImported, total_skipped: totalSkipped, date_range: `${DATE_FROM} to ${DATE_TO}`, results: allResults }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error: unknown) {
