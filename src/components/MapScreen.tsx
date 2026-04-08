@@ -292,7 +292,7 @@ const ActivityPin = ({ emoji, isPrivate }: { emoji: string; isPrivate: boolean }
 );
 
 // Clustered marker wrapper - registers with MarkerClusterer
-const ClusteredAdvancedMarker = ({ id, ...props }: { id: string } & React.ComponentProps<typeof AdvancedMarker>) => {
+const AdvancedMarker = ({ id, ...props }: { id: string } & React.ComponentProps<typeof AdvancedMarker>) => {
   const ctx = useClusterer();
   const ctxRef = useRef(ctx);
   ctxRef.current = ctx;
@@ -989,119 +989,119 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
             </AdvancedMarker>
           )}
 
-          <ClusteredMarkers>
+          <>
             {/* Mock events */}
             {showEvents && allEventPositions.filter(e => !e.host?.toLowerCase().includes("afro nation") && e.source !== "sxsw" && inView(e.lat, e.lng)).map((event) => (
-              <ClusteredAdvancedMarker id={`event-${event.id}`} key={`event-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker id={`event-${event.id}`} key={`event-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "event", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <EventPin />
-              </ClusteredAdvancedMarker>
+              </AdvancedMarker>
             ))}
 
             {/* Afro Nation */}
             {showAfroNation && allEventPositions.filter(e => e.host?.toLowerCase().includes("afro nation") && inView(e.lat, e.lng)).map((event) => (
-              <ClusteredAdvancedMarker id={`an-${event.id}`} key={`an-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker id={`an-${event.id}`} key={`an-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "afronation", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <AfroNationPin />
-              </ClusteredAdvancedMarker>
+              </AdvancedMarker>
             ))}
 
             {/* SXSW */}
             {showSXSW && allEventPositions.filter(e => e.source === "sxsw" && inView(e.lat, e.lng)).map((event) => (
-              <ClusteredAdvancedMarker id={`sxsw-${event.id}`} key={`sxsw-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker id={`sxsw-${event.id}`} key={`sxsw-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "sxsw", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <SXSWPin />
-              </ClusteredAdvancedMarker>
+              </AdvancedMarker>
             ))}
 
             {/* People */}
             {showPeople && allPeople.filter(p => inView(p.lat, p.lng)).map((person, i) => (
-              <ClusteredAdvancedMarker id={`person-${i}`} key={`person-${i}`} position={{ lat: person.lat, lng: person.lng }}
+              <AdvancedMarker id={`person-${i}`} key={`person-${i}`} position={{ lat: person.lat, lng: person.lng }}
                 onClick={() => setOpenInfoWindow({ type: "person", id: i, position: { lat: person.lat, lng: person.lng }, data: person })}>
                 <PersonPin />
-              </ClusteredAdvancedMarker>
+              </AdvancedMarker>
             ))}
 
             {/* Groups */}
             {showGroups && allGroups.filter(g => inView(g.lat, g.lng)).map((group, i) => (
-              <ClusteredAdvancedMarker id={`group-${i}`} key={`group-${i}`} position={{ lat: group.lat, lng: group.lng }}
+              <AdvancedMarker id={`group-${i}`} key={`group-${i}`} position={{ lat: group.lat, lng: group.lng }}
                 onClick={() => setOpenInfoWindow({ type: "group", id: i, position: { lat: group.lat, lng: group.lng }, data: group })}>
                 <GroupPin />
-              </ClusteredAdvancedMarker>
+              </AdvancedMarker>
             ))}
 
             {/* Resources */}
             {showResources && allResources.filter(r => inView(r.lat, r.lng)).map((resource) => (
-              <ClusteredAdvancedMarker id={`resource-${resource.id}`} key={`resource-${resource.id}`} position={{ lat: resource.lat, lng: resource.lng }}
+              <AdvancedMarker id={`resource-${resource.id}`} key={`resource-${resource.id}`} position={{ lat: resource.lat, lng: resource.lng }}
                 onClick={() => setOpenInfoWindow({ type: "resource", id: resource.id, position: { lat: resource.lat, lng: resource.lng }, data: resource })}>
                 <ResourcePin type={resource.type} flag={categoryFlagMap[resource.category]} />
-              </ClusteredAdvancedMarker>
+              </AdvancedMarker>
             ))}
 
             {/* Hubs */}
             {showHubs && hubPositions.filter(h => inView(h.lat, h.lng)).map((hub) => (
-              <ClusteredAdvancedMarker id={`hub-${hub.cityId}`} key={`hub-${hub.cityId}`} position={{ lat: hub.lat, lng: hub.lng }}
+              <AdvancedMarker id={`hub-${hub.cityId}`} key={`hub-${hub.cityId}`} position={{ lat: hub.lat, lng: hub.lng }}
                 onClick={() => setOpenInfoWindow({ type: "hub", id: hub.cityId, position: { lat: hub.lat, lng: hub.lng }, data: hub })}>
                 <HubPin hub={hub} />
-              </ClusteredAdvancedMarker>
+              </AdvancedMarker>
             ))}
 
             {/* DB Events: Eventbrite */}
             {showEventbrite && dbEventPositions.filter(e => e.source === "eventbrite" && inView(e.lat, e.lng)).map((event) => (
-              <ClusteredAdvancedMarker id={`eb-${event.id}`} key={`eb-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker id={`eb-${event.id}`} key={`eb-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "eventbrite", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <EventbritePin />
-              </ClusteredAdvancedMarker>
+              </AdvancedMarker>
             ))}
 
             {/* DB Events: Posh */}
             {showPosh && dbEventPositions.filter(e => e.source === "posh" && inView(e.lat, e.lng)).map((event) => (
-              <ClusteredAdvancedMarker id={`posh-${event.id}`} key={`posh-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker id={`posh-${event.id}`} key={`posh-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "posh", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <PoshPin />
-              </ClusteredAdvancedMarker>
+              </AdvancedMarker>
             ))}
 
             {/* DB Events: DICE */}
             {showEventbrite && dbEventPositions.filter(e => e.source === "dice" && inView(e.lat, e.lng)).map((event) => (
-              <ClusteredAdvancedMarker id={`dice-${event.id}`} key={`dice-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker id={`dice-${event.id}`} key={`dice-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "dice", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <DicePin />
-              </ClusteredAdvancedMarker>
+              </AdvancedMarker>
             ))}
 
             {/* DB Events: Shotgun */}
             {showEventbrite && dbEventPositions.filter(e => e.source === "shotgun" && inView(e.lat, e.lng)).map((event) => (
-              <ClusteredAdvancedMarker id={`shotgun-${event.id}`} key={`shotgun-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker id={`shotgun-${event.id}`} key={`shotgun-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "shotgun", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <ShotgunPin />
-              </ClusteredAdvancedMarker>
+              </AdvancedMarker>
             ))}
 
             {/* DB Events: Billetto */}
             {showEventbrite && dbEventPositions.filter(e => e.source === "billetto" && inView(e.lat, e.lng)).map((event) => (
-              <ClusteredAdvancedMarker id={`billetto-${event.id}`} key={`billetto-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker id={`billetto-${event.id}`} key={`billetto-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "billetto", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <BillettoPin />
-              </ClusteredAdvancedMarker>
+              </AdvancedMarker>
             ))}
 
             {/* Places */}
             {showPlaces && dbPlaces.filter(p => p.latitude && p.longitude && inView(p.latitude!, p.longitude!)).map((place) => (
-              <ClusteredAdvancedMarker id={`place-${place.id}`} key={`place-${place.id}`} position={{ lat: place.latitude!, lng: place.longitude! }}
+              <AdvancedMarker id={`place-${place.id}`} key={`place-${place.id}`} position={{ lat: place.latitude!, lng: place.longitude! }}
                 onClick={() => setOpenInfoWindow({ type: "place", id: place.id, position: { lat: place.latitude!, lng: place.longitude! }, data: place })}>
                 <PlacePin category={place.category} />
-              </ClusteredAdvancedMarker>
+              </AdvancedMarker>
             ))}
 
             {/* Activities */}
             {activities.filter(a => inView(a.latitude, a.longitude)).map((activity) => (
-              <ClusteredAdvancedMarker id={`activity-${activity.id}`} key={`activity-${activity.id}`} position={{ lat: activity.latitude, lng: activity.longitude }}
+              <AdvancedMarker id={`activity-${activity.id}`} key={`activity-${activity.id}`} position={{ lat: activity.latitude, lng: activity.longitude }}
                 onClick={() => setSelectedActivity(activity)}>
                 <ActivityPin emoji={CATEGORY_EMOJI[activity.category] || "✨"} isPrivate={!activity.is_public} />
-              </ClusteredAdvancedMarker>
+              </AdvancedMarker>
             ))}
-          </ClusteredMarkers>
+          </>
 
           {/* Unified InfoWindow */}
           {openInfoWindow && (
