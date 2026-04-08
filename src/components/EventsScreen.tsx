@@ -109,7 +109,7 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const { importEvents, importing } = useEventbriteImport();
   const { bulkImport, importing: bulkImporting } = useBulkImport();
   const { user } = useAuth();
-  const { isAdmin } = useUserRole();
+  const userRole = useUserRole();
   const { toast } = useToast();
 
   const cityEvents: MappedEvent[] = dbEvents.map((e) => ({
