@@ -3,18 +3,19 @@ import { useScreenView } from "@/hooks/useAnalytics";
 import TableBookingSheet from "@/components/TableBookingSheet";
 import { trackEvent } from "@/lib/posthog";
 import { trackEventViewed } from "@/lib/analytics";
-import { Search, Calendar, Plus, Download, Loader2, Link2 } from "lucide-react";
+import { Search, Calendar, Plus, Download, Loader2, Link2, Globe } from "lucide-react";
 import { type City } from "@/data/cityData";
-import EventAddOns from "@/components/EventAddOns";
 import CityPicker from "@/components/CityPicker";
 import EventAttendeesSheet from "@/components/EventAttendeesSheet";
 import CreateEventSheet from "@/components/CreateEventSheet";
 import TicketPurchaseSheet from "@/components/TicketPurchaseSheet";
 import EventCard from "@/components/EventCard";
 import EventCategoryBanners from "@/components/EventCategoryBanners";
-import { useEvents, type DbEvent } from "@/hooks/useEvents";
+import { useEvents } from "@/hooks/useEvents";
 import { useEventbriteImport } from "@/hooks/useEventbriteImport";
+import { useBulkImport } from "@/hooks/useBulkImport";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -106,7 +107,9 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const [importingUrl, setImportingUrl] = useState(false);
   const { events: dbEvents, toggleRsvp, rsvpEventIds, loading } = useEvents(selectedCity.id);
   const { importEvents, importing } = useEventbriteImport();
+  const { bulkImport, importing: bulkImporting } = useBulkImport();
   const { user } = useAuth();
+  const { isAdmin } = useUserRole();
   const { toast } = useToast();
 
   const cityEvents: MappedEvent[] = dbEvents.map((e) => ({
