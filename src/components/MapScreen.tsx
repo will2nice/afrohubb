@@ -979,7 +979,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
           <>
             {/* Mock events */}
             {showEvents && allEventPositions.filter(e => !e.host?.toLowerCase().includes("afro nation") && e.source !== "sxsw" && inView(e.lat, e.lng)).map((event) => (
-              <AdvancedMarker`} key={`event-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker key={`event-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "event", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <EventPin />
               </AdvancedMarker>
@@ -987,7 +987,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
             {/* Afro Nation */}
             {showAfroNation && allEventPositions.filter(e => e.host?.toLowerCase().includes("afro nation") && inView(e.lat, e.lng)).map((event) => (
-              <AdvancedMarker`} key={`an-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker key={`an-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "afronation", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <AfroNationPin />
               </AdvancedMarker>
@@ -995,7 +995,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
             {/* SXSW */}
             {showSXSW && allEventPositions.filter(e => e.source === "sxsw" && inView(e.lat, e.lng)).map((event) => (
-              <AdvancedMarker`} key={`sxsw-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker key={`sxsw-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "sxsw", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <SXSWPin />
               </AdvancedMarker>
@@ -1003,7 +1003,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
             {/* People */}
             {showPeople && allPeople.filter(p => inView(p.lat, p.lng)).map((person, i) => (
-              <AdvancedMarker`} key={`person-${i}`} position={{ lat: person.lat, lng: person.lng }}
+              <AdvancedMarker key={`person-${i}`} position={{ lat: person.lat, lng: person.lng }}
                 onClick={() => setOpenInfoWindow({ type: "person", id: i, position: { lat: person.lat, lng: person.lng }, data: person })}>
                 <PersonPin />
               </AdvancedMarker>
@@ -1011,7 +1011,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
             {/* Groups */}
             {showGroups && allGroups.filter(g => inView(g.lat, g.lng)).map((group, i) => (
-              <AdvancedMarker`} key={`group-${i}`} position={{ lat: group.lat, lng: group.lng }}
+              <AdvancedMarker key={`group-${i}`} position={{ lat: group.lat, lng: group.lng }}
                 onClick={() => setOpenInfoWindow({ type: "group", id: i, position: { lat: group.lat, lng: group.lng }, data: group })}>
                 <GroupPin />
               </AdvancedMarker>
@@ -1019,7 +1019,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
             {/* Resources */}
             {showResources && allResources.filter(r => inView(r.lat, r.lng)).map((resource) => (
-              <AdvancedMarker`} key={`resource-${resource.id}`} position={{ lat: resource.lat, lng: resource.lng }}
+              <AdvancedMarker key={`resource-${resource.id}`} position={{ lat: resource.lat, lng: resource.lng }}
                 onClick={() => setOpenInfoWindow({ type: "resource", id: resource.id, position: { lat: resource.lat, lng: resource.lng }, data: resource })}>
                 <ResourcePin type={resource.type} flag={categoryFlagMap[resource.category]} />
               </AdvancedMarker>
@@ -1027,7 +1027,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
             {/* Hubs */}
             {showHubs && hubPositions.filter(h => inView(h.lat, h.lng)).map((hub) => (
-              <AdvancedMarker`} key={`hub-${hub.cityId}`} position={{ lat: hub.lat, lng: hub.lng }}
+              <AdvancedMarker key={`hub-${hub.cityId}`} position={{ lat: hub.lat, lng: hub.lng }}
                 onClick={() => setOpenInfoWindow({ type: "hub", id: hub.cityId, position: { lat: hub.lat, lng: hub.lng }, data: hub })}>
                 <HubPin hub={hub} />
               </AdvancedMarker>
@@ -1035,7 +1035,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
             {/* DB Events: Eventbrite */}
             {showEventbrite && dbEventPositions.filter(e => e.source === "eventbrite" && inView(e.lat, e.lng)).map((event) => (
-              <AdvancedMarker`} key={`eb-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker key={`eb-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "eventbrite", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <EventbritePin />
               </AdvancedMarker>
@@ -1043,7 +1043,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
             {/* DB Events: Posh */}
             {showPosh && dbEventPositions.filter(e => e.source === "posh" && inView(e.lat, e.lng)).map((event) => (
-              <AdvancedMarker`} key={`posh-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker key={`posh-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "posh", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <PoshPin />
               </AdvancedMarker>
@@ -1051,7 +1051,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
             {/* DB Events: DICE */}
             {showEventbrite && dbEventPositions.filter(e => e.source === "dice" && inView(e.lat, e.lng)).map((event) => (
-              <AdvancedMarker`} key={`dice-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker key={`dice-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "dice", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <DicePin />
               </AdvancedMarker>
@@ -1059,7 +1059,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
             {/* DB Events: Shotgun */}
             {showEventbrite && dbEventPositions.filter(e => e.source === "shotgun" && inView(e.lat, e.lng)).map((event) => (
-              <AdvancedMarker`} key={`shotgun-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker key={`shotgun-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "shotgun", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <ShotgunPin />
               </AdvancedMarker>
@@ -1067,7 +1067,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
             {/* DB Events: Billetto */}
             {showEventbrite && dbEventPositions.filter(e => e.source === "billetto" && inView(e.lat, e.lng)).map((event) => (
-              <AdvancedMarker`} key={`billetto-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
+              <AdvancedMarker key={`billetto-${event.id}`} position={{ lat: event.lat, lng: event.lng }}
                 onClick={() => setOpenInfoWindow({ type: "billetto", id: event.id, position: { lat: event.lat, lng: event.lng }, data: event })}>
                 <BillettoPin />
               </AdvancedMarker>
@@ -1075,7 +1075,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
             {/* Places */}
             {showPlaces && dbPlaces.filter(p => p.latitude && p.longitude && inView(p.latitude!, p.longitude!)).map((place) => (
-              <AdvancedMarker`} key={`place-${place.id}`} position={{ lat: place.latitude!, lng: place.longitude! }}
+              <AdvancedMarker key={`place-${place.id}`} position={{ lat: place.latitude!, lng: place.longitude! }}
                 onClick={() => setOpenInfoWindow({ type: "place", id: place.id, position: { lat: place.latitude!, lng: place.longitude! }, data: place })}>
                 <PlacePin category={place.category} />
               </AdvancedMarker>
@@ -1083,7 +1083,7 @@ const MapScreen = ({ selectedCity, onCityChange }: MapScreenProps) => {
 
             {/* Activities */}
             {activities.filter(a => inView(a.latitude, a.longitude)).map((activity) => (
-              <AdvancedMarker`} key={`activity-${activity.id}`} position={{ lat: activity.latitude, lng: activity.longitude }}
+              <AdvancedMarker key={`activity-${activity.id}`} position={{ lat: activity.latitude, lng: activity.longitude }}
                 onClick={() => setSelectedActivity(activity)}>
                 <ActivityPin emoji={CATEGORY_EMOJI[activity.category] || "✨"} isPrivate={!activity.is_public} />
               </AdvancedMarker>
