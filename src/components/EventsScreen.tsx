@@ -187,6 +187,16 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
           <div className="flex items-center justify-between mb-3">
             <h1 className="font-display text-xl font-bold text-gradient-gold">Experiences</h1>
             <div className="flex items-center gap-2">
+              {userRole === "admin" && (
+                <button
+                  onClick={() => bulkImport(["austin", "dallas", "houston", "sanantonio"])}
+                  disabled={bulkImporting}
+                  className="p-2 rounded-full bg-secondary border border-border hover:bg-muted transition-colors"
+                  title="Bulk import TX events from all platforms"
+                >
+                  {bulkImporting ? <Loader2 size={16} className="text-primary animate-spin" /> : <Globe size={16} className="text-primary" />}
+                </button>
+              )}
               <button
                 onClick={() => importEvents([selectedCity.id])}
                 disabled={importing}
