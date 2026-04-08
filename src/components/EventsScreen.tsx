@@ -79,12 +79,12 @@ const filterMap: Record<string, (e: MappedEvent) => boolean> = {
 };
 
 const sourceLabel = (source: string) => {
-  const map: Record<string, string> = { eventbrite: "Eventbrite", posh: "Posh", dice: "DICE", shotgun: "Shotgun", billetto: "Billetto", afronation: "Afro Nation" };
+  const map: Record<string, string> = { eventbrite: "Eventbrite", posh: "Posh", dice: "DICE", shotgun: "Shotgun", billetto: "Billetto", afronation: "Afro Nation", partyfoul: "PartyFoul" };
   return map[source] || null;
 };
 
 const sourceColor = (source: string) => {
-  const map: Record<string, string> = { eventbrite: "bg-[hsl(14,100%,53%)]/90", posh: "bg-[hsl(270,80%,60%)]/90", dice: "bg-[hsl(210,80%,50%)]/90", shotgun: "bg-[hsl(330,70%,55%)]/90", billetto: "bg-[hsl(170,60%,45%)]/90" };
+  const map: Record<string, string> = { eventbrite: "bg-[hsl(14,100%,53%)]/90", posh: "bg-[hsl(270,80%,60%)]/90", dice: "bg-[hsl(210,80%,50%)]/90", shotgun: "bg-[hsl(330,70%,55%)]/90", billetto: "bg-[hsl(170,60%,45%)]/90", partyfoul: "bg-[hsl(350,80%,55%)]/90" };
   return map[source] || "bg-primary/90";
 };
 
