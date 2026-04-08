@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Ticket, UserCheck, ExternalLink, Share2, Users } from "lucide-react";
+import { Calendar, MapPin, ExternalLink, Share2, Users, UserCheck, Bookmark } from "lucide-react";
 
 interface EventCardProps {
   event: {
@@ -13,6 +13,7 @@ interface EventCardProps {
     category: string;
     source: string;
     description?: string;
+    external_url?: string;
   };
   isGoing: boolean;
   onRsvp: () => void;
@@ -23,16 +24,32 @@ interface EventCardProps {
   sourceColor: string;
 }
 
+const SOURCE_ICONS: Record<string, string> = {
+  eventbrite: "🎟️",
+  posh: "✨",
+  dice: "🎲",
+  shotgun: "🔫",
+  billetto: "🎫",
+  afronation: "🌍",
+  partyfoul: "🎉",
+};
+
 const EventCard = ({ event, isGoing, onRsvp, onGetTickets, onTable, onShare, sourceLabel, sourceColor }: EventCardProps) => {
+  const handleViewEvent = () => {
+    if (event.external_url) {
+      window.open(event.external_url, "_blank", "noopener,noreferrer");
+    }
+  };
+
   return (
     <article className="bg-card rounded-2xl border border-border overflow-hidden shadow-card animate-slide-up flex flex-col">
       <div className="relative">
         <img src={event.image} alt={event.title} className="w-full aspect-square object-cover" loading="lazy" />
-        {/* Overlay badges */}
+        {/* Source badge with icon */}
         <div className="absolute top-2 left-2 flex gap-1">
           {sourceLabel && (
             <span className={`px-2 py-0.5 rounded-full text-[9px] font-semibold ${sourceColor} text-white backdrop-blur-sm flex items-center gap-0.5`}>
-              <ExternalLink size={8} /> {sourceLabel}
+              <span>{SOURCE_ICONS[event.source] || "🔗"}</span> {sourceLabel}
             </span>
           )}
           {isGoing && (
@@ -47,13 +64,15 @@ const EventCard = ({ event, isGoing, onRsvp, onGetTickets, onTable, onShare, sou
               ? "bg-card/90 text-primary border border-primary/30"
               : "gradient-gold text-primary-foreground"
           }`}>
-            {event.free ? "Free" : event.price || "Tickets"}
+            {event.free ? "Free" : event.price || "Paid"}
           </span>
         </div>
-        {/* Bottom gradient with title overlay */}
+        {/* Bottom gradient with title + promoter */}
         <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 pt-10">
           <h3 className="font-display font-bold text-white text-sm leading-tight line-clamp-2">{event.title}</h3>
-          <p className="text-[10px] text-white/70 mt-0.5">{event.host}</p>
+          <p className="text-[10px] text-white/70 mt-0.5 flex items-center gap-1">
+            {event.host}
+          </p>
         </div>
       </div>
 
@@ -73,33 +92,27 @@ const EventCard = ({ event, isGoing, onRsvp, onGetTickets, onTable, onShare, sou
 
         <div className="mt-auto flex items-center justify-between gap-1 pt-1">
           <div className="flex items-center gap-1">
-            <button onClick={onShare} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
+            <button onClick={onShare} className="p-1.5 rounded-full hover:bg-secondary transition-colors" title="Share">
               <Share2 size={12} className="text-muted-foreground" />
             </button>
-            <button onClick={onTable} className="p-1.5 rounded-full hover:bg-secondary transition-colors">
-              <Users size={12} className="text-muted-foreground" />
+            <button onClick={onRsvp} className="p-1.5 rounded-full hover:bg-secondary transition-colors" title="Save">
+              <Bookmark size={12} className={isGoing ? "text-primary fill-primary" : "text-muted-foreground"} />
             </button>
           </div>
-          {isGoing ? (
+          {/* Primary CTA: View on source platform */}
+          {event.external_url ? (
             <button
-              onClick={onRsvp}
-              className="px-3 py-1.5 rounded-full text-[10px] font-semibold bg-green-500/20 text-green-400 border border-green-500/30 flex items-center gap-1"
-            >
-              <UserCheck size={10} /> Going ✓
-            </button>
-          ) : event.free ? (
-            <button
-              onClick={onRsvp}
+              onClick={handleViewEvent}
               className="px-3 py-1.5 rounded-full text-[10px] font-semibold gradient-gold text-primary-foreground shadow-gold flex items-center gap-1"
             >
-              <Ticket size={10} /> RSVP
+              <ExternalLink size={10} /> View Event
             </button>
           ) : (
             <button
-              onClick={onGetTickets}
+              onClick={onRsvp}
               className="px-3 py-1.5 rounded-full text-[10px] font-semibold gradient-gold text-primary-foreground shadow-gold flex items-center gap-1"
             >
-              <Ticket size={10} /> Tickets
+              <UserCheck size={10} /> RSVP
             </button>
           )}
         </div>
