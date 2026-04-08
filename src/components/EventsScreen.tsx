@@ -3,18 +3,19 @@ import { useScreenView } from "@/hooks/useAnalytics";
 import TableBookingSheet from "@/components/TableBookingSheet";
 import { trackEvent } from "@/lib/posthog";
 import { trackEventViewed } from "@/lib/analytics";
-import { Search, Calendar, Plus, Download, Loader2, Link2 } from "lucide-react";
+import { Search, Calendar, Plus, Download, Loader2, Link2, Globe } from "lucide-react";
 import { type City } from "@/data/cityData";
-import EventAddOns from "@/components/EventAddOns";
 import CityPicker from "@/components/CityPicker";
 import EventAttendeesSheet from "@/components/EventAttendeesSheet";
 import CreateEventSheet from "@/components/CreateEventSheet";
 import TicketPurchaseSheet from "@/components/TicketPurchaseSheet";
 import EventCard from "@/components/EventCard";
 import EventCategoryBanners from "@/components/EventCategoryBanners";
-import { useEvents, type DbEvent } from "@/hooks/useEvents";
+import { useEvents } from "@/hooks/useEvents";
 import { useEventbriteImport } from "@/hooks/useEventbriteImport";
+import { useBulkImport } from "@/hooks/useBulkImport";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUserRole } from "@/hooks/useUserRole";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -79,12 +80,12 @@ const filterMap: Record<string, (e: MappedEvent) => boolean> = {
 };
 
 const sourceLabel = (source: string) => {
-  const map: Record<string, string> = { eventbrite: "Eventbrite", posh: "Posh", dice: "DICE", shotgun: "Shotgun", billetto: "Billetto", afronation: "Afro Nation" };
+  const map: Record<string, string> = { eventbrite: "Eventbrite", posh: "Posh", dice: "DICE", shotgun: "Shotgun", billetto: "Billetto", afronation: "Afro Nation", partyfoul: "PartyFoul" };
   return map[source] || null;
 };
 
 const sourceColor = (source: string) => {
-  const map: Record<string, string> = { eventbrite: "bg-[hsl(14,100%,53%)]/90", posh: "bg-[hsl(270,80%,60%)]/90", dice: "bg-[hsl(210,80%,50%)]/90", shotgun: "bg-[hsl(330,70%,55%)]/90", billetto: "bg-[hsl(170,60%,45%)]/90" };
+  const map: Record<string, string> = { eventbrite: "bg-[hsl(14,100%,53%)]/90", posh: "bg-[hsl(270,80%,60%)]/90", dice: "bg-[hsl(210,80%,50%)]/90", shotgun: "bg-[hsl(330,70%,55%)]/90", billetto: "bg-[hsl(170,60%,45%)]/90", partyfoul: "bg-[hsl(350,80%,55%)]/90" };
   return map[source] || "bg-primary/90";
 };
 
@@ -106,13 +107,15 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
   const [importingUrl, setImportingUrl] = useState(false);
   const { events: dbEvents, toggleRsvp, rsvpEventIds, loading } = useEvents(selectedCity.id);
   const { importEvents, importing } = useEventbriteImport();
-  const { user } = useAuth();
+  const { bulkImport, importing: bulkImporting } = useBulkImport();
+  useAuth();
+  const userRole = useUserRole();
   const { toast } = useToast();
 
   const cityEvents: MappedEvent[] = dbEvents.map((e) => ({
     id: e.id,
     title: e.title,
-    host: sourceLabel((e as any).source) ? `via ${sourceLabel((e as any).source)}` : "Community",
+    host: (e as any).location ? `📍 ${(e as any).location}` : (sourceLabel((e as any).source) ? `via ${sourceLabel((e as any).source)}` : "Community"),
     date: new Date(e.date).toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }),
     rawDate: e.date,
     venue: e.location || "",
@@ -184,6 +187,16 @@ const EventsScreen = ({ selectedCity, onCityChange }: EventsScreenProps) => {
           <div className="flex items-center justify-between mb-3">
             <h1 className="font-display text-xl font-bold text-gradient-gold">Experiences</h1>
             <div className="flex items-center gap-2">
+              {userRole === "admin" && (
+                <button
+                  onClick={() => bulkImport(["austin", "dallas", "houston", "sanantonio"])}
+                  disabled={bulkImporting}
+                  className="p-2 rounded-full bg-secondary border border-border hover:bg-muted transition-colors"
+                  title="Bulk import TX events from all platforms"
+                >
+                  {bulkImporting ? <Loader2 size={16} className="text-primary animate-spin" /> : <Globe size={16} className="text-primary" />}
+                </button>
+              )}
               <button
                 onClick={() => importEvents([selectedCity.id])}
                 disabled={importing}
