@@ -106,25 +106,29 @@ Deno.serve(async (req) => {
   }
 
   try {
-    // Auth: require admin role
+    // Auth: require admin role or service role key
     const authHeader = req.headers.get("Authorization");
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return new Response(JSON.stringify({ error: "Unauthorized - please log in as admin" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
-    const userClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authHeader } } });
-    
-    // Use getClaims for fast JWT validation
+
     const token = authHeader.replace("Bearer ", "");
-    const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
-    if (claimsError || !claimsData?.claims?.sub) {
-      return new Response(JSON.stringify({ error: "Invalid or expired token - please log in again" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+    const isServiceRole = token === serviceKey;
+
+    if (!isServiceRole) {
+      const userClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authHeader } } });
+      const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
+      if (claimsError || !claimsData?.claims?.sub) {
+        return new Response(JSON.stringify({ error: "Invalid or expired token - please log in again" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
+      }
+      const userId = claimsData.claims.sub as string;
+      const { data: isAdmin } = await userClient.rpc("has_role", { _user_id: userId, _role: "admin" });
+      if (!isAdmin) return new Response(JSON.stringify({ error: "Admin access required" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
-    const userId = claimsData.claims.sub as string;
-    
-    const { data: isAdmin } = await userClient.rpc("has_role", { _user_id: userId, _role: "admin" });
-    if (!isAdmin) return new Response(JSON.stringify({ error: "Admin access required" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
 
     const FIRECRAWL_KEY = Deno.env.get("FIRECRAWL_API_KEY");
     if (!FIRECRAWL_KEY) throw new Error("FIRECRAWL_API_KEY is not configured");
