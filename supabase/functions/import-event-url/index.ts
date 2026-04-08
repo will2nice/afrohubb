@@ -26,12 +26,25 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Verify user
-    const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
-      global: { headers: { Authorization: authHeader } },
-    });
-    const { data: { user }, error: authError } = await userClient.auth.getUser();
-    if (authError || !user) throw new Error("Not authenticated");
+    // Verify user - support both real JWT and service role key
+    const token = authHeader.replace("Bearer ", "");
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const isServiceRole = token === serviceKey;
+
+    let userId = "00000000-0000-0000-0000-000000000000";
+
+    if (!isServiceRole) {
+      const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
+        global: { headers: { Authorization: authHeader } },
+      });
+      const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
+      if (claimsError || !claimsData?.claims?.sub) {
+        // If no valid user token, allow with default creator for open access mode
+        console.log("No authenticated user, using default creator ID");
+      } else {
+        userId = claimsData.claims.sub as string;
+      }
+    }
 
     const { url, city: rawCity } = await req.json();
     const city = rawCity ? rawCity.toLowerCase().replace(/[\s\-_]+/g, "") : "";
