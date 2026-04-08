@@ -291,19 +291,6 @@ const ActivityPin = ({ emoji, isPrivate }: { emoji: string; isPrivate: boolean }
   </div>
 );
 
-// Clustered marker wrapper - registers with MarkerClusterer
-const AdvancedMarker = ({ id, ...props }: { id: string } & React.ComponentProps<typeof AdvancedMarker>) => {
-  const ctx = useClusterer();
-  const ctxRef = useRef(ctx);
-  ctxRef.current = ctx;
-  const handleRef = useCallback(
-    (marker: google.maps.marker.AdvancedMarkerElement | null) => {
-      ctxRef.current?.setMarkerRef(id, marker as Marker | null);
-    },
-    [id]
-  );
-  return <AdvancedMarker ref={handleRef} {...props} />;
-};
 
 const HubPin = ({ hub }: { hub: DiasporaHub }) => {
   const flags = hub.communities.map(c => c.countryFlag);
