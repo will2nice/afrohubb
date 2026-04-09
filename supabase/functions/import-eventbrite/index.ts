@@ -121,12 +121,11 @@ Deno.serve(async (req) => {
 
     if (!isServiceRole) {
       const userClient = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authHeader } } });
-      const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
-      if (claimsError || !claimsData?.claims?.sub) {
+      const { data: { user }, error: userError } = await userClient.auth.getUser();
+      if (userError || !user) {
         return new Response(JSON.stringify({ error: "Invalid or expired token - please log in again" }), { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } });
       }
-      const userId = claimsData.claims.sub as string;
-      const { data: isAdmin } = await userClient.rpc("has_role", { _user_id: userId, _role: "admin" });
+      const { data: isAdmin } = await userClient.rpc("has_role", { _user_id: user.id, _role: "admin" });
       if (!isAdmin) return new Response(JSON.stringify({ error: "Admin access required" }), { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } });
     }
 

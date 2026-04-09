@@ -32,16 +32,19 @@ Deno.serve(async (req) => {
 
     let userId = "00000000-0000-0000-0000-000000000000";
 
-    if (!isServiceRole) {
-      const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
-        global: { headers: { Authorization: authHeader } },
-      });
-      const { data: claimsData, error: claimsError } = await userClient.auth.getClaims(token);
-      if (claimsError || !claimsData?.claims?.sub) {
-        // If no valid user token, allow with default creator for open access mode
-        console.log("No authenticated user, using default creator ID");
-      } else {
-        userId = claimsData.claims.sub as string;
+    if (!isServiceRole && token) {
+      try {
+        const userClient = createClient(supabaseUrl, Deno.env.get("SUPABASE_ANON_KEY")!, {
+          global: { headers: { Authorization: authHeader } },
+        });
+        const { data: { user }, error: userError } = await userClient.auth.getUser();
+        if (!userError && user) {
+          userId = user.id;
+        } else {
+          console.log("No authenticated user, using default creator ID");
+        }
+      } catch {
+        console.log("Auth check failed, using default creator ID");
       }
     }
 
